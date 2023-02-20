@@ -1,6 +1,7 @@
 # Arthera Beacon chain 
 
-EVM-compatible chain secured by Fantom's Lachesis consensus algorithm.
+This is the initial chain to bootstrap the Arthera Network, which we named the "beacon" chain. It's an EVM-compatible chain, secured by Fantom's Lachesis consensus algorithm.
+The purpose of the Beacon chain is to gather initial support around the Arthera Network, prior to the launch of the new Main chain that will have all the features of Arthera. 
 
 ## Building the source
 

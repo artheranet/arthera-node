@@ -37,7 +37,7 @@ import (
 
 const (
 	// clientIdentifier to advertise over the network.
-	clientIdentifier = "go-opera"
+	clientIdentifier = "arthera-node"
 )
 
 var (
@@ -125,6 +125,7 @@ func initFlags() {
 		DBPresetFlag,
 		DBMigrationModeFlag,
 		genesisTypeFlag,
+		TestnetFlag,
 	}
 	legacyRpcFlags = []cli.Flag{
 		utils.NoUSBFlag,

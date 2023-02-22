@@ -1,5 +1,9 @@
-node1/
-node2/
-node3/
-node4/
-node5/
+node1/keystore/validator/password
+node1/chaindata
+node1/arthera-node
+node2/keystore/validator/password
+node2/chaindata
+node2/arthera-node
+node3/keystore/validator/password
+node3/chaindata
+node3/arthera-node

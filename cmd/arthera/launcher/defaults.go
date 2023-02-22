@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	DefaultP2PPort  = 5050  // Default p2p port for listening
+	DefaultP2PPort  = 6060  // Default p2p port for listening
 	DefaultHTTPPort = 18545 // Default TCP port for the HTTP RPC server
 	DefaultWSPort   = 18546 // Default TCP port for the websocket RPC server
 )
@@ -40,7 +40,7 @@ var NodeDefaultConfig = node.Config{
 	P2P: p2p.Config{
 		NoDiscovery: false, // enable discovery v4 by default
 		DiscoveryV5: true,  // enable discovery v5 by default
-		ListenAddr:  fmt.Sprintf(":%d", DefaultP2PPort),
+		ListenAddr:  fmt.Sprintf("0.0.0.0:%d", DefaultP2PPort),
 		MaxPeers:    50,
 		NAT:         nat.Any(),
 	},

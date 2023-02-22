@@ -120,6 +120,10 @@ var (
 		Name:  "db.preset",
 		Usage: "DBs layout preset ('pbl-1' or 'ldb-1' or 'legacy-ldb' or 'legacy-pbl')",
 	}
+	TestnetFlag = cli.BoolFlag{
+		Name:  "testnet",
+		Usage: "Run a testnet node",
+	}
 )
 
 type GenesisTemplate struct {
@@ -408,6 +412,8 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 		_, num, _ := parseFakeGen(ctx.GlobalString(FakeNetFlag.Name))
 		cfg.Emitter = emitter.FakeConfig(num)
 		setBootnodes(ctx, []string{}, &cfg.Node)
+	} else if ctx.GlobalIsSet(TestnetFlag.Name) {
+		cfg.Emitter = emitter.TestnetConfig()
 	} else {
 		// "asDefault" means set network defaults
 		cfg.Node.P2P.BootstrapNodes = asDefault

@@ -202,8 +202,10 @@ func mayGetGenesisStore(ctx *cli.Context) *genesisstore.Store {
 		if err != nil {
 			log.Crit("Invalid flag", "flag", FakeNetFlag.Name, "err", err)
 		}
-		fmt.Println(num)
-		return makefakegenesis.FakeGenesisStore(num, utils2.ToArt(1000000000), utils2.ToArt(5000000))
+		return makefakegenesis.FakeGenesisStore(num, utils2.ToArt(1_000_000_000), utils2.ToArt(5_000_000))
+	case ctx.GlobalIsSet(TestnetFlag.Name):
+		gen, _ := CreateGenesis("testnet")
+		return gen
 	case ctx.GlobalIsSet(GenesisFlag.Name):
 		genesisPath := ctx.GlobalString(GenesisFlag.Name)
 
@@ -413,7 +415,7 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 		cfg.Emitter = emitter.FakeConfig(num)
 		setBootnodes(ctx, []string{}, &cfg.Node)
 	} else if ctx.GlobalIsSet(TestnetFlag.Name) {
-		cfg.Emitter = emitter.TestnetConfig()
+		cfg.Emitter = emitter.DefaultConfig()
 	} else {
 		// "asDefault" means set network defaults
 		cfg.Node.P2P.BootstrapNodes = asDefault

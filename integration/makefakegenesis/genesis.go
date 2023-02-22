@@ -44,11 +44,7 @@ func FakeKey(n idx.ValidatorID) *ecdsa.PrivateKey {
 }
 
 func FakeGenesisStore(num idx.Validator, balance, stake *big.Int) *genesisstore.Store {
-	return FakeGenesisStoreWithRules(num, balance, stake, opera.FakeNetRules())
-}
-
-func FakeGenesisStoreWithRules(num idx.Validator, balance, stake *big.Int, rules opera.Rules) *genesisstore.Store {
-	return FakeGenesisStoreWithRulesAndStart(num, balance, stake, rules, 2, 1)
+	return FakeGenesisStoreWithRulesAndStart(num, balance, stake, opera.FakeNetRules(), 2, 1)
 }
 
 func FakeGenesisStoreWithRulesAndStart(num idx.Validator, balance, stake *big.Int, rules opera.Rules, epoch idx.Epoch, block idx.Block) *genesisstore.Store {

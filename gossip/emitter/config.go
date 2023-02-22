@@ -107,7 +107,7 @@ func FakeConfig(num idx.Validator) Config {
 
 func TestnetConfig() Config {
 	cfg := DefaultConfig()
-	cfg.EmitIntervals.Max = 10 * time.Second // don't wait long in testnet
-	cfg.EmitIntervals.DoublesignProtection = cfg.EmitIntervals.Max * 2
+	cfg.EmitIntervals.Max = 1 * time.Minute // don't wait long in testnet
+	cfg.EmitIntervals.DoublesignProtection = cfg.EmitIntervals.Max / 2
 	return cfg
 }

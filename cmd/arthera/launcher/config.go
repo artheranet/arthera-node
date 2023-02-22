@@ -415,7 +415,7 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 		cfg.Emitter = emitter.FakeConfig(num)
 		setBootnodes(ctx, []string{}, &cfg.Node)
 	} else if ctx.GlobalIsSet(TestnetFlag.Name) {
-		cfg.Emitter = emitter.DefaultConfig()
+		cfg.Emitter = emitter.TestnetConfig()
 	} else {
 		// "asDefault" means set network defaults
 		cfg.Node.P2P.BootstrapNodes = asDefault

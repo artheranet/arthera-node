@@ -82,6 +82,12 @@ var (
 			stake:   utils2.ToArt(3_175_000), // min stake StakerConstants.sol -> minSelfStake
 			balance: utils2.ToArt(0),
 		},
+		{
+			addr:    "0xF51e935061731a129765ff63b3Af0Adb5e4486aC",
+			pubkey:  "0xc004c39c38dc49cc4c9b64ea9d817545e713635f808d692f2f500ad801e002c50987e15cf4d9419731adf4cd83edf2207a806685cb2b75c3027d2dcdd78ec126f430",
+			stake:   utils2.ToArt(3_175_000),
+			balance: utils2.ToArt(0), // min stake StakerConstants.sol -> minSelfStake
+		},
 	}
 
 	TestnetAccounts = []GenesisAccount{

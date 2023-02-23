@@ -73,19 +73,19 @@ var (
 		{
 			addr:    "0x7a97E50436a074ADDB9A51D50Fbd35ADAFE88442",
 			pubkey:  "0xc0041d7405a8bc7dabf1e397e6689ff09482466aea9d3a716bf1dd4fd971c22d035d8d939c88764136a3213106282887f9005b5addf23af781302a0119400706996e",
-			stake:   utils2.ToArt(3_175_000), // min stake StakerConstants.sol -> minSelfStake
+			stake:   utils2.ToArt(1_000_000), // min stake StakerConstants.sol -> minSelfStake
 			balance: utils2.ToArt(0),
 		},
 		{
 			addr:    "0xfE8301b91A8Eb4734ed954f8E2FB84c2F72Cef8a",
 			pubkey:  "0xc004a61ec5eb3cf8d6b399ff56682b95277337b601fb31e1a254dd451101b8aafb0218d428fc814faee132aabcc17b3dd39fa35dfce2d5ce29d6bd05615bbd571016",
-			stake:   utils2.ToArt(3_175_000), // min stake StakerConstants.sol -> minSelfStake
+			stake:   utils2.ToArt(1_000_000), // min stake StakerConstants.sol -> minSelfStake
 			balance: utils2.ToArt(0),
 		},
 		{
 			addr:    "0xF51e935061731a129765ff63b3Af0Adb5e4486aC",
 			pubkey:  "0xc004c39c38dc49cc4c9b64ea9d817545e713635f808d692f2f500ad801e002c50987e15cf4d9419731adf4cd83edf2207a806685cb2b75c3027d2dcdd78ec126f430",
-			stake:   utils2.ToArt(3_175_000),
+			stake:   utils2.ToArt(1_000_000),
 			balance: utils2.ToArt(0), // min stake StakerConstants.sol -> minSelfStake
 		},
 	}

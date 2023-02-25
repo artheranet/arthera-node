@@ -344,7 +344,7 @@ func (s *Service) RegisterEmitter(em *emitter.Emitter) {
 	s.emitters = append(s.emitters, em)
 }
 
-// MakeProtocols constructs the P2P protocol definitions for `opera`.
+// MakeProtocols constructs the P2P protocol definitions for `arthera`.
 func MakeProtocols(svc *Service, backend *handler, disc enode.Iterator) []p2p.Protocol {
 	protocols := make([]p2p.Protocol, len(ProtocolVersions))
 	for i, version := range ProtocolVersions {

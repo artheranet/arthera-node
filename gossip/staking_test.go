@@ -28,6 +28,7 @@ package gossip
 
 import (
 	"fmt"
+	"github.com/artheranet/arthera-node/opera/contracts/staking"
 	"math/big"
 	"testing"
 
@@ -45,11 +46,10 @@ import (
 	"github.com/artheranet/arthera-node/opera/contracts/driverauth"
 	"github.com/artheranet/arthera-node/opera/contracts/evmwriter"
 	"github.com/artheranet/arthera-node/opera/contracts/netinit"
-	"github.com/artheranet/arthera-node/opera/contracts/sfc"
 	"github.com/artheranet/arthera-node/utils"
 )
 
-func TestSFC(t *testing.T) {
+func TestStakingContract(t *testing.T) {
 	logger.SetTestMode(t)
 	logger.SetLevel("debug")
 
@@ -70,14 +70,14 @@ func TestSFC(t *testing.T) {
 	adminAddr := env.Address(admin)
 
 	_ = true &&
-		t.Run("Genesis SFC", func(t *testing.T) {
+		t.Run("Genesis Staking", func(t *testing.T) {
 			require := require.New(t)
 
-			exp := sfc.GetContractBin()
-			got, err := env.CodeAt(nil, sfc.ContractAddress, nil)
+			exp := staking.GetContractBin()
+			got, err := env.CodeAt(nil, staking.ContractAddress, nil)
 			require.NoError(err)
-			require.Equal(exp, got, "genesis SFC contract")
-			require.Equal(exp, hexutil.MustDecode(sfc100.ContractBinRuntime), "genesis SFC contract version")
+			require.Equal(exp, got, "genesis Staking contract")
+			require.Equal(exp, hexutil.MustDecode(sfc100.ContractBinRuntime), "genesis Staking contract version")
 		}) &&
 		t.Run("Genesis Driver", func(t *testing.T) {
 			require := require.New(t)
@@ -139,22 +139,22 @@ func TestSFC(t *testing.T) {
 			require.Equal(1, rr.Len())
 			require.Equal(types.ReceiptStatusSuccessful, rr[0].Status)
 			newImpl := rr[0].ContractAddress
-			require.NotEqual(sfc.ContractAddress, newImpl)
+			require.NotEqual(staking.ContractAddress, newImpl)
 			newSfcContractBinRuntime, err := env.CodeAt(nil, newImpl, nil)
 			require.NoError(err)
 			require.Equal(hexutil.MustDecode(sfc100.ContractBinRuntime), newSfcContractBinRuntime)
 
-			tx, err := authDriver10.CopyCode(env.Pay(admin), sfc.ContractAddress, newImpl)
+			tx, err := authDriver10.CopyCode(env.Pay(admin), staking.ContractAddress, newImpl)
 			require.NoError(err)
 			rr, err = env.ApplyTxs(sameEpoch, tx)
 			require.NoError(err)
 			require.Equal(1, rr.Len())
 			require.Equal(types.ReceiptStatusSuccessful, rr[0].Status)
-			got, err := env.CodeAt(nil, sfc.ContractAddress, nil)
+			got, err := env.CodeAt(nil, staking.ContractAddress, nil)
 			require.NoError(err)
 			require.Equal(newSfcContractBinRuntime, got, "new SFC contract")
 
-			sfc10, err = sfc100.NewContract(sfc.ContractAddress, env)
+			sfc10, err = sfc100.NewContract(staking.ContractAddress, env)
 			require.NoError(err)
 			sfcEpoch, err := sfc10.ContractCaller.CurrentEpoch(env.ReadOnly())
 			require.NoError(err)
@@ -174,7 +174,7 @@ func TestSFC(t *testing.T) {
 		require.Equal(types.ReceiptStatusSuccessful, rr[0].Status)
 		newImpl := rr[0].ContractAddress
 
-		tx, err := rootDriver10.CopyCode(env.Pay(admin), sfc.ContractAddress, newImpl)
+		tx, err := rootDriver10.CopyCode(env.Pay(admin), staking.ContractAddress, newImpl)
 		require.NoError(err)
 		rr, err = env.ApplyTxs(sameEpoch, tx)
 		require.NoError(err)

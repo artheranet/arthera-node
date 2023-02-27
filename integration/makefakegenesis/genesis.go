@@ -2,6 +2,7 @@ package makefakegenesis
 
 import (
 	"crypto/ecdsa"
+	"github.com/artheranet/arthera-node/opera/contracts/staking"
 	"math/big"
 	"time"
 
@@ -28,7 +29,6 @@ import (
 	"github.com/artheranet/arthera-node/opera/contracts/evmwriter"
 	"github.com/artheranet/arthera-node/opera/contracts/netinit"
 	netinitcall "github.com/artheranet/arthera-node/opera/contracts/netinit/netinitcalls"
-	"github.com/artheranet/arthera-node/opera/contracts/sfc"
 	"github.com/artheranet/arthera-node/opera/genesis"
 	"github.com/artheranet/arthera-node/opera/genesis/gpos"
 	"github.com/artheranet/arthera-node/opera/genesisstore"
@@ -76,8 +76,9 @@ func FakeGenesisStoreWithRulesAndStart(num idx.Validator, balance, stake *big.In
 	builder.SetCode(driver.ContractAddress, driver.GetContractBin())
 	// pre deploy NodeDriverAuth
 	builder.SetCode(driverauth.ContractAddress, driverauth.GetContractBin())
-	// pre deploy SFC
-	builder.SetCode(sfc.ContractAddress, sfc.GetContractBin())
+	// pre deploy Staking
+	builder.SetCode(staking.ContractAddress, staking.GetContractBin())
+	builder.SetCode(staking.StakerInfoContractAddress, staking.GetStakerInfoContractBin())
 	// set non-zero code for pre-compiled contracts
 	builder.SetCode(evmwriter.ContractAddress, []byte{0})
 
@@ -144,7 +145,7 @@ func GetGenesisTxs(sealedEpoch idx.Epoch, validators gpos.Validators, totalSuppl
 	buildTx := txBuilder()
 	internalTxs := make(types.Transactions, 0, 15)
 	// initialization
-	calldata := netinitcall.InitializeAll(sealedEpoch, totalSupply, sfc.ContractAddress, driverauth.ContractAddress, driver.ContractAddress, evmwriter.ContractAddress, driverOwner)
+	calldata := netinitcall.InitializeAll(sealedEpoch, totalSupply, staking.ContractAddress, driverauth.ContractAddress, driver.ContractAddress, evmwriter.ContractAddress, driverOwner)
 	internalTxs = append(internalTxs, buildTx(calldata, netinit.ContractAddress))
 	// push genesis validators
 	for _, v := range validators {

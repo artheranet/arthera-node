@@ -1,6 +1,7 @@
 package drivercall
 
 import (
+	"github.com/ethereum/go-ethereum/log"
 	"math/big"
 	"strings"
 
@@ -54,11 +55,20 @@ func SealEpoch(metrics []ValidatorEpochMetric) []byte {
 	offlineBlocks := make([]*big.Int, len(metrics))
 	uptimes := make([]*big.Int, len(metrics))
 	originatedTxFees := make([]*big.Int, len(metrics))
+	log.Debug("------------ Sealing Epoch -----------")
 	for i, m := range metrics {
 		offlineTimes[i] = utils.U64toBig(uint64(m.Missed.Period.Unix()))
 		offlineBlocks[i] = utils.U64toBig(uint64(m.Missed.BlocksNum))
 		uptimes[i] = utils.U64toBig(uint64(m.Uptime.Unix()))
 		originatedTxFees[i] = m.OriginatedTxFee
+
+		log.Debug("---> Epoch Validator",
+			"index", i,
+			"offlineTimes", uint64(m.Missed.Period.Unix()),
+			"offlineBlocks", uint64(m.Missed.BlocksNum),
+			"uptimes", uint64(m.Uptime.Unix()),
+			"originatedTxFees", m.OriginatedTxFee.String(),
+		)
 	}
 
 	data, _ := sAbi.Pack("sealEpoch", offlineTimes, offlineBlocks, uptimes, originatedTxFees)

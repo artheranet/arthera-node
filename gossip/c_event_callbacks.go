@@ -2,6 +2,7 @@ package gossip
 
 import (
 	"errors"
+	"github.com/ethereum/go-ethereum/log"
 	"math/big"
 	"sync/atomic"
 
@@ -132,6 +133,7 @@ func (s *Service) switchEpochTo(newEpoch idx.Epoch) {
 	s.gasPowerCheckReader.Ctx.Store(NewGasPowerContext(s.store, s.store.GetValidators(), newEpoch, s.store.GetRules().Economy)) // read gaspower check data from disk
 	s.heavyCheckReader.Pubkeys.Store(readEpochPubKeys(s.store, newEpoch))
 	// notify about new epoch
+	log.Info("New Epoch", "index", newEpoch)
 	for _, em := range s.emitters {
 		em.OnNewEpoch(s.store.GetValidators(), newEpoch)
 	}

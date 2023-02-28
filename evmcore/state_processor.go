@@ -132,17 +132,7 @@ func applyTransaction(
 
 	if msg.To() == nil {
 		contractAddress = crypto.CreateAddress(evm.TxContext.Origin, tx.Nonce())
-
-		hash := crypto.Keccak256Hash(
-			common.LeftPadBytes(contractAddress.Bytes(), 32),
-			common.LeftPadBytes(big.NewInt(0).Bytes(), 32),
-		)
-
-		statedb.SetState(
-			registry.ContractAddress,
-			hash,
-			common.BytesToHash(common.LeftPadBytes(msg.From().Bytes()[:], 32)),
-		)
+		registry.AddDeployer(contractAddress, msg.From(), statedb)
 	}
 
 	// Update the state with pending changes.

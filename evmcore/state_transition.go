@@ -18,6 +18,7 @@ package evmcore
 
 import (
 	"fmt"
+	"github.com/artheranet/arthera-node/opera/contracts/registry"
 	"math"
 	"math/big"
 
@@ -304,6 +305,17 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	} else {
 		// After EIP-3529: refunds are capped to gasUsed / 5
 		st.refundGas(params.RefundQuotientEIP3529)
+	}
+
+	if !contractCreation {
+		// check to see if the destination address is in our contract registry
+		deployer := registry.GetDeployer(st.to(), st.state)
+		zeroAddr := common.Address{}
+		if deployer != zeroAddr {
+			deployerGas := st.gasUsed() / 10
+			refund := new(big.Int).Mul(new(big.Int).SetUint64(deployerGas), st.gasPrice)
+			st.state.AddBalance(deployer, refund)
+		}
 	}
 
 	return &ExecutionResult{

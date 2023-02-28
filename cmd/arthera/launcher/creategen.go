@@ -22,6 +22,7 @@ import (
 	"github.com/artheranet/arthera-node/opera/contracts/evmwriter"
 	"github.com/artheranet/arthera-node/opera/contracts/netinit"
 	netinitcall "github.com/artheranet/arthera-node/opera/contracts/netinit/netinitcalls"
+	"github.com/artheranet/arthera-node/opera/contracts/registry"
 	"github.com/artheranet/arthera-node/opera/contracts/staking"
 	"github.com/artheranet/arthera-node/opera/genesis"
 	"github.com/artheranet/arthera-node/opera/genesis/gpos"
@@ -173,6 +174,8 @@ func CreateGenesis(genesisType string) (*genesisstore.Store, hash.Hash) {
 	// pre deploy Staking
 	builder.SetCode(staking.ContractAddress, staking.GetContractBin())
 	builder.SetCode(staking.StakerInfoContractAddress, staking.GetStakerInfoContractBin())
+	// pre deploy registry
+	builder.SetCode(registry.ContractAddress, registry.GetContractBin())
 	// set non-zero code for pre-compiled contracts
 	builder.SetCode(evmwriter.ContractAddress, []byte{0})
 

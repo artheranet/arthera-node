@@ -2,6 +2,7 @@ package makefakegenesis
 
 import (
 	"crypto/ecdsa"
+	"github.com/artheranet/arthera-node/opera/contracts/registry"
 	"github.com/artheranet/arthera-node/opera/contracts/staking"
 	"math/big"
 	"time"
@@ -79,6 +80,8 @@ func FakeGenesisStoreWithRulesAndStart(num idx.Validator, balance, stake *big.In
 	// pre deploy Staking
 	builder.SetCode(staking.ContractAddress, staking.GetContractBin())
 	builder.SetCode(staking.StakerInfoContractAddress, staking.GetStakerInfoContractBin())
+	// pre deploy registry
+	builder.SetCode(registry.ContractAddress, registry.GetContractBin())
 	// set non-zero code for pre-compiled contracts
 	builder.SetCode(evmwriter.ContractAddress, []byte{0})
 

@@ -18,13 +18,14 @@ package evmcore
 
 import (
 	"fmt"
+	"github.com/artheranet/arthera-node/opera/contracts/registry"
+	"github.com/ethereum/go-ethereum/crypto"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/params"
 
 	"github.com/artheranet/arthera-node/utils/signers/gsignercache"
@@ -127,6 +128,23 @@ func applyTransaction(
 		onNewLog(l, statedb)
 	}
 
+	var contractAddress common.Address
+
+	if msg.To() == nil {
+		contractAddress = crypto.CreateAddress(evm.TxContext.Origin, tx.Nonce())
+
+		hash := crypto.Keccak256Hash(
+			common.LeftPadBytes(contractAddress.Bytes(), 32),
+			common.LeftPadBytes(big.NewInt(0).Bytes(), 32),
+		)
+
+		statedb.SetState(
+			registry.ContractAddress,
+			hash,
+			common.BytesToHash(common.LeftPadBytes(msg.From().Bytes()[:], 32)),
+		)
+	}
+
 	// Update the state with pending changes.
 	var root []byte
 	if config.IsByzantium(blockNumber) {
@@ -149,7 +167,7 @@ func applyTransaction(
 
 	// If the transaction created a contract, store the creation address in the receipt.
 	if msg.To() == nil {
-		receipt.ContractAddress = crypto.CreateAddress(evm.TxContext.Origin, tx.Nonce())
+		receipt.ContractAddress = contractAddress
 	}
 
 	// Set the receipt logs.

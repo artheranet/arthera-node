@@ -173,7 +173,7 @@ func CreateGenesis(genesisType string) (*genesisstore.Store, hash.Hash) {
 	builder.SetCode(driverauth.ContractAddress, driverauth.GetContractBin())
 	// pre deploy Staking
 	builder.SetCode(staking.ContractAddress, staking.GetContractBin())
-	builder.SetCode(staking.StakerInfoContractAddress, staking.GetStakerInfoContractBin())
+	builder.SetCode(staking.ValidatorInfoContractAddress, staking.GetValidatorInfoContractBin())
 	// pre deploy registry
 	builder.SetCode(registry.ContractAddress, registry.GetContractBin())
 	// set non-zero code for pre-compiled contracts
@@ -277,7 +277,7 @@ func GetGenesisTxs(sealedEpoch idx.Epoch, validators gpos.Validators, totalSuppl
 	buildTx := txBuilder()
 	internalTxs := make(types.Transactions, 0, 15)
 	// initialization
-	calldata := netinitcall.InitializeAll(sealedEpoch, totalSupply, staking.ContractAddress, driverauth.ContractAddress, driver.ContractAddress, evmwriter.ContractAddress, driverOwner)
+	calldata := netinitcall.InitializeAll(sealedEpoch, totalSupply, staking.ContractAddress, driverauth.ContractAddress, driver.ContractAddress, evmwriter.ContractAddress, staking.ValidatorInfoContractAddress, driverOwner)
 	internalTxs = append(internalTxs, buildTx(calldata, netinit.ContractAddress))
 	// push genesis validators
 	for _, v := range validators {

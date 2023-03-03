@@ -13,14 +13,12 @@ make arthera
 ```
 The build output is ```build/arthera-node``` executable.
 
-### Launching a network
+### Launching a test network
 
-You will need a genesis file to join a network, which may be found in https://github.com/Fantom-foundation/lachesis_launch
-
-Launching `arthera-node` readonly (non-validator) node for network specified by the genesis file:
+Launching a network with a single validator:
 
 ```shell
-$ arthera-node --genesis file.g
+$ arthera-node --fakenet 1/1
 ```
 
 ### Configuration

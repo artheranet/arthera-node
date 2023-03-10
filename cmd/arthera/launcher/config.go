@@ -5,7 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/artheranet/arthera-node/integration/makefakegenesis"
+	"github.com/artheranet/arthera-node/opera"
 	utils2 "github.com/artheranet/arthera-node/utils"
+	"github.com/ethereum/go-ethereum/core/vm"
 	"os"
 	"path"
 	"path/filepath"
@@ -408,6 +410,16 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 		Lachesis:      abft.DefaultConfig(),
 		LachesisStore: abft.DefaultStoreConfig(cacheRatio),
 		VectorClock:   vecmt.DefaultConfig(cacheRatio),
+	}
+
+	if ctx.IsSet(utils.EWASMInterpreterFlag.Name) {
+		opera.DefaultVMConfig.EWASMInterpreter = ctx.String(utils.EWASMInterpreterFlag.Name)
+		vm.InitEVMCEwasm(opera.DefaultVMConfig.EWASMInterpreter)
+	}
+
+	if ctx.IsSet(utils.EVMInterpreterFlag.Name) {
+		opera.DefaultVMConfig.EVMInterpreter = ctx.String(utils.EVMInterpreterFlag.Name)
+		vm.InitEVMCEVM(opera.DefaultVMConfig.EVMInterpreter)
 	}
 
 	if ctx.GlobalIsSet(FakeNetFlag.Name) {

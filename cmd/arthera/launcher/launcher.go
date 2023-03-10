@@ -58,6 +58,7 @@ var (
 	legacyRpcFlags   []cli.Flag
 	rpcFlags         []cli.Flag
 	metricsFlags     []cli.Flag
+	vmFlags          []cli.Flag
 )
 
 func initFlags() {
@@ -178,6 +179,11 @@ func initFlags() {
 		tracing.EnableFlag,
 	}
 
+	vmFlags = []cli.Flag{
+		utils.EVMInterpreterFlag,
+		utils.EWASMInterpreterFlag,
+	}
+
 	nodeFlags = []cli.Flag{}
 	nodeFlags = append(nodeFlags, gpoFlags...)
 	nodeFlags = append(nodeFlags, accountFlags...)
@@ -186,6 +192,7 @@ func initFlags() {
 	nodeFlags = append(nodeFlags, txpoolFlags...)
 	nodeFlags = append(nodeFlags, operaFlags...)
 	nodeFlags = append(nodeFlags, legacyRpcFlags...)
+	nodeFlags = append(nodeFlags, vmFlags...)
 }
 
 // init the CLI app.

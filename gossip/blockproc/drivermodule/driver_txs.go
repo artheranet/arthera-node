@@ -19,7 +19,6 @@ import (
 	"github.com/artheranet/arthera-node/opera"
 	"github.com/artheranet/arthera-node/opera/contracts/driver"
 	"github.com/artheranet/arthera-node/opera/contracts/driver/drivercall"
-	"github.com/artheranet/arthera-node/opera/contracts/driver/driverpos"
 )
 
 const (
@@ -166,7 +165,7 @@ func (p *DriverTxListener) OnNewLog(l *types.Log) {
 		return
 	}
 	// Track validator weight changes
-	if l.Topics[0] == driverpos.Topics.UpdateValidatorWeight && len(l.Topics) > 1 && len(l.Data) >= 32 {
+	if l.Topics[0] == driver.Topics.UpdateValidatorWeight && len(l.Topics) > 1 && len(l.Data) >= 32 {
 		validatorID := idx.ValidatorID(new(big.Int).SetBytes(l.Topics[1][:]).Uint64())
 		weight := new(big.Int).SetBytes(l.Data[0:32])
 
@@ -185,7 +184,7 @@ func (p *DriverTxListener) OnNewLog(l *types.Log) {
 		}
 	}
 	// Track validator pubkey changes
-	if l.Topics[0] == driverpos.Topics.UpdateValidatorPubkey && len(l.Topics) > 1 {
+	if l.Topics[0] == driver.Topics.UpdateValidatorPubkey && len(l.Topics) > 1 {
 		validatorID := idx.ValidatorID(new(big.Int).SetBytes(l.Topics[1][:]).Uint64())
 		pubkey, err := decodeDataBytes(l)
 		if err != nil {
@@ -202,7 +201,7 @@ func (p *DriverTxListener) OnNewLog(l *types.Log) {
 		p.bs.NextValidatorProfiles[validatorID] = profile
 	}
 	// Update rules
-	if l.Topics[0] == driverpos.Topics.UpdateNetworkRules && len(l.Data) >= 64 {
+	if l.Topics[0] == driver.Topics.UpdateNetworkRules && len(l.Data) >= 64 {
 		diff, err := decodeDataBytes(l)
 		if err != nil {
 			log.Warn("Malformed UpdateNetworkRules Driver event")
@@ -221,7 +220,7 @@ func (p *DriverTxListener) OnNewLog(l *types.Log) {
 		p.bs.DirtyRules = &updated
 	}
 	// Advance epochs
-	if l.Topics[0] == driverpos.Topics.AdvanceEpochs && len(l.Data) >= 32 {
+	if l.Topics[0] == driver.Topics.AdvanceEpochs && len(l.Data) >= 32 {
 		// epochsNum < 2^24 to avoid overflow
 		epochsNum := new(big.Int).SetBytes(l.Data[29:32]).Uint64()
 

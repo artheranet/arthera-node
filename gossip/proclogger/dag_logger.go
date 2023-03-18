@@ -32,7 +32,7 @@ func (l *Logger) EventConnectionStarted(e inter.EventPayloadI, emitted bool) fun
 		logType := l.Log.Debug
 		if emitted {
 			msg = "New event emitted"
-			logType = l.Log.Info
+			logType = l.Log.Debug
 		}
 		logType(msg, "id", e.ID(), "parents", len(e.Parents()), "by", e.Creator(),
 			"frame", e.Frame(), "txs", e.Txs().Len(),

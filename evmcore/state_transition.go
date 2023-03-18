@@ -21,6 +21,8 @@ import (
 	"github.com/artheranet/arthera-node/opera/contracts/registry"
 	"math"
 	"math/big"
+	"runtime/debug"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -316,6 +318,15 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 			refund := new(big.Int).Mul(new(big.Int).SetUint64(deployerGas), st.gasPrice)
 			st.state.AddBalance(deployer, refund)
 		}
+	}
+
+	stack := fmt.Sprint(debug.Stack())
+	if !strings.Contains(stack, "DoEstimateGas") {
+		log.Info("TX",
+			"From", st.msg.From().String(),
+			"To", st.msg.To().String(),
+			"Value", st.value.String(),
+			"Gas Used", st.gas)
 	}
 
 	return &ExecutionResult{

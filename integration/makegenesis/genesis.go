@@ -3,6 +3,19 @@ package makegenesis
 import (
 	"bytes"
 	"errors"
+	"github.com/Fantom-foundation/lachesis-base/inter/idx"
+	"github.com/Fantom-foundation/lachesis-base/inter/pos"
+	"github.com/Fantom-foundation/lachesis-base/lachesis"
+	"github.com/artheranet/arthera-node/inter/drivertype"
+	"github.com/artheranet/arthera-node/opera/contracts/driver"
+	"github.com/artheranet/arthera-node/opera/contracts/driver/drivercall"
+	"github.com/artheranet/arthera-node/opera/contracts/driverauth"
+	"github.com/artheranet/arthera-node/opera/contracts/evmwriter"
+	"github.com/artheranet/arthera-node/opera/contracts/netinit"
+	"github.com/artheranet/arthera-node/opera/contracts/registry"
+	"github.com/artheranet/arthera-node/opera/contracts/staking"
+	"github.com/artheranet/arthera-node/opera/contracts/subscription"
+	"github.com/artheranet/arthera-node/opera/genesis/gpos"
 	"io"
 	"math/big"
 
@@ -262,4 +275,94 @@ func (b *GenesisBuilder) Build(head genesis.Header) *genesisstore.Store {
 		*b = GenesisBuilder{}
 		return nil
 	})
+}
+
+func (b *GenesisBuilder) DeployBaseContracts() {
+	// deploy essential contracts
+	// pre deploy NetworkInitializer
+	b.SetCode(netinit.ContractAddress, netinit.GetContractBin())
+	// pre deploy NodeDriver
+	b.SetCode(driver.ContractAddress, driver.GetContractBin())
+	// pre deploy NodeDriverAuth
+	b.SetCode(driverauth.ContractAddress, driverauth.GetContractBin())
+	// pre deploy Staking
+	b.SetCode(staking.ContractAddress, staking.GetContractBin())
+	b.SetCode(staking.ValidatorInfoContractAddress, staking.GetValidatorInfoContractBin())
+	// pre deploy registry
+	b.SetCode(registry.ContractAddress, registry.GetContractBin())
+	// pre deploy subscription
+	b.SetCode(subscription.ContractAddress, subscription.GetContractBin())
+	// set non-zero code for pre-compiled contracts
+	b.SetCode(evmwriter.ContractAddress, []byte{0})
+}
+
+func (b *GenesisBuilder) InitializeEpoch(block idx.Block, epoch idx.Epoch, rules opera.Rules, timestamp inter.Timestamp) {
+	b.SetCurrentEpoch(ier.LlrIdxFullEpochRecord{
+		LlrFullEpochRecord: ier.LlrFullEpochRecord{
+			BlockState: iblockproc.BlockState{
+				LastBlock: iblockproc.BlockCtx{
+					Idx:     block - 1,
+					Time:    timestamp,
+					Atropos: hash.Event{},
+				},
+				FinalizedStateRoot:    hash.Hash{},
+				EpochGas:              0,
+				EpochCheaters:         lachesis.Cheaters{},
+				CheatersWritten:       0,
+				ValidatorStates:       make([]iblockproc.ValidatorBlockState, 0),
+				NextValidatorProfiles: make(map[idx.ValidatorID]drivertype.Validator),
+				DirtyRules:            nil,
+				AdvanceEpochs:         0,
+			},
+			EpochState: iblockproc.EpochState{
+				Epoch:             epoch - 1,
+				EpochStart:        timestamp,
+				PrevEpochStart:    timestamp - 1,
+				EpochStateRoot:    hash.Zero,
+				Validators:        pos.NewBuilder().Build(),
+				ValidatorStates:   make([]iblockproc.ValidatorEpochState, 0),
+				ValidatorProfiles: make(map[idx.ValidatorID]drivertype.Validator),
+				Rules:             rules,
+			},
+		},
+		Idx: epoch - 1,
+	})
+}
+
+func (b *GenesisBuilder) GetGenesisTxs(sealedEpoch idx.Epoch, validators gpos.Validators, totalSupply *big.Int, delegations []drivercall.Delegation, driverOwner common.Address) types.Transactions {
+	buildTx := txBuilder()
+	internalTxs := make(types.Transactions, 0, 15)
+	// initialization
+	calldata := netinit.InitializeAll(
+		sealedEpoch,
+		totalSupply,
+		staking.ContractAddress,
+		driverauth.ContractAddress,
+		driver.ContractAddress,
+		evmwriter.ContractAddress,
+		staking.ValidatorInfoContractAddress,
+		subscription.ContractAddress,
+		driverOwner,
+	)
+	internalTxs = append(internalTxs, buildTx(calldata, netinit.ContractAddress))
+	// push genesis validators
+	for _, v := range validators {
+		calldata := drivercall.SetGenesisValidator(v)
+		internalTxs = append(internalTxs, buildTx(calldata, driver.ContractAddress))
+	}
+	// push genesis delegations
+	for _, delegation := range delegations {
+		calldata := drivercall.SetGenesisDelegation(delegation)
+		internalTxs = append(internalTxs, buildTx(calldata, driver.ContractAddress))
+	}
+	return internalTxs
+}
+
+func txBuilder() func(calldata []byte, addr common.Address) *types.Transaction {
+	nonce := uint64(0)
+	return func(calldata []byte, addr common.Address) *types.Transaction {
+		tx := types.NewTransaction(nonce, addr, common.Big0, 1e10, common.Big0, calldata)
+		nonce++
+		return tx
+	}
 }

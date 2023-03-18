@@ -10,7 +10,6 @@ import (
 
 	"github.com/artheranet/arthera-node/logger"
 	"github.com/artheranet/arthera-node/opera/contracts/driver"
-	"github.com/artheranet/arthera-node/opera/contracts/driver/driverpos"
 	"github.com/artheranet/arthera-node/version"
 )
 
@@ -45,7 +44,7 @@ func (w *VerWarcher) OnNewLog(l *types.Log) {
 	if l.Address != driver.ContractAddress {
 		return
 	}
-	if l.Topics[0] == driverpos.Topics.UpdateNetworkVersion && len(l.Data) >= 32 {
+	if l.Topics[0] == driver.Topics.UpdateNetworkVersion && len(l.Data) >= 32 {
 		netVersion := new(big.Int).SetBytes(l.Data[24:32]).Uint64()
 		w.store.SetNetworkVersion(netVersion)
 		w.log()

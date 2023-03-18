@@ -2,13 +2,11 @@ package evmwriter
 
 import (
 	"bytes"
-	"math/big"
-	"strings"
-
-	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/artheranet/arthera-node/opera/contracts/abis"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/params"
+	"math/big"
 
 	"github.com/artheranet/arthera-node/opera/contracts/driver"
 )
@@ -16,8 +14,6 @@ import (
 var (
 	// ContractAddress is the EvmWriter pre-compiled contract address
 	ContractAddress = common.HexToAddress("0xd100ec0000000000000000000000000000000000")
-	// ContractABI is the input ABI used to generate the binding from
-	ContractABI = "[{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"acc\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"}],\"name\":\"copyCode\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"acc\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"diff\",\"type\":\"uint256\"}],\"name\":\"incNonce\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"acc\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"setBalance\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"acc\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"key\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"value\",\"type\":\"bytes32\"}],\"name\":\"setStorage\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"acc\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"with\",\"type\":\"address\"}],\"name\":\"swapCode\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 )
 
 var (
@@ -29,11 +25,6 @@ var (
 )
 
 func init() {
-	abi, err := abi.JSON(strings.NewReader(ContractABI))
-	if err != nil {
-		panic(err)
-	}
-
 	for name, constID := range map[string]*[]byte{
 		"setBalance": &setBalanceMethodID,
 		"copyCode":   &copyCodeMethodID,
@@ -41,7 +32,7 @@ func init() {
 		"setStorage": &setStorageMethodID,
 		"incNonce":   &incNonceMethodID,
 	} {
-		method, exist := abi.Methods[name]
+		method, exist := abis.EVMWriter.Methods[name]
 		if !exist {
 			panic("unknown EvmWriter method")
 		}

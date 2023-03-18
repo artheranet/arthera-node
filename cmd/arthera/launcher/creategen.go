@@ -4,26 +4,15 @@ import (
 	"fmt"
 	"github.com/Fantom-foundation/lachesis-base/hash"
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
-	"github.com/Fantom-foundation/lachesis-base/inter/pos"
 	"github.com/Fantom-foundation/lachesis-base/kvdb"
 	"github.com/Fantom-foundation/lachesis-base/kvdb/memorydb"
-	"github.com/Fantom-foundation/lachesis-base/lachesis"
 	"github.com/artheranet/arthera-node/integration/makegenesis"
 	"github.com/artheranet/arthera-node/inter"
-	"github.com/artheranet/arthera-node/inter/drivertype"
-	"github.com/artheranet/arthera-node/inter/iblockproc"
 	"github.com/artheranet/arthera-node/inter/ibr"
 	"github.com/artheranet/arthera-node/inter/ier"
 	"github.com/artheranet/arthera-node/inter/validatorpk"
 	"github.com/artheranet/arthera-node/opera"
-	"github.com/artheranet/arthera-node/opera/contracts/driver"
 	"github.com/artheranet/arthera-node/opera/contracts/driver/drivercall"
-	"github.com/artheranet/arthera-node/opera/contracts/driverauth"
-	"github.com/artheranet/arthera-node/opera/contracts/evmwriter"
-	"github.com/artheranet/arthera-node/opera/contracts/netinit"
-	netinitcall "github.com/artheranet/arthera-node/opera/contracts/netinit/netinitcalls"
-	"github.com/artheranet/arthera-node/opera/contracts/registry"
-	"github.com/artheranet/arthera-node/opera/contracts/staking"
 	"github.com/artheranet/arthera-node/opera/genesis"
 	"github.com/artheranet/arthera-node/opera/genesis/gpos"
 	"github.com/artheranet/arthera-node/opera/genesisstore"
@@ -31,7 +20,6 @@ import (
 	"github.com/artheranet/arthera-node/utils/iodb"
 	"github.com/ethereum/go-ethereum/cmd/utils"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/rlp"
@@ -164,60 +152,18 @@ func CreateGenesis(genesisType string) (*genesisstore.Store, hash.Hash) {
 		)
 	}
 
-	// deploy essential contracts
-	// pre deploy NetworkInitializer
-	builder.SetCode(netinit.ContractAddress, netinit.GetContractBin())
-	// pre deploy NodeDriver
-	builder.SetCode(driver.ContractAddress, driver.GetContractBin())
-	// pre deploy NodeDriverAuth
-	builder.SetCode(driverauth.ContractAddress, driverauth.GetContractBin())
-	// pre deploy Staking
-	builder.SetCode(staking.ContractAddress, staking.GetContractBin())
-	builder.SetCode(staking.ValidatorInfoContractAddress, staking.GetValidatorInfoContractBin())
-	// pre deploy registry
-	builder.SetCode(registry.ContractAddress, registry.GetContractBin())
-	// set non-zero code for pre-compiled contracts
-	builder.SetCode(evmwriter.ContractAddress, []byte{0})
+	builder.DeployBaseContracts()
 
 	rules := opera.TestNetRules()
 	if genesisType == "mainnet" {
 		rules = opera.MainNetRules()
 	}
 
-	builder.SetCurrentEpoch(ier.LlrIdxFullEpochRecord{
-		LlrFullEpochRecord: ier.LlrFullEpochRecord{
-			BlockState: iblockproc.BlockState{
-				LastBlock: iblockproc.BlockCtx{
-					Idx:     0,
-					Time:    GenesisTime,
-					Atropos: hash.Event{},
-				},
-				FinalizedStateRoot:    hash.Hash{},
-				EpochGas:              0,
-				EpochCheaters:         lachesis.Cheaters{},
-				CheatersWritten:       0,
-				ValidatorStates:       make([]iblockproc.ValidatorBlockState, 0),
-				NextValidatorProfiles: make(map[idx.ValidatorID]drivertype.Validator),
-				DirtyRules:            nil,
-				AdvanceEpochs:         0,
-			},
-			EpochState: iblockproc.EpochState{
-				Epoch:             1,
-				EpochStart:        GenesisTime,
-				PrevEpochStart:    GenesisTime - 1,
-				EpochStateRoot:    hash.Zero,
-				Validators:        pos.NewBuilder().Build(),
-				ValidatorStates:   make([]iblockproc.ValidatorEpochState, 0),
-				ValidatorProfiles: make(map[idx.ValidatorID]drivertype.Validator),
-				Rules:             rules,
-			},
-		},
-		Idx: 1,
-	})
+	builder.InitializeEpoch(1, 2, rules, GenesisTime)
 
 	owner := validators[0].Address
 	blockProc := makegenesis.DefaultBlockProc()
-	genesisTxs := GetGenesisTxs(0, validators, builder.TotalSupply(), delegations, owner)
+	genesisTxs := builder.GetGenesisTxs(0, validators, builder.TotalSupply(), delegations, owner)
 	err := builder.ExecuteGenesisTxs(blockProc, genesisTxs)
 	if err != nil {
 		panic(err)
@@ -271,34 +217,6 @@ func AddValidator(
 	})
 
 	return validators, delegations
-}
-
-func GetGenesisTxs(sealedEpoch idx.Epoch, validators gpos.Validators, totalSupply *big.Int, delegations []drivercall.Delegation, driverOwner common.Address) types.Transactions {
-	buildTx := txBuilder()
-	internalTxs := make(types.Transactions, 0, 15)
-	// initialization
-	calldata := netinitcall.InitializeAll(sealedEpoch, totalSupply, staking.ContractAddress, driverauth.ContractAddress, driver.ContractAddress, evmwriter.ContractAddress, staking.ValidatorInfoContractAddress, driverOwner)
-	internalTxs = append(internalTxs, buildTx(calldata, netinit.ContractAddress))
-	// push genesis validators
-	for _, v := range validators {
-		calldata := drivercall.SetGenesisValidator(v)
-		internalTxs = append(internalTxs, buildTx(calldata, driver.ContractAddress))
-	}
-	// push genesis delegations
-	for _, delegation := range delegations {
-		calldata := drivercall.SetGenesisDelegation(delegation)
-		internalTxs = append(internalTxs, buildTx(calldata, driver.ContractAddress))
-	}
-	return internalTxs
-}
-
-func txBuilder() func(calldata []byte, addr common.Address) *types.Transaction {
-	nonce := uint64(0)
-	return func(calldata []byte, addr common.Address) *types.Transaction {
-		tx := types.NewTransaction(nonce, addr, common.Big0, 1e10, common.Big0, calldata)
-		nonce++
-		return tx
-	}
 }
 
 func WriteGenesisStore(fn string, gs *genesisstore.Store, genesisHash hash.Hash) error {

@@ -4,10 +4,12 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"github.com/artheranet/arthera-node/arthera"
+	"github.com/artheranet/arthera-node/genesis"
 	"github.com/artheranet/arthera-node/integration/makefakegenesis"
+	"github.com/artheranet/arthera-node/params"
 	utils2 "github.com/artheranet/arthera-node/utils"
 	"github.com/ethereum/go-ethereum/core/vm"
+	ethparams "github.com/ethereum/go-ethereum/params"
 	"os"
 	"path"
 	"path/filepath"
@@ -21,13 +23,11 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/node"
 	"github.com/ethereum/go-ethereum/p2p/enode"
-	"github.com/ethereum/go-ethereum/params"
 	"github.com/naoina/toml"
 	"gopkg.in/urfave/cli.v1"
 
-	"github.com/artheranet/arthera-node/arthera/genesis"
-	"github.com/artheranet/arthera-node/arthera/genesisstore"
 	"github.com/artheranet/arthera-node/evmcore"
+	"github.com/artheranet/arthera-node/genesis/genesisstore"
 	"github.com/artheranet/arthera-node/gossip"
 	"github.com/artheranet/arthera-node/gossip/emitter"
 	"github.com/artheranet/arthera-node/gossip/gasprice"
@@ -413,13 +413,13 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 	}
 
 	if ctx.IsSet(utils.EWASMInterpreterFlag.Name) {
-		opera.DefaultVMConfig.EWASMInterpreter = ctx.String(utils.EWASMInterpreterFlag.Name)
-		vm.InitEVMCEwasm(opera.DefaultVMConfig.EWASMInterpreter)
+		params.DefaultVMConfig.EWASMInterpreter = ctx.String(utils.EWASMInterpreterFlag.Name)
+		vm.InitEVMCEwasm(params.DefaultVMConfig.EWASMInterpreter)
 	}
 
 	if ctx.IsSet(utils.EVMInterpreterFlag.Name) {
-		opera.DefaultVMConfig.EVMInterpreter = ctx.String(utils.EVMInterpreterFlag.Name)
-		vm.InitEVMCEVM(opera.DefaultVMConfig.EVMInterpreter)
+		params.DefaultVMConfig.EVMInterpreter = ctx.String(utils.EVMInterpreterFlag.Name)
+		vm.InitEVMCEVM(params.DefaultVMConfig.EVMInterpreter)
 	}
 
 	if ctx.GlobalIsSet(FakeNetFlag.Name) {
@@ -494,7 +494,7 @@ func makeAllConfigs(ctx *cli.Context) *config {
 func defaultNodeConfig() node.Config {
 	cfg := NodeDefaultConfig
 	cfg.Name = clientIdentifier
-	cfg.Version = params.VersionWithCommit(gitCommit, gitDate)
+	cfg.Version = ethparams.VersionWithCommit(gitCommit, gitDate)
 	cfg.HTTPModules = append(cfg.HTTPModules, "eth", "art", "dag", "abft", "web3")
 	cfg.WSModules = append(cfg.WSModules, "eth", "art", "dag", "abft", "web3")
 	cfg.IPCPath = "arthera.ipc"

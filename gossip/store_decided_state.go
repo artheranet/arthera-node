@@ -7,8 +7,8 @@ import (
 	ethparams "github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/rlp"
 
-	"github.com/artheranet/arthera-node/arthera"
 	"github.com/artheranet/arthera-node/inter/iblockproc"
+	"github.com/artheranet/arthera-node/params"
 )
 
 const sKey = "s"
@@ -151,7 +151,7 @@ func (s *Store) GetLatestBlockIndex() idx.Block {
 }
 
 // GetRules retrieves current network rules
-func (s *Store) GetRules() opera.Rules {
+func (s *Store) GetRules() params.ProtocolRules {
 	return s.GetEpochState().Rules
 }
 
@@ -161,7 +161,7 @@ func (s *Store) GetEvmChainConfig() *ethparams.ChainConfig {
 }
 
 // GetEpochRules retrieves current network rules and epoch atomically
-func (s *Store) GetEpochRules() (opera.Rules, idx.Epoch) {
+func (s *Store) GetEpochRules() (params.ProtocolRules, idx.Epoch) {
 	es := s.GetEpochState()
 	return es.Rules, es.Epoch
 }

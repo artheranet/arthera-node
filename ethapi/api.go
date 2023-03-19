@@ -20,6 +20,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	ethparams "github.com/ethereum/go-ethereum/params"
 	"math/big"
 	"time"
 
@@ -40,15 +41,14 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/ethereum/go-ethereum/trie"
 	"github.com/tyler-smith/go-bip39"
 
-	"github.com/artheranet/arthera-node/arthera"
 	"github.com/artheranet/arthera-node/evmcore"
 	"github.com/artheranet/arthera-node/gossip/gasprice"
+	"github.com/artheranet/arthera-node/params"
 	"github.com/artheranet/arthera-node/utils/signers/gsignercache"
 	"github.com/artheranet/arthera-node/utils/signers/internaltx"
 )
@@ -639,7 +639,7 @@ func (s *PublicBlockChainAPI) CurrentEpoch(ctx context.Context) hexutil.Uint64 {
 }
 
 // GetRules returns network rules for an epoch
-func (s *PublicBlockChainAPI) GetRules(ctx context.Context, epoch rpc.BlockNumber) (*opera.Rules, error) {
+func (s *PublicBlockChainAPI) GetRules(ctx context.Context, epoch rpc.BlockNumber) (*params.ProtocolRules, error) {
 	_, es, err := s.b.GetEpochBlockState(ctx, epoch)
 	if err != nil {
 		return nil, err
@@ -971,7 +971,7 @@ func DoCall(ctx context.Context, b Backend, args TransactionArgs, blockNrOrHash 
 	if err != nil {
 		return nil, err
 	}
-	vmConfig := opera.DefaultVMConfig
+	vmConfig := params.DefaultVMConfig
 	vmConfig.NoBaseFee = true
 	evm, vmError, err := b.GetEVM(ctx, msg, state, header, &vmConfig)
 	if err != nil {
@@ -1053,7 +1053,7 @@ func (s *PublicBlockChainAPI) Call(ctx context.Context, args TransactionArgs, bl
 func DoEstimateGas(ctx context.Context, b Backend, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, gasCap uint64) (hexutil.Uint64, error) {
 	// Binary search the gas requirement, as it may be higher than the amount used
 	var (
-		lo  uint64 = params.TxGas - 1
+		lo  uint64 = ethparams.TxGas - 1
 		hi  uint64
 		cap uint64
 	)
@@ -1062,7 +1062,7 @@ func DoEstimateGas(ctx context.Context, b Backend, args TransactionArgs, blockNr
 		args.From = new(common.Address)
 	}
 	// Determine the highest gas limit can be used during the estimation.
-	if args.Gas != nil && uint64(*args.Gas) >= params.TxGas {
+	if args.Gas != nil && uint64(*args.Gas) >= ethparams.TxGas {
 		hi = uint64(*args.Gas)
 	} else {
 		hi = b.MaxGasLimit()
@@ -1519,7 +1519,7 @@ func AccessList(ctx context.Context, b Backend, blockNrOrHash rpc.BlockNumberOrH
 
 		// Apply the transaction with the access list tracer
 		tracer := vm.NewAccessListTracer(accessList, args.from(), to, precompiles)
-		config := opera.DefaultVMConfig
+		config := params.DefaultVMConfig
 		config.Tracer = tracer
 		config.Debug = true
 		config.NoBaseFee = true
@@ -2121,7 +2121,7 @@ func checkTxFee(gasPrice *big.Int, gas uint64, cap float64) error {
 	if cap == 0 {
 		return nil
 	}
-	feeEth := new(big.Float).Quo(new(big.Float).SetInt(new(big.Int).Mul(gasPrice, new(big.Int).SetUint64(gas))), new(big.Float).SetInt(big.NewInt(params.Ether)))
+	feeEth := new(big.Float).Quo(new(big.Float).SetInt(new(big.Int).Mul(gasPrice, new(big.Int).SetUint64(gas))), new(big.Float).SetInt(big.NewInt(ethparams.Ether)))
 	feeFloat, _ := feeEth.Float64()
 	if feeFloat > cap {
 		return fmt.Errorf("tx fee (%.2f ART) exceeds the configured cap (%.2f ART)", feeFloat, cap)

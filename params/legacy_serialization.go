@@ -1,4 +1,4 @@
-package opera
+package params
 
 import (
 	"errors"
@@ -15,7 +15,7 @@ type GasRulesRLPV0 struct {
 }
 
 // EncodeRLP is for RLP serialization.
-func (r Rules) EncodeRLP(w io.Writer) error {
+func (r ProtocolRules) EncodeRLP(w io.Writer) error {
 	// write the type
 	rType := uint8(0)
 	if r.Upgrades != (Upgrades{}) {
@@ -26,7 +26,7 @@ func (r Rules) EncodeRLP(w io.Writer) error {
 		}
 	}
 	// write the main body
-	rlpR := RulesRLP(r)
+	rlpR := ProtocolRulesRLP(r)
 	err := rlp.Encode(w, &rlpR)
 	if err != nil {
 		return err
@@ -42,7 +42,7 @@ func (r Rules) EncodeRLP(w io.Writer) error {
 }
 
 // DecodeRLP is for RLP serialization.
-func (r *Rules) DecodeRLP(s *rlp.Stream) error {
+func (r *ProtocolRules) DecodeRLP(s *rlp.Stream) error {
 	kind, _, err := s.Kind()
 	if err != nil {
 		return err
@@ -63,12 +63,12 @@ func (r *Rules) DecodeRLP(s *rlp.Stream) error {
 		}
 	}
 	// decode the main body
-	rlpR := RulesRLP{}
+	rlpR := ProtocolRulesRLP{}
 	err = s.Decode(&rlpR)
 	if err != nil {
 		return err
 	}
-	*r = Rules(rlpR)
+	*r = ProtocolRules(rlpR)
 	// decode additional fields, depending on the type
 	if rType >= 1 {
 		err = s.Decode(&r.Upgrades)

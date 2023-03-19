@@ -18,6 +18,7 @@ package evmcore
 
 import (
 	"fmt"
+	"github.com/artheranet/arthera-node/params"
 	"math/big"
 	"time"
 
@@ -26,9 +27,8 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/params"
+	ethparams "github.com/ethereum/go-ethereum/params"
 
-	"github.com/artheranet/arthera-node/arthera"
 	"github.com/artheranet/arthera-node/inter"
 )
 
@@ -45,7 +45,7 @@ type BlockGen struct {
 	txs      []*types.Transaction
 	receipts []*types.Receipt
 
-	config *params.ChainConfig
+	config *ethparams.ChainConfig
 }
 
 type TestChain struct {
@@ -99,7 +99,7 @@ func (b *BlockGen) AddTxWithChain(bc DummyChain, tx *types.Transaction) {
 	}
 	b.statedb.Prepare(tx.Hash(), len(b.txs))
 	blockContext := NewEVMBlockContext(b.header, bc, nil)
-	vmenv := vm.NewEVM(blockContext, vm.TxContext{}, b.statedb, b.config, opera.DefaultVMConfig)
+	vmenv := vm.NewEVM(blockContext, vm.TxContext{}, b.statedb, b.config, params.DefaultVMConfig)
 	receipt, _, _, err := applyTransaction(msg, b.config, b.gasPool, b.statedb, b.header.Number, b.header.Hash, tx, &b.header.GasUsed, vmenv, func(log *types.Log, db *state.StateDB) {})
 	if err != nil {
 		panic(err)
@@ -185,9 +185,9 @@ func (b *BlockGen) OffsetTime(seconds int64) {
 // Blocks created by GenerateChain do not contain valid proof of work
 // values. Inserting them into BlockChain requires use of FakePow or
 // a similar non-validating proof of work implementation.
-func GenerateChain(config *params.ChainConfig, parent *EvmBlock, db ethdb.Database, n int, gen func(int, *BlockGen)) ([]*EvmBlock, []types.Receipts, DummyChain) {
+func GenerateChain(config *ethparams.ChainConfig, parent *EvmBlock, db ethdb.Database, n int, gen func(int, *BlockGen)) ([]*EvmBlock, []types.Receipts, DummyChain) {
 	if config == nil {
-		config = params.AllEthashProtocolChanges
+		config = ethparams.AllEthashProtocolChanges
 	}
 
 	chain := &TestChain{
@@ -267,19 +267,19 @@ func makeHeaderChain(parent *EvmHeader, n int, db ethdb.Database, seed int) []*E
 
 // makeBlockChain creates a deterministic chain of blocks rooted at parent.
 func makeBlockChain(parent *EvmBlock, n int, db ethdb.Database, seed int) []*EvmBlock {
-	blocks, _, _ := GenerateChain(params.TestChainConfig, parent, db, n, func(i int, b *BlockGen) {
+	blocks, _, _ := GenerateChain(ethparams.TestChainConfig, parent, db, n, func(i int, b *BlockGen) {
 		b.SetCoinbase(common.Address{0: byte(seed), 19: byte(i)})
 	})
 	return blocks
 }
 
 type fakeChainReader struct {
-	config  *params.ChainConfig
+	config  *ethparams.ChainConfig
 	genesis *EvmBlock
 }
 
 // Config returns the chain configuration.
-func (cr *fakeChainReader) Config() *params.ChainConfig {
+func (cr *fakeChainReader) Config() *ethparams.ChainConfig {
 	return cr.config
 }
 

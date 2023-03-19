@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
-	"github.com/ethereum/go-ethereum/params"
+	ethparams "github.com/ethereum/go-ethereum/params"
 
-	"github.com/artheranet/arthera-node/arthera"
 	"github.com/artheranet/arthera-node/inter/validatorpk"
+	"github.com/artheranet/arthera-node/params"
 )
 
 // EmitIntervals is the configuration of emit intervals.
@@ -57,7 +57,7 @@ type Config struct {
 // DefaultConfig returns the default configurations for the events emitter.
 func DefaultConfig() Config {
 	return Config{
-		VersionToPublish: params.VersionWithMeta(),
+		VersionToPublish: ethparams.VersionWithMeta(),
 
 		EmitIntervals: EmitIntervals{
 			Min:                        110 * time.Millisecond,
@@ -71,9 +71,9 @@ func DefaultConfig() Config {
 
 		MaxParents: 0,
 
-		LimitedTpsThreshold: opera.DefaultEventGas * 120,
-		NoTxsThreshold:      opera.DefaultEventGas * 30,
-		EmergencyThreshold:  opera.DefaultEventGas * 5,
+		LimitedTpsThreshold: params.DefaultEventGas * 120,
+		NoTxsThreshold:      params.DefaultEventGas * 30,
+		EmergencyThreshold:  params.DefaultEventGas * 5,
 
 		TxsCacheInvalidation: 200 * time.Millisecond,
 	}

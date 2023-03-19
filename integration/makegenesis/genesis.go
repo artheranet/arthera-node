@@ -6,16 +6,17 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
 	"github.com/Fantom-foundation/lachesis-base/inter/pos"
 	"github.com/Fantom-foundation/lachesis-base/lachesis"
-	"github.com/artheranet/arthera-node/arthera/contracts/driver"
-	"github.com/artheranet/arthera-node/arthera/contracts/driver/drivercall"
-	"github.com/artheranet/arthera-node/arthera/contracts/driverauth"
-	"github.com/artheranet/arthera-node/arthera/contracts/evmwriter"
-	"github.com/artheranet/arthera-node/arthera/contracts/netinit"
-	"github.com/artheranet/arthera-node/arthera/contracts/registry"
-	"github.com/artheranet/arthera-node/arthera/contracts/staking"
-	"github.com/artheranet/arthera-node/arthera/contracts/subscription"
-	"github.com/artheranet/arthera-node/arthera/genesis/gpos"
+	"github.com/artheranet/arthera-node/contracts/driver"
+	"github.com/artheranet/arthera-node/contracts/driver/drivercall"
+	"github.com/artheranet/arthera-node/contracts/driverauth"
+	"github.com/artheranet/arthera-node/contracts/evmwriter"
+	"github.com/artheranet/arthera-node/contracts/netinit"
+	"github.com/artheranet/arthera-node/contracts/registry"
+	"github.com/artheranet/arthera-node/contracts/staking"
+	"github.com/artheranet/arthera-node/contracts/subscription"
+	"github.com/artheranet/arthera-node/genesis/gpos"
 	"github.com/artheranet/arthera-node/inter/drivertype"
+	"github.com/artheranet/arthera-node/params"
 	"io"
 	"math/big"
 
@@ -26,10 +27,9 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/rlp"
 
-	"github.com/artheranet/arthera-node/arthera"
-	"github.com/artheranet/arthera-node/arthera/genesis"
-	"github.com/artheranet/arthera-node/arthera/genesisstore"
 	"github.com/artheranet/arthera-node/evmcore"
+	"github.com/artheranet/arthera-node/genesis"
+	"github.com/artheranet/arthera-node/genesis/genesisstore"
 	"github.com/artheranet/arthera-node/gossip/blockproc"
 	"github.com/artheranet/arthera-node/gossip/blockproc/drivermodule"
 	"github.com/artheranet/arthera-node/gossip/blockproc/eventmodule"
@@ -158,7 +158,7 @@ func (b *GenesisBuilder) ExecuteGenesisTxs(blockProc BlockProc, genesisTxs types
 	txListener := blockProc.TxListenerModule.Start(blockCtx, bs, es, b.tmpStateDB)
 	evmProcessor := blockProc.EVMModule.Start(blockCtx, b.tmpStateDB, dummyHeaderReturner{}, func(l *types.Log) {
 		txListener.OnNewLog(l)
-	}, es.Rules, es.Rules.EvmChainConfig([]opera.UpgradeHeight{
+	}, es.Rules, es.Rules.EvmChainConfig([]params.UpgradeHeight{
 		{
 			Upgrades: es.Rules.Upgrades,
 			Height:   0,
@@ -296,7 +296,7 @@ func (b *GenesisBuilder) DeployBaseContracts() {
 	b.SetCode(evmwriter.ContractAddress, []byte{0})
 }
 
-func (b *GenesisBuilder) InitializeEpoch(block idx.Block, epoch idx.Epoch, rules opera.Rules, timestamp inter.Timestamp) {
+func (b *GenesisBuilder) InitializeEpoch(block idx.Block, epoch idx.Epoch, rules params.ProtocolRules, timestamp inter.Timestamp) {
 	b.SetCurrentEpoch(ier.LlrIdxFullEpochRecord{
 		LlrFullEpochRecord: ier.LlrFullEpochRecord{
 			BlockState: iblockproc.BlockState{

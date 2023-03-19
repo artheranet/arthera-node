@@ -1,6 +1,7 @@
 package drivermodule
 
 import (
+	"github.com/artheranet/arthera-node/params"
 	"io"
 	"math"
 	"math/big"
@@ -11,9 +12,8 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/log"
 
-	"github.com/artheranet/arthera-node/arthera"
-	"github.com/artheranet/arthera-node/arthera/contracts/driver"
-	"github.com/artheranet/arthera-node/arthera/contracts/driver/drivercall"
+	"github.com/artheranet/arthera-node/contracts/driver"
+	"github.com/artheranet/arthera-node/contracts/driver/drivercall"
 	"github.com/artheranet/arthera-node/gossip/blockproc"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/inter/drivertype"
@@ -94,13 +94,13 @@ func (p *DriverTxPreTransactor) PopInternalTxs(block iblockproc.BlockCtx, bs ibl
 		for oldValIdx := idx.Validator(0); oldValIdx < es.Validators.Len(); oldValIdx++ {
 			info := bs.ValidatorStates[oldValIdx]
 			// forgive downtime if below BlockMissedSlack
-			missed := opera.BlocksMissed{
+			missed := params.BlocksMissed{
 				BlocksNum: maxBlockIdx(block.Idx, info.LastBlock) - info.LastBlock,
 				Period:    inter.MaxTimestamp(block.Time, info.LastOnlineTime) - info.LastOnlineTime,
 			}
 			uptime := info.Uptime
 			if missed.BlocksNum <= es.Rules.Economy.BlockMissedSlack {
-				missed = opera.BlocksMissed{}
+				missed = params.BlocksMissed{}
 				prevOnlineTime := inter.MaxTimestamp(info.LastOnlineTime, es.EpochStart)
 				uptime += inter.MaxTimestamp(block.Time, prevOnlineTime) - prevOnlineTime
 			}
@@ -212,7 +212,7 @@ func (p *DriverTxListener) OnNewLog(l *types.Log) {
 		if p.bs.DirtyRules != nil {
 			last = p.bs.DirtyRules
 		}
-		updated, err := opera.UpdateRules(*last, diff)
+		updated, err := params.UpdateRules(*last, diff)
 		if err != nil {
 			log.Warn("Network rules update error", "err", err)
 			return

@@ -4,7 +4,7 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/kvdb"
 	"github.com/Fantom-foundation/lachesis-base/kvdb/batched"
 
-	"github.com/artheranet/arthera-node/arthera/genesis"
+	"github.com/artheranet/arthera-node/genesis"
 )
 
 // ApplyGenesis writes initial state.

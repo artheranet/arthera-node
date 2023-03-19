@@ -6,7 +6,7 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/hash"
 	"github.com/Fantom-foundation/lachesis-base/kvdb/batched"
 
-	"github.com/artheranet/arthera-node/arthera/genesis"
+	"github.com/artheranet/arthera-node/genesis"
 	"github.com/artheranet/arthera-node/inter/iblockproc"
 	"github.com/artheranet/arthera-node/inter/ibr"
 	"github.com/artheranet/arthera-node/inter/ier"

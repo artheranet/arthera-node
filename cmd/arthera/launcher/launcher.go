@@ -20,13 +20,13 @@ import (
 
 	evmetrics "github.com/ethereum/go-ethereum/metrics"
 
-	"github.com/artheranet/arthera-node/arthera/genesis"
-	"github.com/artheranet/arthera-node/arthera/genesisstore"
 	"github.com/artheranet/arthera-node/cmd/arthera/launcher/metrics"
 	"github.com/artheranet/arthera-node/cmd/arthera/launcher/tracing"
 	"github.com/artheranet/arthera-node/debug"
 	"github.com/artheranet/arthera-node/evmcore"
 	"github.com/artheranet/arthera-node/flags"
+	"github.com/artheranet/arthera-node/genesis"
+	"github.com/artheranet/arthera-node/genesis/genesisstore"
 	"github.com/artheranet/arthera-node/gossip"
 	"github.com/artheranet/arthera-node/gossip/emitter"
 	"github.com/artheranet/arthera-node/integration"

@@ -2,13 +2,13 @@ package evmwriter
 
 import (
 	"bytes"
-	"github.com/artheranet/arthera-node/arthera/contracts/abis"
+	"github.com/artheranet/arthera-node/contracts/abis"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/params"
 	"math/big"
 
-	"github.com/artheranet/arthera-node/arthera/contracts/driver"
+	"github.com/artheranet/arthera-node/contracts/driver"
 )
 
 var (

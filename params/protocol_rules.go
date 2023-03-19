@@ -1,4 +1,4 @@
-package opera
+package params
 
 import (
 	"encoding/json"
@@ -10,7 +10,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/vm"
 	ethparams "github.com/ethereum/go-ethereum/params"
 
-	"github.com/artheranet/arthera-node/arthera/contracts/evmwriter"
+	"github.com/artheranet/arthera-node/contracts/evmwriter"
 	"github.com/artheranet/arthera-node/inter"
 )
 
@@ -30,7 +30,7 @@ var DefaultVMConfig = vm.Config{
 	},
 }
 
-type RulesRLP struct {
+type ProtocolRulesRLP struct {
 	Name      string
 	NetworkID uint64
 
@@ -49,9 +49,9 @@ type RulesRLP struct {
 	Upgrades Upgrades `rlp:"-"`
 }
 
-// Rules describes opera net.
+// ProtocolRules describes opera net.
 // Note keep track of all the non-copiable variables in Copy()
-type Rules RulesRLP
+type ProtocolRules ProtocolRulesRLP
 
 // GasPowerRules defines gas power rules in the consensus.
 type GasPowerRules struct {
@@ -123,7 +123,7 @@ type UpgradeHeight struct {
 }
 
 // EvmChainConfig returns ChainConfig for transactions signing and execution
-func (r Rules) EvmChainConfig(hh []UpgradeHeight) *ethparams.ChainConfig {
+func (r ProtocolRules) EvmChainConfig(hh []UpgradeHeight) *ethparams.ChainConfig {
 	cfg := *ethparams.AllEthashProtocolChanges
 	cfg.ChainID = new(big.Int).SetUint64(r.NetworkID)
 	cfg.BerlinBlock = nil
@@ -150,8 +150,8 @@ func (r Rules) EvmChainConfig(hh []UpgradeHeight) *ethparams.ChainConfig {
 	return &cfg
 }
 
-func MainNetRules() Rules {
-	return Rules{
+func MainNetRules() ProtocolRules {
+	return ProtocolRules{
 		Name:      "main",
 		NetworkID: MainNetworkID,
 		Dag:       DefaultDagRules(),
@@ -169,8 +169,8 @@ func MainNetRules() Rules {
 	}
 }
 
-func TestNetRules() Rules {
-	return Rules{
+func TestNetRules() ProtocolRules {
+	return ProtocolRules{
 		Name:      "test",
 		NetworkID: TestNetworkID,
 		Dag:       DefaultDagRules(),
@@ -188,8 +188,8 @@ func TestNetRules() Rules {
 	}
 }
 
-func FakeNetRules() Rules {
-	return Rules{
+func FakeNetRules() ProtocolRules {
+	return ProtocolRules{
 		Name:      "fake",
 		NetworkID: FakeNetworkID,
 		Dag:       DefaultDagRules(),
@@ -295,13 +295,26 @@ func FakeShortGasPowerRules() GasPowerRules {
 	return config
 }
 
-func (r Rules) Copy() Rules {
+func (r ProtocolRules) Copy() ProtocolRules {
 	cp := r
 	cp.Economy.MinGasPrice = new(big.Int).Set(r.Economy.MinGasPrice)
 	return cp
 }
 
-func (r Rules) String() string {
+func (r ProtocolRules) String() string {
 	b, _ := json.Marshal(&r)
 	return string(b)
+}
+
+func UpdateRules(src ProtocolRules, diff []byte) (res ProtocolRules, err error) {
+	changed := src.Copy()
+	err = json.Unmarshal(diff, &changed)
+	if err != nil {
+		return src, err
+	}
+	// protect readonly fields
+	res = changed
+	res.NetworkID = src.NetworkID
+	res.Name = src.Name
+	return
 }

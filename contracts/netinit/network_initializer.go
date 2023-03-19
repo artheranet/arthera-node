@@ -2,7 +2,7 @@ package netinit
 
 import (
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
-	"github.com/artheranet/arthera-node/arthera/contracts/abis"
+	"github.com/artheranet/arthera-node/contracts/abis"
 	"github.com/artheranet/arthera-node/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"

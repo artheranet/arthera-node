@@ -2,11 +2,11 @@ package launcher
 
 import (
 	"github.com/Fantom-foundation/lachesis-base/hash"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/artheranet/arthera-node/params"
+	ethparams "github.com/ethereum/go-ethereum/params"
 
-	"github.com/artheranet/arthera-node/arthera"
-	"github.com/artheranet/arthera-node/arthera/genesis"
-	"github.com/artheranet/arthera-node/arthera/genesisstore"
+	"github.com/artheranet/arthera-node/genesis"
+	"github.com/artheranet/arthera-node/genesis/genesisstore"
 )
 
 var (
@@ -21,13 +21,13 @@ var (
 
 	mainnetHeader = genesis.Header{
 		GenesisID:   hash.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
-		NetworkID:   opera.MainNetworkID,
+		NetworkID:   params.MainNetworkID,
 		NetworkName: "main",
 	}
 
 	testnetHeader = genesis.Header{
 		GenesisID:   hash.HexToHash("0xb93bd2bdd0c13653fd0b636bdc865f14b2fd0f875340fe92ed4580ad774ed60d"),
-		NetworkID:   opera.TestNetworkID,
+		NetworkID:   params.TestNetworkID,
 		NetworkName: "test",
 	}
 
@@ -55,8 +55,8 @@ var (
 )
 
 func overrideParams() {
-	params.MainnetBootnodes = []string{}
-	params.RopstenBootnodes = []string{}
-	params.RinkebyBootnodes = []string{}
-	params.GoerliBootnodes = []string{}
+	ethparams.MainnetBootnodes = []string{}
+	ethparams.RopstenBootnodes = []string{}
+	ethparams.RinkebyBootnodes = []string{}
+	ethparams.GoerliBootnodes = []string{}
 }

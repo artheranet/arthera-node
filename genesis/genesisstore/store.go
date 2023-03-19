@@ -3,7 +3,7 @@ package genesisstore
 import (
 	"io"
 
-	"github.com/artheranet/arthera-node/arthera/genesis"
+	"github.com/artheranet/arthera-node/genesis"
 	"github.com/artheranet/arthera-node/logger"
 )
 

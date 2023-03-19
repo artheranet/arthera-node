@@ -17,6 +17,7 @@
 package evmcore
 
 import (
+	"github.com/artheranet/arthera-node/params"
 	"math"
 	"math/big"
 
@@ -26,7 +27,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/trie"
 
-	"github.com/artheranet/arthera-node/arthera"
 	"github.com/artheranet/arthera-node/inter"
 )
 
@@ -70,7 +70,7 @@ func NewEvmBlock(h *EvmHeader, txs types.Transactions) *EvmBlock {
 }
 
 // ToEvmHeader converts inter.Block to EvmHeader.
-func ToEvmHeader(block *inter.Block, index idx.Block, prevHash hash.Event, rules opera.Rules) *EvmHeader {
+func ToEvmHeader(block *inter.Block, index idx.Block, prevHash hash.Event, rules params.ProtocolRules) *EvmHeader {
 	baseFee := rules.Economy.MinGasPrice
 	if !rules.Upgrades.London {
 		baseFee = nil

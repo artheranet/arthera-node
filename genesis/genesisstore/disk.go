@@ -14,10 +14,10 @@ import (
 	"github.com/status-im/keycard-go/hexutils"
 	"github.com/syndtr/goleveldb/leveldb/opt"
 
-	"github.com/artheranet/arthera-node/arthera/genesis"
-	"github.com/artheranet/arthera-node/arthera/genesisstore/filelog"
-	"github.com/artheranet/arthera-node/arthera/genesisstore/fileshash"
-	"github.com/artheranet/arthera-node/arthera/genesisstore/readersmap"
+	"github.com/artheranet/arthera-node/genesis"
+	"github.com/artheranet/arthera-node/genesis/genesisstore/filelog"
+	"github.com/artheranet/arthera-node/genesis/genesisstore/fileshash"
+	"github.com/artheranet/arthera-node/genesis/genesisstore/readersmap"
 	"github.com/artheranet/arthera-node/utils/ioread"
 )
 

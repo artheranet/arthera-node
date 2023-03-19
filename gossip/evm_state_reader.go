@@ -8,11 +8,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/params"
+	ethparams "github.com/ethereum/go-ethereum/params"
 
-	"github.com/artheranet/arthera-node/arthera"
 	"github.com/artheranet/arthera-node/evmcore"
 	"github.com/artheranet/arthera-node/gossip/gasprice"
+	"github.com/artheranet/arthera-node/params"
 )
 
 type EvmStateReader struct {
@@ -63,7 +63,7 @@ func (r *EvmStateReader) MaxGasLimit() uint64 {
 	return rules.Economy.Gas.MaxEventGas - maxEmptyEventGas
 }
 
-func (r *EvmStateReader) Config() *params.ChainConfig {
+func (r *EvmStateReader) Config() *ethparams.ChainConfig {
 	return r.store.GetEvmChainConfig()
 }
 
@@ -111,7 +111,7 @@ func (r *EvmStateReader) getBlock(h hash.Event, n idx.Block, readTxs bool) *evmc
 	// find block rules
 	epoch := block.Atropos.Epoch()
 	es := r.store.GetHistoryEpochState(epoch)
-	var rules opera.Rules
+	var rules params.ProtocolRules
 	if es != nil {
 		rules = es.Rules
 	}

@@ -1,4 +1,4 @@
-package opera
+package params
 
 import (
 	"math/big"
@@ -11,7 +11,7 @@ import (
 func TestUpdateRules(t *testing.T) {
 	require := require.New(t)
 
-	var exp Rules
+	var exp ProtocolRules
 	exp.Epochs.MaxEpochGas = 99
 
 	exp.Dag.MaxParents = 5
@@ -41,7 +41,7 @@ func TestMainNetRulesRLP(t *testing.T) {
 	b, err := rlp.EncodeToBytes(rules)
 	require.NoError(err)
 
-	decodedRules := Rules{}
+	decodedRules := ProtocolRules{}
 	require.NoError(rlp.DecodeBytes(b, &decodedRules))
 
 	require.Equal(rules.String(), decodedRules.String())
@@ -55,7 +55,7 @@ func TestRulesBerlinRLP(t *testing.T) {
 	b, err := rlp.EncodeToBytes(rules)
 	require.NoError(err)
 
-	decodedRules := Rules{}
+	decodedRules := ProtocolRules{}
 	require.NoError(rlp.DecodeBytes(b, &decodedRules))
 
 	require.Equal(rules.String(), decodedRules.String())
@@ -71,7 +71,7 @@ func TestRulesLondonRLP(t *testing.T) {
 	b, err := rlp.EncodeToBytes(rules)
 	require.NoError(err)
 
-	decodedRules := Rules{}
+	decodedRules := ProtocolRules{}
 	require.NoError(rlp.DecodeBytes(b, &decodedRules))
 
 	require.Equal(rules.String(), decodedRules.String())

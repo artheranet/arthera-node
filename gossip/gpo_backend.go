@@ -5,9 +5,9 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
 	"github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/artheranet/arthera-node/arthera"
 	"github.com/artheranet/arthera-node/eventcheck/gaspowercheck"
 	"github.com/artheranet/arthera-node/inter"
+	"github.com/artheranet/arthera-node/params"
 	"github.com/artheranet/arthera-node/utils/concurrent"
 )
 
@@ -20,11 +20,11 @@ func (b *GPOBackend) GetLatestBlockIndex() idx.Block {
 	return b.store.GetLatestBlockIndex()
 }
 
-func (b *GPOBackend) GetRules() opera.Rules {
+func (b *GPOBackend) GetRules() params.ProtocolRules {
 	return b.store.GetRules()
 }
 
-func (b *GPOBackend) GetPendingRules() opera.Rules {
+func (b *GPOBackend) GetPendingRules() params.ProtocolRules {
 	bs, es := b.store.GetBlockEpochState()
 	if bs.DirtyRules != nil {
 		return *bs.DirtyRules

@@ -2,7 +2,8 @@ package makefakegenesis
 
 import (
 	"crypto/ecdsa"
-	"github.com/artheranet/arthera-node/arthera/contracts/driver/drivercall"
+	"github.com/artheranet/arthera-node/contracts/driver/drivercall"
+	"github.com/artheranet/arthera-node/params"
 	"math/big"
 	"time"
 
@@ -11,11 +12,10 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 
-	"github.com/artheranet/arthera-node/arthera"
-	"github.com/artheranet/arthera-node/arthera/genesis"
-	"github.com/artheranet/arthera-node/arthera/genesis/gpos"
-	"github.com/artheranet/arthera-node/arthera/genesisstore"
 	"github.com/artheranet/arthera-node/evmcore"
+	"github.com/artheranet/arthera-node/genesis"
+	"github.com/artheranet/arthera-node/genesis/genesisstore"
+	"github.com/artheranet/arthera-node/genesis/gpos"
 	"github.com/artheranet/arthera-node/integration/makegenesis"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/inter/validatorpk"
@@ -31,10 +31,10 @@ func FakeKey(n idx.ValidatorID) *ecdsa.PrivateKey {
 }
 
 func FakeGenesisStore(num idx.Validator, balance, stake *big.Int) *genesisstore.Store {
-	return FakeGenesisStoreWithRulesAndStart(num, balance, stake, opera.FakeNetRules(), 2, 1)
+	return FakeGenesisStoreWithRulesAndStart(num, balance, stake, params.FakeNetRules(), 2, 1)
 }
 
-func FakeGenesisStoreWithRulesAndStart(num idx.Validator, balance, stake *big.Int, rules opera.Rules, epoch idx.Epoch, block idx.Block) *genesisstore.Store {
+func FakeGenesisStoreWithRulesAndStart(num idx.Validator, balance, stake *big.Int, rules params.ProtocolRules, epoch idx.Epoch, block idx.Block) *genesisstore.Store {
 	builder := makegenesis.NewGenesisBuilder(memorydb.NewProducer(""))
 
 	validators := GetFakeValidators(num)

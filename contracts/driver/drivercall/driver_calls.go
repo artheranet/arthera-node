@@ -2,13 +2,13 @@ package drivercall
 
 import (
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
-	"github.com/artheranet/arthera-node/arthera/contracts/abis"
+	"github.com/artheranet/arthera-node/contracts/abis"
+	"github.com/artheranet/arthera-node/params"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/log"
 	"math/big"
 
-	"github.com/artheranet/arthera-node/arthera"
-	"github.com/artheranet/arthera-node/arthera/genesis/gpos"
+	"github.com/artheranet/arthera-node/genesis/gpos"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/utils"
 )
@@ -37,7 +37,7 @@ func SealEpochValidators(_validators []idx.ValidatorID) []byte {
 }
 
 type ValidatorEpochMetric struct {
-	Missed          opera.BlocksMissed
+	Missed          params.BlocksMissed
 	Uptime          inter.Timestamp
 	OriginatedTxFee *big.Int
 }

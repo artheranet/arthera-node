@@ -18,7 +18,7 @@ package evmcore
 
 import (
 	"fmt"
-	"github.com/artheranet/arthera-node/arthera/contracts/registry"
+	"github.com/artheranet/arthera-node/contracts/registry"
 	"math"
 	"math/big"
 	"runtime/debug"

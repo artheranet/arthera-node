@@ -5,8 +5,8 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
 	"github.com/Fantom-foundation/lachesis-base/inter/pos"
 
-	"github.com/artheranet/arthera-node/arthera"
 	"github.com/artheranet/arthera-node/inter"
+	"github.com/artheranet/arthera-node/params"
 )
 
 type ValidatorEpochStateV0 struct {
@@ -25,5 +25,5 @@ type EpochStateV0 struct {
 	ValidatorStates   []ValidatorEpochStateV0
 	ValidatorProfiles ValidatorProfiles
 
-	Rules opera.Rules
+	Rules params.ProtocolRules
 }

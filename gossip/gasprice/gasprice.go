@@ -28,14 +28,14 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	lru "github.com/hashicorp/golang-lru"
 
-	"github.com/artheranet/arthera-node/arthera"
+	"github.com/artheranet/arthera-node/params"
 
 	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/params"
+	ethparams "github.com/ethereum/go-ethereum/params"
 )
 
 var (
-	DefaultMaxGasPrice = big.NewInt(10000000 * params.GWei)
+	DefaultMaxGasPrice = big.NewInt(10000000 * ethparams.GWei)
 	DecimalUnitBn      = big.NewInt(DecimalUnit)
 	secondBn           = new(big.Int).SetUint64(uint64(time.Second))
 )
@@ -54,8 +54,8 @@ type Config struct {
 type Reader interface {
 	GetLatestBlockIndex() idx.Block
 	TotalGasPowerLeft() uint64
-	GetRules() opera.Rules
-	GetPendingRules() opera.Rules
+	GetRules() params.ProtocolRules
+	GetPendingRules() params.ProtocolRules
 	PendingTxs() types.Transactions
 }
 

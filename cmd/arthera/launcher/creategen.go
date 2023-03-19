@@ -6,16 +6,16 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
 	"github.com/Fantom-foundation/lachesis-base/kvdb"
 	"github.com/Fantom-foundation/lachesis-base/kvdb/memorydb"
-	"github.com/artheranet/arthera-node/arthera"
-	"github.com/artheranet/arthera-node/arthera/contracts/driver/drivercall"
-	"github.com/artheranet/arthera-node/arthera/genesis"
-	"github.com/artheranet/arthera-node/arthera/genesis/gpos"
-	"github.com/artheranet/arthera-node/arthera/genesisstore"
+	"github.com/artheranet/arthera-node/contracts/driver/drivercall"
+	"github.com/artheranet/arthera-node/genesis"
+	"github.com/artheranet/arthera-node/genesis/genesisstore"
+	"github.com/artheranet/arthera-node/genesis/gpos"
 	"github.com/artheranet/arthera-node/integration/makegenesis"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/inter/ibr"
 	"github.com/artheranet/arthera-node/inter/ier"
 	"github.com/artheranet/arthera-node/inter/validatorpk"
+	"github.com/artheranet/arthera-node/params"
 	utils2 "github.com/artheranet/arthera-node/utils"
 	"github.com/artheranet/arthera-node/utils/iodb"
 	"github.com/ethereum/go-ethereum/cmd/utils"
@@ -154,9 +154,9 @@ func CreateGenesis(genesisType string) (*genesisstore.Store, hash.Hash) {
 
 	builder.DeployBaseContracts()
 
-	rules := opera.TestNetRules()
+	rules := params.TestNetRules()
 	if genesisType == "mainnet" {
-		rules = opera.MainNetRules()
+		rules = params.MainNetRules()
 	}
 
 	builder.InitializeEpoch(1, 2, rules, GenesisTime)

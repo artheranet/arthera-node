@@ -18,7 +18,7 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/status-im/keycard-go/hexutils"
 
-	"github.com/artheranet/arthera-node/arthera/genesis"
+	"github.com/artheranet/arthera-node/genesis"
 	"github.com/artheranet/arthera-node/gossip"
 	"github.com/artheranet/arthera-node/utils/adapters/vecmt2dagidx"
 	"github.com/artheranet/arthera-node/vecmt"

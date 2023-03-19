@@ -9,13 +9,13 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 
+	"github.com/artheranet/arthera-node/arthera"
 	"github.com/artheranet/arthera-node/eventcheck"
 	"github.com/artheranet/arthera-node/gossip/evmstore"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/inter/iblockproc"
 	"github.com/artheranet/arthera-node/inter/ibr"
 	"github.com/artheranet/arthera-node/inter/ier"
-	"github.com/artheranet/arthera-node/opera"
 )
 
 var errValidatorNotExist = errors.New("validator does not exist")

@@ -28,8 +28,8 @@ import (
 	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/params"
 
+	"github.com/artheranet/arthera-node/arthera"
 	"github.com/artheranet/arthera-node/inter"
-	"github.com/artheranet/arthera-node/opera"
 )
 
 // BlockGen creates blocks for testing.

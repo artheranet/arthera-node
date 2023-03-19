@@ -26,8 +26,8 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/trie"
 
+	"github.com/artheranet/arthera-node/arthera"
 	"github.com/artheranet/arthera-node/inter"
-	"github.com/artheranet/arthera-node/opera"
 )
 
 type (

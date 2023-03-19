@@ -10,8 +10,8 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/lachesis"
 	"github.com/ethereum/go-ethereum/rlp"
 
+	"github.com/artheranet/arthera-node/arthera"
 	"github.com/artheranet/arthera-node/inter"
-	"github.com/artheranet/arthera-node/opera"
 )
 
 type ValidatorBlockState struct {

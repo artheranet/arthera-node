@@ -19,12 +19,12 @@ import (
 	"github.com/ethereum/go-ethereum/rlp"
 	"gopkg.in/urfave/cli.v1"
 
+	"github.com/artheranet/arthera-node/arthera/genesis"
+	"github.com/artheranet/arthera-node/arthera/genesisstore"
+	"github.com/artheranet/arthera-node/arthera/genesisstore/fileshash"
 	"github.com/artheranet/arthera-node/gossip/evmstore"
 	"github.com/artheranet/arthera-node/inter/ibr"
 	"github.com/artheranet/arthera-node/inter/ier"
-	"github.com/artheranet/arthera-node/opera/genesis"
-	"github.com/artheranet/arthera-node/opera/genesisstore"
-	"github.com/artheranet/arthera-node/opera/genesisstore/fileshash"
 	"github.com/artheranet/arthera-node/utils/devnullfile"
 	"github.com/artheranet/arthera-node/utils/iodb"
 )

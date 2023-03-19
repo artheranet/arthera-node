@@ -4,9 +4,9 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/hash"
 	"github.com/ethereum/go-ethereum/params"
 
-	"github.com/artheranet/arthera-node/opera"
-	"github.com/artheranet/arthera-node/opera/genesis"
-	"github.com/artheranet/arthera-node/opera/genesisstore"
+	"github.com/artheranet/arthera-node/arthera"
+	"github.com/artheranet/arthera-node/arthera/genesis"
+	"github.com/artheranet/arthera-node/arthera/genesisstore"
 )
 
 var (

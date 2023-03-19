@@ -10,11 +10,11 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/params"
 
+	"github.com/artheranet/arthera-node/arthera"
 	"github.com/artheranet/arthera-node/evmcore"
 	"github.com/artheranet/arthera-node/gossip/blockproc"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/inter/iblockproc"
-	"github.com/artheranet/arthera-node/opera"
 	"github.com/artheranet/arthera-node/utils"
 )
 

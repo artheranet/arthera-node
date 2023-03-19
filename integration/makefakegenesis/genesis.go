@@ -2,7 +2,7 @@ package makefakegenesis
 
 import (
 	"crypto/ecdsa"
-	"github.com/artheranet/arthera-node/opera/contracts/driver/drivercall"
+	"github.com/artheranet/arthera-node/arthera/contracts/driver/drivercall"
 	"math/big"
 	"time"
 
@@ -11,14 +11,14 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 
+	"github.com/artheranet/arthera-node/arthera"
+	"github.com/artheranet/arthera-node/arthera/genesis"
+	"github.com/artheranet/arthera-node/arthera/genesis/gpos"
+	"github.com/artheranet/arthera-node/arthera/genesisstore"
 	"github.com/artheranet/arthera-node/evmcore"
 	"github.com/artheranet/arthera-node/integration/makegenesis"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/inter/validatorpk"
-	"github.com/artheranet/arthera-node/opera"
-	"github.com/artheranet/arthera-node/opera/genesis"
-	"github.com/artheranet/arthera-node/opera/genesis/gpos"
-	"github.com/artheranet/arthera-node/opera/genesisstore"
 )
 
 var (

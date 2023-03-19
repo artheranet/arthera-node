@@ -18,7 +18,7 @@ package evmcore
 
 import (
 	"fmt"
-	"github.com/artheranet/arthera-node/opera/contracts/registry"
+	"github.com/artheranet/arthera-node/arthera/contracts/registry"
 	"github.com/ethereum/go-ethereum/crypto"
 	"math/big"
 

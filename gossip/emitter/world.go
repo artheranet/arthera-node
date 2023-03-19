@@ -11,9 +11,9 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	notify "github.com/ethereum/go-ethereum/event"
 
+	"github.com/artheranet/arthera-node/arthera"
 	"github.com/artheranet/arthera-node/evmcore"
 	"github.com/artheranet/arthera-node/inter"
-	"github.com/artheranet/arthera-node/opera"
 	"github.com/artheranet/arthera-node/valkeystore"
 	"github.com/artheranet/arthera-node/vecmt"
 )

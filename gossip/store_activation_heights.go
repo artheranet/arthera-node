@@ -1,7 +1,7 @@
 package gossip
 
 import (
-	"github.com/artheranet/arthera-node/opera"
+	"github.com/artheranet/arthera-node/arthera"
 )
 
 func (s *Store) AddUpgradeHeight(h opera.UpgradeHeight) {

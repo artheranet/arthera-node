@@ -7,8 +7,8 @@ import (
 	ethparams "github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/rlp"
 
+	"github.com/artheranet/arthera-node/arthera"
 	"github.com/artheranet/arthera-node/inter/iblockproc"
-	"github.com/artheranet/arthera-node/opera"
 )
 
 const sKey = "s"

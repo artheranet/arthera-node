@@ -46,9 +46,9 @@ import (
 	"github.com/ethereum/go-ethereum/trie"
 	"github.com/tyler-smith/go-bip39"
 
+	"github.com/artheranet/arthera-node/arthera"
 	"github.com/artheranet/arthera-node/evmcore"
 	"github.com/artheranet/arthera-node/gossip/gasprice"
-	"github.com/artheranet/arthera-node/opera"
 	"github.com/artheranet/arthera-node/utils/signers/gsignercache"
 	"github.com/artheranet/arthera-node/utils/signers/internaltx"
 )

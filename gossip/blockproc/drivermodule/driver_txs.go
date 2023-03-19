@@ -11,14 +11,14 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/log"
 
+	"github.com/artheranet/arthera-node/arthera"
+	"github.com/artheranet/arthera-node/arthera/contracts/driver"
+	"github.com/artheranet/arthera-node/arthera/contracts/driver/drivercall"
 	"github.com/artheranet/arthera-node/gossip/blockproc"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/inter/drivertype"
 	"github.com/artheranet/arthera-node/inter/iblockproc"
 	"github.com/artheranet/arthera-node/inter/validatorpk"
-	"github.com/artheranet/arthera-node/opera"
-	"github.com/artheranet/arthera-node/opera/contracts/driver"
-	"github.com/artheranet/arthera-node/opera/contracts/driver/drivercall"
 )
 
 const (

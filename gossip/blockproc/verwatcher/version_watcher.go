@@ -8,8 +8,8 @@ import (
 
 	"github.com/ethereum/go-ethereum/core/types"
 
+	"github.com/artheranet/arthera-node/arthera/contracts/driver"
 	"github.com/artheranet/arthera-node/logger"
-	"github.com/artheranet/arthera-node/opera/contracts/driver"
 	"github.com/artheranet/arthera-node/version"
 )
 

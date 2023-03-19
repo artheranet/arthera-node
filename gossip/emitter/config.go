@@ -7,8 +7,8 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
 	"github.com/ethereum/go-ethereum/params"
 
+	"github.com/artheranet/arthera-node/arthera"
 	"github.com/artheranet/arthera-node/inter/validatorpk"
-	"github.com/artheranet/arthera-node/opera"
 )
 
 // EmitIntervals is the configuration of emit intervals.

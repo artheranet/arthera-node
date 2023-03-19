@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/artheranet/arthera-node/genesis"
-	"github.com/artheranet/arthera-node/integration/makefakegenesis"
+	"github.com/artheranet/arthera-node/genesis/makefakegenesis"
 	"github.com/artheranet/arthera-node/params"
 	utils2 "github.com/artheranet/arthera-node/utils"
 	"github.com/ethereum/go-ethereum/core/vm"

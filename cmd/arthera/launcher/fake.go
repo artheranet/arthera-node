@@ -9,7 +9,7 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
 	cli "gopkg.in/urfave/cli.v1"
 
-	"github.com/artheranet/arthera-node/integration/makefakegenesis"
+	"github.com/artheranet/arthera-node/genesis/makefakegenesis"
 )
 
 // FakeNetFlag enables special testnet, where validators are automatically created

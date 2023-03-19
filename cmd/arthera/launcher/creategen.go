@@ -10,7 +10,7 @@ import (
 	"github.com/artheranet/arthera-node/genesis"
 	"github.com/artheranet/arthera-node/genesis/genesisstore"
 	"github.com/artheranet/arthera-node/genesis/gpos"
-	"github.com/artheranet/arthera-node/integration/makegenesis"
+	"github.com/artheranet/arthera-node/genesis/makegenesis"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/inter/ibr"
 	"github.com/artheranet/arthera-node/inter/ier"

@@ -6,8 +6,8 @@ import (
 
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
 
+	"github.com/artheranet/arthera-node/genesis/makefakegenesis"
 	"github.com/artheranet/arthera-node/gossip/emitter"
-	"github.com/artheranet/arthera-node/integration/makefakegenesis"
 	"github.com/artheranet/arthera-node/inter/validatorpk"
 )
 

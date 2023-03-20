@@ -2,6 +2,7 @@ package params
 
 import (
 	"encoding/json"
+	"github.com/artheranet/arthera-node/contracts"
 	"math/big"
 	"time"
 
@@ -26,7 +27,7 @@ const (
 
 var DefaultVMConfig = vm.Config{
 	StatePrecompiles: map[common.Address]vm.PrecompiledStateContract{
-		evmwriter.ContractAddress: &evmwriter.PreCompiledContract{},
+		contracts.EvmWriterSmartContractAddress: &evmwriter.PreCompiledContract{},
 	},
 }
 

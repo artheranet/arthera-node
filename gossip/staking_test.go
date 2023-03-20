@@ -28,7 +28,7 @@ package gossip
 
 import (
 	"fmt"
-	"github.com/artheranet/arthera-node/opera/contracts/staking"
+	"github.com/artheranet/arthera-node/contracts"
 	"math/big"
 	"testing"
 
@@ -42,10 +42,6 @@ import (
 	"github.com/artheranet/arthera-node/gossip/contract/netinit100"
 	"github.com/artheranet/arthera-node/gossip/contract/sfc100"
 	"github.com/artheranet/arthera-node/logger"
-	"github.com/artheranet/arthera-node/opera/contracts/driver"
-	"github.com/artheranet/arthera-node/opera/contracts/driverauth"
-	"github.com/artheranet/arthera-node/opera/contracts/evmwriter"
-	"github.com/artheranet/arthera-node/opera/contracts/netinit"
 	"github.com/artheranet/arthera-node/utils"
 )
 
@@ -61,9 +57,9 @@ func TestStakingContract(t *testing.T) {
 		err   error
 	)
 
-	authDriver10, err := driverauth100.NewContract(driverauth.ContractAddress, env)
+	authDriver10, err := driverauth100.NewContract(contracts.NodeDriverAuthSmartContractAddress, env)
 	require.NoError(t, err)
-	rootDriver10, err := driver100.NewContract(driver.ContractAddress, env)
+	rootDriver10, err := driver100.NewContract(contracts.NodeDriverSmartContractAddress, env)
 	require.NoError(t, err)
 
 	admin := idx.ValidatorID(1)
@@ -73,8 +69,8 @@ func TestStakingContract(t *testing.T) {
 		t.Run("Genesis Staking", func(t *testing.T) {
 			require := require.New(t)
 
-			exp := staking.GetContractBin()
-			got, err := env.CodeAt(nil, staking.ContractAddress, nil)
+			exp := contracts.StakingBytecode
+			got, err := env.CodeAt(nil, contracts.StakingSmartContractAddress, nil)
 			require.NoError(err)
 			require.Equal(exp, got, "genesis Staking contract")
 			require.Equal(exp, hexutil.MustDecode(sfc100.ContractBinRuntime), "genesis Staking contract version")
@@ -82,8 +78,8 @@ func TestStakingContract(t *testing.T) {
 		t.Run("Genesis Driver", func(t *testing.T) {
 			require := require.New(t)
 
-			exp := driver.GetContractBin()
-			got, err := env.CodeAt(nil, driver.ContractAddress, nil)
+			exp := contracts.NodeDriverBytecode
+			got, err := env.CodeAt(nil, contracts.NodeDriverSmartContractAddress, nil)
 			require.NoError(err)
 			require.Equal(exp, got, "genesis Driver contract")
 			require.Equal(exp, hexutil.MustDecode(driver100.ContractBinRuntime), "genesis Driver contract version")
@@ -91,8 +87,8 @@ func TestStakingContract(t *testing.T) {
 		t.Run("Genesis DriverAuth", func(t *testing.T) {
 			require := require.New(t)
 
-			exp := driverauth.GetContractBin()
-			got, err := env.CodeAt(nil, driverauth.ContractAddress, nil)
+			exp := contracts.NodeDriverAuthBytecode
+			got, err := env.CodeAt(nil, contracts.NodeDriverAuthSmartContractAddress, nil)
 			require.NoError(err)
 			require.Equal(exp, got, "genesis DriverAuth contract")
 			require.Equal(exp, hexutil.MustDecode(driverauth100.ContractBinRuntime), "genesis DriverAuth contract version")
@@ -100,8 +96,8 @@ func TestStakingContract(t *testing.T) {
 		t.Run("Network initializer", func(t *testing.T) {
 			require := require.New(t)
 
-			exp := netinit.GetContractBin()
-			got, err := env.CodeAt(nil, netinit.ContractAddress, nil)
+			exp := contracts.NetworkInitializerBytecode
+			got, err := env.CodeAt(nil, contracts.NetworkInitializerSmartContractAddress, nil)
 			require.NoError(err)
 			require.NotEmpty(exp, "genesis NetworkInitializer contract")
 			require.Empty(got, "genesis NetworkInitializer should be destructed")
@@ -111,7 +107,7 @@ func TestStakingContract(t *testing.T) {
 			require := require.New(t)
 
 			exp := []byte{0}
-			got, err := env.CodeAt(nil, evmwriter.ContractAddress, nil)
+			got, err := env.CodeAt(nil, contracts.EvmWriterSmartContractAddress, nil)
 			require.NoError(err)
 			require.Equal(exp, got, "builtin EvmWriter contract")
 		}) &&
@@ -139,26 +135,26 @@ func TestStakingContract(t *testing.T) {
 			require.Equal(1, rr.Len())
 			require.Equal(types.ReceiptStatusSuccessful, rr[0].Status)
 			newImpl := rr[0].ContractAddress
-			require.NotEqual(staking.ContractAddress, newImpl)
+			require.NotEqual(contracts.StakingSmartContractAddress, newImpl)
 			newSfcContractBinRuntime, err := env.CodeAt(nil, newImpl, nil)
 			require.NoError(err)
 			require.Equal(hexutil.MustDecode(sfc100.ContractBinRuntime), newSfcContractBinRuntime)
 
-			tx, err := authDriver10.CopyCode(env.Pay(admin), staking.ContractAddress, newImpl)
+			tx, err := authDriver10.CopyCode(env.Pay(admin), contracts.StakingSmartContractAddress, newImpl)
 			require.NoError(err)
 			rr, err = env.ApplyTxs(sameEpoch, tx)
 			require.NoError(err)
 			require.Equal(1, rr.Len())
 			require.Equal(types.ReceiptStatusSuccessful, rr[0].Status)
-			got, err := env.CodeAt(nil, staking.ContractAddress, nil)
+			got, err := env.CodeAt(nil, contracts.StakingSmartContractAddress, nil)
 			require.NoError(err)
-			require.Equal(newSfcContractBinRuntime, got, "new SFC contract")
+			require.Equal(newSfcContractBinRuntime, got, "new Staking contract")
 
-			sfc10, err = sfc100.NewContract(staking.ContractAddress, env)
+			sfc10, err = sfc100.NewContract(contracts.StakingSmartContractAddress, env)
 			require.NoError(err)
 			sfcEpoch, err := sfc10.ContractCaller.CurrentEpoch(env.ReadOnly())
 			require.NoError(err)
-			require.Equal(0, sfcEpoch.Cmp(big.NewInt(3)), "current SFC epoch %s", sfcEpoch.String())
+			require.Equal(0, sfcEpoch.Cmp(big.NewInt(3)), "current Staking epoch %s", sfcEpoch.String())
 		})
 
 	t.Run("Direct driver", func(t *testing.T) {
@@ -174,7 +170,7 @@ func TestStakingContract(t *testing.T) {
 		require.Equal(types.ReceiptStatusSuccessful, rr[0].Status)
 		newImpl := rr[0].ContractAddress
 
-		tx, err := rootDriver10.CopyCode(env.Pay(admin), staking.ContractAddress, newImpl)
+		tx, err := rootDriver10.CopyCode(env.Pay(admin), contracts.StakingSmartContractAddress, newImpl)
 		require.NoError(err)
 		rr, err = env.ApplyTxs(sameEpoch, tx)
 		require.NoError(err)

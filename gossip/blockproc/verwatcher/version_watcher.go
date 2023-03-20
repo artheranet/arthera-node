@@ -2,6 +2,7 @@ package verwatcher
 
 import (
 	"fmt"
+	"github.com/artheranet/arthera-node/contracts"
 	"math/big"
 	"sync"
 	"time"
@@ -41,7 +42,7 @@ func (w *VerWarcher) Pause() error {
 }
 
 func (w *VerWarcher) OnNewLog(l *types.Log) {
-	if l.Address != driver.ContractAddress {
+	if l.Address != contracts.NodeDriverSmartContractAddress {
 		return
 	}
 	if l.Topics[0] == driver.Topics.UpdateNetworkVersion && len(l.Data) >= 32 {

@@ -2,18 +2,12 @@ package evmwriter
 
 import (
 	"bytes"
+	"github.com/artheranet/arthera-node/contracts"
 	"github.com/artheranet/arthera-node/contracts/abis"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/params"
 	"math/big"
-
-	"github.com/artheranet/arthera-node/contracts/driver"
-)
-
-var (
-	// ContractAddress is the EvmWriter pre-compiled contract address
-	ContractAddress = common.HexToAddress("0xd100ec0000000000000000000000000000000000")
 )
 
 var (
@@ -45,7 +39,7 @@ func init() {
 type PreCompiledContract struct{}
 
 func (_ PreCompiledContract) Run(stateDB vm.StateDB, _ vm.BlockContext, txCtx vm.TxContext, caller common.Address, input []byte, suppliedGas uint64) ([]byte, uint64, error) {
-	if caller != driver.ContractAddress {
+	if caller != contracts.NodeDriverSmartContractAddress {
 		return nil, 0, vm.ErrExecutionReverted
 	}
 	if len(input) < 4 {

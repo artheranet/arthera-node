@@ -1,6 +1,7 @@
 package drivermodule
 
 import (
+	"github.com/artheranet/arthera-node/contracts"
 	"github.com/artheranet/arthera-node/params"
 	"io"
 	"math"
@@ -13,7 +14,6 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 
 	"github.com/artheranet/arthera-node/contracts/driver"
-	"github.com/artheranet/arthera-node/contracts/driver/drivercall"
 	"github.com/artheranet/arthera-node/gossip/blockproc"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/inter/drivertype"
@@ -84,13 +84,13 @@ func (p *DriverTxPreTransactor) PopInternalTxs(block iblockproc.BlockCtx, bs ibl
 
 	// write cheaters
 	for _, validatorID := range bs.EpochCheaters[bs.CheatersWritten:] {
-		calldata := drivercall.DeactivateValidator(validatorID, drivertype.DoublesignBit)
-		internalTxs = append(internalTxs, buildTx(calldata, driver.ContractAddress))
+		calldata := driver.DeactivateValidator(validatorID, drivertype.DoublesignBit)
+		internalTxs = append(internalTxs, buildTx(calldata, contracts.NodeDriverSmartContractAddress))
 	}
 
 	// push data into Driver before epoch sealing
 	if sealing {
-		metrics := make([]drivercall.ValidatorEpochMetric, es.Validators.Len())
+		metrics := make([]driver.ValidatorEpochMetric, es.Validators.Len())
 		for oldValIdx := idx.Validator(0); oldValIdx < es.Validators.Len(); oldValIdx++ {
 			info := bs.ValidatorStates[oldValIdx]
 			// forgive downtime if below BlockMissedSlack
@@ -104,14 +104,14 @@ func (p *DriverTxPreTransactor) PopInternalTxs(block iblockproc.BlockCtx, bs ibl
 				prevOnlineTime := inter.MaxTimestamp(info.LastOnlineTime, es.EpochStart)
 				uptime += inter.MaxTimestamp(block.Time, prevOnlineTime) - prevOnlineTime
 			}
-			metrics[oldValIdx] = drivercall.ValidatorEpochMetric{
+			metrics[oldValIdx] = driver.ValidatorEpochMetric{
 				Missed:          missed,
 				Uptime:          uptime,
 				OriginatedTxFee: info.Originated,
 			}
 		}
-		calldata := drivercall.SealEpoch(metrics)
-		internalTxs = append(internalTxs, buildTx(calldata, driver.ContractAddress))
+		calldata := driver.SealEpoch(metrics)
+		internalTxs = append(internalTxs, buildTx(calldata, contracts.NodeDriverSmartContractAddress))
 	}
 	return internalTxs
 }
@@ -121,8 +121,8 @@ func (p *DriverTxTransactor) PopInternalTxs(_ iblockproc.BlockCtx, _ iblockproc.
 	internalTxs := make(types.Transactions, 0, 1)
 	// push data into Driver after epoch sealing
 	if sealing {
-		calldata := drivercall.SealEpochValidators(es.Validators.SortedIDs())
-		internalTxs = append(internalTxs, buildTx(calldata, driver.ContractAddress))
+		calldata := driver.SealEpochValidators(es.Validators.SortedIDs())
+		internalTxs = append(internalTxs, buildTx(calldata, contracts.NodeDriverSmartContractAddress))
 	}
 	return internalTxs
 }
@@ -161,7 +161,7 @@ func decodeDataBytes(l *types.Log) ([]byte, error) {
 }
 
 func (p *DriverTxListener) OnNewLog(l *types.Log) {
-	if l.Address != driver.ContractAddress {
+	if l.Address != contracts.NodeDriverSmartContractAddress {
 		return
 	}
 	// Track validator weight changes

@@ -6,7 +6,7 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
 	"github.com/Fantom-foundation/lachesis-base/kvdb"
 	"github.com/Fantom-foundation/lachesis-base/kvdb/memorydb"
-	"github.com/artheranet/arthera-node/contracts/driver/drivercall"
+	"github.com/artheranet/arthera-node/contracts/driver"
 	"github.com/artheranet/arthera-node/genesis"
 	"github.com/artheranet/arthera-node/genesis/genesisstore"
 	"github.com/artheranet/arthera-node/genesis/gpos"
@@ -126,7 +126,7 @@ func CreateGenesis(genesisType string) (*genesisstore.Store, hash.Hash) {
 	builder := makegenesis.NewGenesisBuilder(memorydb.NewProducer(""))
 
 	validators := make(gpos.Validators, 0, 3)
-	delegations := make([]drivercall.Delegation, 0, 3)
+	delegations := make([]driver.Delegation, 0, 3)
 
 	var initialValidators = TestnetValidators
 	var initialAccounts = TestnetAccounts
@@ -180,9 +180,9 @@ func AddValidator(
 	id uint8,
 	v GenesisValidator,
 	validators gpos.Validators,
-	delegations []drivercall.Delegation,
+	delegations []driver.Delegation,
 	builder *makegenesis.GenesisBuilder,
-) (gpos.Validators, []drivercall.Delegation) {
+) (gpos.Validators, []driver.Delegation) {
 	validatorId := idx.ValidatorID(id)
 	pk, _ := validatorpk.FromString(v.pubkey)
 	ecdsaPubkey, _ := crypto.UnmarshalPubkey(pk.Raw)
@@ -204,7 +204,7 @@ func AddValidator(
 	builder.AddBalance(validator.Address, v.balance)
 	validators = append(validators, validator)
 
-	delegations = append(delegations, drivercall.Delegation{
+	delegations = append(delegations, driver.Delegation{
 		Address:            validator.Address,
 		ValidatorID:        validator.ID,
 		Stake:              v.stake,

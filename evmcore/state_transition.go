@@ -18,7 +18,7 @@ package evmcore
 
 import (
 	"fmt"
-	"github.com/artheranet/arthera-node/contracts/registry"
+	"github.com/artheranet/arthera-node/contracts/pyag"
 	"math"
 	"math/big"
 	"runtime/debug"
@@ -310,8 +310,8 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	}
 
 	if !contractCreation {
-		// check to see if the destination address is in our contract registry
-		deployer := registry.GetDeployer(st.to(), st.state)
+		// check to see if the destination address is eligible for Pay-as-You-Go rebates
+		deployer := pyag.GetDeployer(st.to(), st.state)
 		zeroAddr := common.Address{}
 		if deployer != zeroAddr {
 			deployerGas := st.gasUsed() / 10
@@ -322,9 +322,16 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 
 	stack := fmt.Sprint(debug.Stack())
 	if !strings.Contains(stack, "DoEstimateGas") {
+		var to string
+		if contractCreation {
+			to = "nil"
+		} else {
+			to = st.msg.To().String()
+		}
+
 		log.Info("TX",
 			"From", st.msg.From().String(),
-			"To", st.msg.To().String(),
+			"To", to,
 			"Value", st.value.String(),
 			"Gas Used", st.gas)
 	}

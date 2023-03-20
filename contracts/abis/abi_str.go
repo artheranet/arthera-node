@@ -468,7 +468,7 @@ const NodeDriverStr = `[
 ]`
 
 const EVMWriterStr = `[
-{
+	{
       "inputs": [
         {
           "internalType": "address",
@@ -566,7 +566,98 @@ const EVMWriterStr = `[
 ]`
 
 const NetworkInitializerStr = `[
-{
+	{
+      "inputs": [],
+      "name": "EVM_WRITER",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "NODE_DRIVER",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "NODE_DRIVER_AUTH",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "PYAG_REBATES",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "STAKING",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "SUBSCRIBERS",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "VALIDATOR_INFO",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint256",
@@ -577,36 +668,6 @@ const NetworkInitializerStr = `[
           "internalType": "uint256",
           "name": "totalSupply",
           "type": "uint256"
-        },
-        {
-          "internalType": "address",
-          "name": "_staking",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_auth",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_driver",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_evmWriter",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_validatorInfo",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_subscriptionRegistry",
-          "type": "address"
         },
         {
           "internalType": "address",

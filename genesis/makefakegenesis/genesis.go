@@ -2,7 +2,7 @@ package makefakegenesis
 
 import (
 	"crypto/ecdsa"
-	"github.com/artheranet/arthera-node/contracts/driver/drivercall"
+	"github.com/artheranet/arthera-node/contracts/driver"
 	"github.com/artheranet/arthera-node/params"
 	"math/big"
 	"time"
@@ -40,10 +40,10 @@ func FakeGenesisStoreWithRulesAndStart(num idx.Validator, balance, stake *big.In
 	validators := GetFakeValidators(num)
 
 	// add balances to validators
-	var delegations []drivercall.Delegation
+	var delegations []driver.Delegation
 	for _, val := range validators {
 		builder.AddBalance(val.Address, balance)
-		delegations = append(delegations, drivercall.Delegation{
+		delegations = append(delegations, driver.Delegation{
 			Address:            val.Address,
 			ValidatorID:        val.ID,
 			Stake:              stake,

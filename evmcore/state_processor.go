@@ -18,7 +18,7 @@ package evmcore
 
 import (
 	"fmt"
-	"github.com/artheranet/arthera-node/contracts/registry"
+	"github.com/artheranet/arthera-node/contracts/pyag"
 	"github.com/ethereum/go-ethereum/crypto"
 	"math/big"
 
@@ -132,7 +132,7 @@ func applyTransaction(
 
 	if msg.To() == nil {
 		contractAddress = crypto.CreateAddress(evm.TxContext.Origin, tx.Nonce())
-		registry.AddDeployer(contractAddress, msg.From(), statedb)
+		pyag.AddDeployer(contractAddress, msg.From(), statedb)
 	}
 
 	// Update the state with pending changes.

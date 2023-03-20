@@ -19,17 +19,16 @@ package evmcore
 import (
 	"fmt"
 	"github.com/artheranet/arthera-node/contracts/pyag"
-	"math"
-	"math/big"
-	"runtime/debug"
-	"strings"
-
+	"github.com/artheranet/arthera-node/contracts/runner"
+	"github.com/artheranet/arthera-node/contracts/subscriber"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/params"
+	"math"
+	"math/big"
 )
 
 var emptyCodeHash = crypto.Keccak256Hash(nil)
@@ -193,7 +192,7 @@ func (st *StateTransition) to() common.Address {
 func (st *StateTransition) buyGas() error {
 	mgval := new(big.Int).SetUint64(st.msg.Gas())
 	mgval = mgval.Mul(mgval, st.gasPrice)
-	// Note: Opera doesn't need to check against gasFeeCap instead of gasPrice, as it's too aggressive in the asynchronous environment
+	// Note: we don't need to check against gasFeeCap instead of gasPrice, as it's too aggressive in the asynchronous environment
 	if have, want := st.state.GetBalance(st.msg.From()), mgval; have.Cmp(want) < 0 {
 		return fmt.Errorf("%w: address %v have %v want %v", ErrInsufficientFunds, st.msg.From().Hex(), have, want)
 	}
@@ -225,7 +224,7 @@ func (st *StateTransition) preCheck() error {
 				st.msg.From().Hex(), codeHash)
 		}
 	}
-	// Note: Opera doesn't need to check gasFeeCap >= BaseFee, because it's already checked by epochcheck
+	// Note: we don't need to check gasFeeCap >= BaseFee, because it's already checked by epochcheck
 	return st.buyGas()
 }
 
@@ -296,6 +295,14 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
 		ret, st.gas, vmerr = st.evm.Call(sender, st.to(), st.data, st.gas, st.value)
 	}
+
+	// check if the user has an active subscription
+	activeSubscriber, err := st.hasActiveSubscription()
+	if err != nil {
+		return nil, err
+	}
+	log.Trace("Active subscriber", "sender", st.msg.From().String(), "active", activeSubscriber)
+
 	// use 10% of not used gas
 	if !st.internal() {
 		st.gas -= st.gas / 10
@@ -309,7 +316,7 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 		st.refundGas(params.RefundQuotientEIP3529)
 	}
 
-	if !contractCreation {
+	if !contractCreation && !activeSubscriber {
 		// check to see if the destination address is eligible for Pay-as-You-Go rebates
 		deployer := pyag.GetDeployer(st.to(), st.state)
 		zeroAddr := common.Address{}
@@ -320,21 +327,21 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 		}
 	}
 
-	stack := fmt.Sprint(debug.Stack())
-	if !strings.Contains(stack, "DoEstimateGas") {
-		var to string
-		if contractCreation {
-			to = "nil"
-		} else {
-			to = st.msg.To().String()
-		}
-
-		log.Info("TX",
-			"From", st.msg.From().String(),
-			"To", to,
-			"Value", st.value.String(),
-			"Gas Used", st.gas)
-	}
+	//stack := fmt.Sprint(debug.Stack())
+	//if !strings.Contains(stack, "DoEstimateGas") {
+	//	var to string
+	//	if contractCreation {
+	//		to = "nil"
+	//	} else {
+	//		to = st.msg.To().String()
+	//	}
+	//
+	//	log.Info("TX",
+	//		"From", st.msg.From().String(),
+	//		"To", to,
+	//		"Value", st.value.String(),
+	//		"Gas Used", st.gas)
+	//}
 
 	return &ExecutionResult{
 		UsedGas:    st.gasUsed(),
@@ -363,4 +370,13 @@ func (st *StateTransition) refundGas(refundQuotient uint64) {
 // gasUsed returns the amount of gas used up by the state transition.
 func (st *StateTransition) gasUsed() uint64 {
 	return st.initialGas - st.gas
+}
+
+func (st *StateTransition) hasActiveSubscription() (bool, error) {
+	caller := &runner.SharedEVMRunner{EVM: st.evm}
+	activeSubscriber, err := subscriber.HasActiveSubscription(caller, st.msg.From())
+	if err != nil {
+		return false, err
+	}
+	return activeSubscriber, nil
 }

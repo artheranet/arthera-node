@@ -29,7 +29,7 @@ func (p *EVMModule) Start(block iblockproc.BlockCtx, statedb *state.StateDB, rea
 	if block.Idx != 0 {
 		prevBlockHash = reader.GetHeader(common.Hash{}, uint64(block.Idx-1)).Hash
 	}
-	return &OperaEVMProcessor{
+	return &ArtheraEVMProcessor{
 		block:         block,
 		reader:        reader,
 		statedb:       statedb,
@@ -41,7 +41,7 @@ func (p *EVMModule) Start(block iblockproc.BlockCtx, statedb *state.StateDB, rea
 	}
 }
 
-type OperaEVMProcessor struct {
+type ArtheraEVMProcessor struct {
 	block    iblockproc.BlockCtx
 	reader   evmcore.DummyChain
 	statedb  *state.StateDB
@@ -59,7 +59,7 @@ type OperaEVMProcessor struct {
 	receipts    types.Receipts
 }
 
-func (p *OperaEVMProcessor) evmBlockWith(txs types.Transactions) *evmcore.EvmBlock {
+func (p *ArtheraEVMProcessor) evmBlockWith(txs types.Transactions) *evmcore.EvmBlock {
 	baseFee := p.net.Economy.MinGasPrice
 	if !p.net.Upgrades.London {
 		baseFee = nil
@@ -79,7 +79,7 @@ func (p *OperaEVMProcessor) evmBlockWith(txs types.Transactions) *evmcore.EvmBlo
 	return evmcore.NewEvmBlock(h, txs)
 }
 
-func (p *OperaEVMProcessor) Execute(txs types.Transactions) types.Receipts {
+func (p *ArtheraEVMProcessor) Execute(txs types.Transactions) types.Receipts {
 	evmProcessor := evmcore.NewStateProcessor(p.evmCfg, p.reader)
 	txsOffset := uint(len(p.incomingTxs))
 
@@ -110,7 +110,7 @@ func (p *OperaEVMProcessor) Execute(txs types.Transactions) types.Receipts {
 	return receipts
 }
 
-func (p *OperaEVMProcessor) Finalize() (evmBlock *evmcore.EvmBlock, skippedTxs []uint32, receipts types.Receipts) {
+func (p *ArtheraEVMProcessor) Finalize() (evmBlock *evmcore.EvmBlock, skippedTxs []uint32, receipts types.Receipts) {
 	evmBlock = p.evmBlockWith(
 		// Filter skipped transactions. Receipts are filtered already
 		inter.FilterSkippedTxs(p.incomingTxs, p.skippedTxs),

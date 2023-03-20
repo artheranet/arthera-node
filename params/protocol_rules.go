@@ -159,7 +159,7 @@ func MainNetRules() ProtocolRules {
 		Epochs:    DefaultEpochsRules(),
 		Economy:   DefaultEconomyRules(),
 		Blocks: BlocksRules{
-			MaxBlockGas:             20500000,
+			MaxBlockGas:             20_500_000,
 			MaxEmptyBlockSkipPeriod: inter.Timestamp(1 * time.Minute),
 		},
 		Upgrades: Upgrades{
@@ -178,7 +178,7 @@ func TestNetRules() ProtocolRules {
 		Epochs:    DefaultEpochsRules(),
 		Economy:   DefaultEconomyRules(),
 		Blocks: BlocksRules{
-			MaxBlockGas:             20500000,
+			MaxBlockGas:             20_500_000,
 			MaxEmptyBlockSkipPeriod: inter.Timestamp(1 * time.Minute),
 		},
 		Upgrades: Upgrades{
@@ -197,7 +197,7 @@ func FakeNetRules() ProtocolRules {
 		Epochs:    FakeNetEpochsRules(),
 		Economy:   FakeEconomyRules(),
 		Blocks: BlocksRules{
-			MaxBlockGas:             20500000,
+			MaxBlockGas:             20_500_000,
 			MaxEmptyBlockSkipPeriod: inter.Timestamp(3 * time.Second),
 		},
 		Upgrades: Upgrades{
@@ -213,7 +213,7 @@ func DefaultEconomyRules() EconomyRules {
 	return EconomyRules{
 		BlockMissedSlack: 50,
 		Gas:              DefaultGasRules(),
-		MinGasPrice:      big.NewInt(1e9),
+		MinGasPrice:      big.NewInt(1e9), // 1 gwei
 		ShortGasPower:    DefaultShortGasPowerRules(),
 		LongGasPower:     DefaulLongGasPowerRules(),
 	}

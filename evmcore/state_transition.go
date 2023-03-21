@@ -117,6 +117,14 @@ func (result *ExecutionResult) Revert() []byte {
 }
 
 // IntrinsicGas computes the 'intrinsic gas' for a message with the given data.
+// it does not compute the actual gas consumed by executing the actual transaction
+/*
+intrinsic gas = minimum gas per tx type (TxGasContractCreation or TxGas)
+					+ non-zero bytes txdata * TxDataNonZeroGasEIP2028
+					+ zero-bytes txdata  * TxDataZeroGas
+					+ len(access list) * TxAccessListAddressGas
+					+ len(access list storage key) * TxAccessListStorageKeyGas
+*/
 func IntrinsicGas(data []byte, accessList types.AccessList, isContractCreation bool) (uint64, error) {
 	// Set the starting gas for the raw transaction
 	var gas uint64
@@ -189,7 +197,7 @@ func (st *StateTransition) to() common.Address {
 	return *st.msg.To()
 }
 
-func (st *StateTransition) buyGas() error {
+func (st *StateTransition) buyGas(activeSubscriber bool) error {
 	mgval := new(big.Int).SetUint64(st.msg.Gas())
 	mgval = mgval.Mul(mgval, st.gasPrice)
 	// Note: we don't need to check against gasFeeCap instead of gasPrice, as it's too aggressive in the asynchronous environment
@@ -202,11 +210,24 @@ func (st *StateTransition) buyGas() error {
 	st.gas += st.msg.Gas()
 
 	st.initialGas = st.msg.Gas()
-	st.state.SubBalance(st.msg.From(), mgval)
+	st.debitGas(activeSubscriber, mgval)
+
 	return nil
 }
 
-func (st *StateTransition) preCheck() error {
+func (st *StateTransition) debitGas(activeSubscriber bool, value *big.Int) {
+	if activeSubscriber {
+		// reduce the subscription balance
+		remaining := st.reduceBalance(value)
+		// Pay-as-You-Go remaining gas units if subscription does not have enough
+		st.state.SubBalance(st.msg.From(), remaining)
+	} else {
+		// For Pay-as-You-Go the sender always pays for gas
+		st.state.SubBalance(st.msg.From(), value)
+	}
+}
+
+func (st *StateTransition) preCheck(activeSubscriber bool) error {
 	// Only check transactions that are not fake
 	if !st.msg.IsFake() {
 		// Make sure this transaction's nonce is correct.
@@ -225,7 +246,7 @@ func (st *StateTransition) preCheck() error {
 		}
 	}
 	// Note: we don't need to check gasFeeCap >= BaseFee, because it's already checked by epochcheck
-	return st.buyGas()
+	return st.buyGas(activeSubscriber)
 }
 
 func (st *StateTransition) internal() bool {
@@ -259,8 +280,12 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	// Note: insufficient balance for **topmost** call isn't a consensus error in Opera, unlike Ethereum
 	// Such transaction will revert and consume sender's gas
 
+	// check if the user has an active subscription
+	activeSubscriber := st.hasActiveSubscription()
+	log.Trace("Active subscriber", "sender", st.msg.From().String(), "active", activeSubscriber)
+
 	// Check clauses 1-3, buy gas if everything is correct
-	if err := st.preCheck(); err != nil {
+	if err := st.preCheck(activeSubscriber); err != nil {
 		return nil, err
 	}
 	msg := st.msg
@@ -295,13 +320,6 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
 		ret, st.gas, vmerr = st.evm.Call(sender, st.to(), st.data, st.gas, st.value)
 	}
-
-	// check if the user has an active subscription
-	activeSubscriber, err := st.hasActiveSubscription()
-	if err != nil {
-		return nil, err
-	}
-	log.Trace("Active subscriber", "sender", st.msg.From().String(), "active", activeSubscriber)
 
 	// use 10% of not used gas
 	if !st.internal() {
@@ -372,11 +390,22 @@ func (st *StateTransition) gasUsed() uint64 {
 	return st.initialGas - st.gas
 }
 
-func (st *StateTransition) hasActiveSubscription() (bool, error) {
+func (st *StateTransition) hasActiveSubscription() bool {
 	caller := &runner.SharedEVMRunner{EVM: st.evm}
 	activeSubscriber, err := subscriber.HasActiveSubscription(caller, st.msg.From())
 	if err != nil {
-		return false, err
+		log.Error("Smart-contract call Subscribers::hasActiveSubscription() failed")
+		activeSubscriber = false
 	}
-	return activeSubscriber, nil
+	return activeSubscriber
+}
+
+func (st *StateTransition) reduceBalance(units *big.Int) *big.Int {
+	caller := &runner.SharedEVMRunner{EVM: st.evm}
+	result, err := subscriber.ReduceBalance(caller, st.msg.From(), units)
+	if err != nil {
+		log.Error("Smart-contract call Subscribers::reduceBalance() failed")
+		return units
+	}
+	return result
 }

@@ -683,7 +683,7 @@ const NetworkInitializerStr = `[
 ]`
 
 const SubscribersStr = `[
-{
+	{
       "anonymous": false,
       "inputs": [
         {

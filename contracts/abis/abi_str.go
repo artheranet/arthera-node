@@ -736,6 +736,11 @@ const SubscribersStr = `[
           "internalType": "uint256",
           "name": "usdPrice",
           "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "dapp",
+          "type": "bool"
         }
       ],
       "name": "createPlan",
@@ -772,6 +777,11 @@ const SubscribersStr = `[
           "internalType": "uint256",
           "name": "price",
           "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "dapp",
+          "type": "bool"
         }
       ],
       "stateMutability": "view",
@@ -923,12 +933,30 @@ const SubscribersStr = `[
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "dapp",
+          "type": "address"
+        },
+        {
           "internalType": "uint256",
           "name": "planId",
           "type": "uint256"
         }
       ],
-      "name": "subscribeToPlan",
+      "name": "subscribeToDappPlan",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "planId",
+          "type": "uint256"
+        }
+      ],
+      "name": "subscribeToUserPlan",
       "outputs": [],
       "stateMutability": "payable",
       "type": "function"

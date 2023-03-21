@@ -53,15 +53,18 @@ The state transitioning model does all the necessary work to work out a valid ne
 6) Derive new state root
 */
 type StateTransition struct {
-	gp         *GasPool
-	msg        Message
-	gas        uint64
-	gasPrice   *big.Int
-	initialGas uint64
-	value      *big.Int
-	data       []byte
-	state      vm.StateDB
-	evm        *vm.EVM
+	gp               *GasPool
+	msg              Message
+	gas              uint64
+	senderSpentGas   uint64
+	receiverSpentGas uint64
+	pyagSpentGas     uint64
+	gasPrice         *big.Int
+	initialGas       uint64
+	value            *big.Int
+	data             []byte
+	state            vm.StateDB
+	evm              *vm.EVM
 }
 
 // Message represents a message sent to a contract.
@@ -211,53 +214,80 @@ func (st *StateTransition) to() common.Address {
 	return *st.msg.To()
 }
 
-func (st *StateTransition) buyGas(sub *subscriber.Subscription) error {
-	gasUnits := new(big.Int).SetUint64(st.msg.Gas())
-	pyagGasValue := gasUnits.Mul(gasUnits, st.gasPrice)
-	activeSubscription := st.hasActiveSubscription(sub)
+func (st *StateTransition) buyGas(senderSub *subscriber.Subscription, receiverSub *subscriber.Subscription) error {
+	pyagGasUnits := new(big.Int).SetUint64(st.msg.Gas())
 
-	if activeSubscription {
-		if sub.Balance.Cmp(gasUnits) < 0 {
-			// the subscription balance is not enough
-			// the overflowed value needs to be covered from Pay-as-You-Go
-			pyagGasUnits := gasUnits.Sub(gasUnits, sub.Balance)
-			pyagGasValue = pyagGasUnits.Mul(pyagGasUnits, st.gasPrice)
+	// first check to see if the target is a smart contract and if it can pay for all gas units
+	// from its subscription
+	if receiverSub != nil && st.hasActiveSubscription(receiverSub) {
+		// the target is a smart contract with an active subscription
+		if receiverSub.Balance.Cmp(pyagGasUnits) < 0 {
+			// receiver's subscription balance is not enough
+			// the overflowed value needs to be covered from the sender
+			pyagGasUnits = pyagGasUnits.Sub(pyagGasUnits, receiverSub.Balance)
 		} else {
-			// the subscription has enough balance to cover the gas
-			pyagGasValue = big.NewInt(0)
+			// the subscription has enough balance to cover the gas, nothing left to pay
+			pyagGasUnits = big.NewInt(0)
 		}
 	}
 
+	// if there are still gas units to pe paid, check to see if they can be paid
+	// from the sender's subscription
+	if pyagGasUnits.Cmp(big.NewInt(0)) > 0 && st.hasActiveSubscription(senderSub) {
+		if senderSub.Balance.Cmp(pyagGasUnits) < 0 {
+			// the subscription balance is not enough
+			// the overflowed value needs to be covered from Pay-as-You-Go
+			pyagGasUnits = pyagGasUnits.Sub(pyagGasUnits, senderSub.Balance)
+		} else {
+			// the subscription has enough balance to cover the gas, nothing left to pay
+			pyagGasUnits = big.NewInt(0)
+		}
+	}
+
+	// at this point, gas units were deducted from existing subscriptions
+	// check if there's anything else to pay
+	pyagGasValue := pyagGasUnits.Mul(pyagGasUnits, st.gasPrice)
+
+	// and check if the sender has enough balance
 	// Note: we don't need to check against gasFeeCap instead of gasPrice, as it's too aggressive in the asynchronous environment
 	if have, want := st.state.GetBalance(st.msg.From()), pyagGasValue; have.Cmp(want) < 0 {
 		return fmt.Errorf("%w: address %v have %v want %v", ErrInsufficientFunds, st.msg.From().Hex(), have, want)
 	}
 
+	// deduct the gas from the block gas counter
 	if err := st.gp.SubGas(st.msg.Gas()); err != nil {
 		return err
 	}
+
+	// set the initial gas specified in the message
+	// everyone down the road will consume gas from st.gas
 	st.gas += st.msg.Gas()
 
+	// copy it to st.initialGas to keep the initial gas value specified in the message
 	st.initialGas = st.msg.Gas()
 
-	// debit the gas
-	if activeSubscription {
-		// reduce the subscription balance and if the subscription balance is not enough
-		// the subscriber needs to conver pyagGasUnits from Pay-as-You-Go
-		log.Info("Reducing subscription balance", "units", st.msg.Gas())
-		pyagGasUnits := st.reduceBalance(new(big.Int).SetUint64(st.msg.Gas()))
-		if pyagGasUnits.Cmp(big.NewInt(0)) > 0 {
-			log.Info("Subscription does not have enough balance", "overflow", pyagGasUnits.Uint64())
-		}
-		pyagGasValue = pyagGasUnits.Mul(pyagGasUnits, st.gasPrice)
+	// debit the gas, redo the same logic as above
+	pyagGasUnits = new(big.Int).SetUint64(st.msg.Gas())
+	if receiverSub != nil && st.hasActiveSubscription(receiverSub) {
+		// receiver pays from his subscription the entire cost
+		pyagGasUnits = st.reduceBalance(*st.msg.To(), new(big.Int).SetUint64(st.msg.Gas()))
+		st.receiverSpentGas = st.msg.Gas() - pyagGasUnits.Uint64()
+	}
+	if pyagGasUnits.Cmp(big.NewInt(0)) > 0 && st.hasActiveSubscription(senderSub) {
+		// sender pays the rest from his subscription
+		pyagGasUnits = st.reduceBalance(st.msg.From(), new(big.Int).SetUint64(st.msg.Gas()))
+		st.senderSpentGas = st.msg.Gas() - pyagGasUnits.Uint64()
 	}
 
+	// if there's anything else to pay not covered by subscriptions, do a standard (Pay-as-You-Go) payment
+	pyagGasValue = pyagGasUnits.Mul(pyagGasUnits, st.gasPrice)
+	st.pyagSpentGas = pyagGasUnits.Uint64()
 	st.state.SubBalance(st.msg.From(), pyagGasValue)
 
 	return nil
 }
 
-func (st *StateTransition) preCheck(sub *subscriber.Subscription) error {
+func (st *StateTransition) preCheck(senderSub *subscriber.Subscription, receiverSub *subscriber.Subscription) error {
 	// Only check transactions that are not fake
 	if !st.msg.IsFake() {
 		// Make sure this transaction's nonce is correct.
@@ -276,7 +306,7 @@ func (st *StateTransition) preCheck(sub *subscriber.Subscription) error {
 		}
 	}
 	// Note: we don't need to check gasFeeCap >= BaseFee, because it's already checked by epochcheck
-	return st.buyGas(sub)
+	return st.buyGas(senderSub, receiverSub)
 }
 
 func (st *StateTransition) internal() bool {
@@ -310,18 +340,22 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	// Note: insufficient balance for **topmost** call isn't a consensus error in Opera, unlike Ethereum
 	// Such transaction will revert and consume sender's gas
 
-	log.Info("TransitionDB", "st.msg.Gas()", st.msg.Gas(), "st.msg.GasPrice()", st.msg.GasPrice())
-
-	// check if the user has an active subscription
-	subscription := st.getSubscription()
-
-	// Check clauses 1-3, buy gas if everything is correct
-	if err := st.preCheck(subscription); err != nil {
-		return nil, err
-	}
 	msg := st.msg
 	sender := vm.AccountRef(msg.From())
 	contractCreation := msg.To() == nil
+
+	// check if the user has an active subscription
+	senderSubscription := st.getSubscription(st.msg.From())
+	var receiverSubscription *subscriber.Subscription = nil
+	if !contractCreation && st.state.GetCodeSize(*st.msg.To()) > 0 {
+		// receiver is a smart contract, retrieve its subscription
+		receiverSubscription = st.getSubscription(*st.msg.To())
+	}
+
+	// Check clauses 1-3, buy gas if everything is correct
+	if err := st.preCheck(senderSubscription, receiverSubscription); err != nil {
+		return nil, err
+	}
 
 	london := st.evm.ChainConfig().IsLondon(st.evm.Context.BlockNumber)
 
@@ -333,6 +367,8 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	if st.gas < gas {
 		return nil, fmt.Errorf("%w: have %d, want %d", ErrIntrinsicGas, st.gas, gas)
 	}
+
+	// deduct the intrinsic gas
 	st.gas -= gas
 
 	// Set up the initial access list.
@@ -345,14 +381,22 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 		vmerr error // vm errors do not effect consensus and are therefore not assigned to err
 	)
 	if contractCreation {
+		// deduct Create gas
 		ret, _, st.gas, vmerr = st.evm.Create(sender, st.data, st.gas, st.value)
 	} else {
 		// Increment the nonce for the next transaction
 		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
+		// deduct Call gas
 		ret, st.gas, vmerr = st.evm.Call(sender, st.to(), st.data, st.gas, st.value)
 	}
 
-	// use 10% of not used gas
+	// 10% of unspent gas gets spent as a disincentive to militate against excessive transaction gas limits
+	// The disincentive is required because Fantom is leaderless decentralized aBFT and blocks are not known in advance
+	// to a validator (unlike Ethereum miner) until blocks are created from confirmed events.
+	// There is no single proposer who originated transactions for a block and so validator doesn't know in advance
+	// how much gas will be spent by a transaction, this is different from Ethereum and so adjustments were made
+	// to address this issue. The penalty (10% charge of unspent gas) is introduced to avoid many of such cases.
+	// https://github.com/Fantom-foundation/go-opera/wiki/EVM
 	if !st.internal() {
 		st.gas -= st.gas / 10
 	}
@@ -365,7 +409,8 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 		st.refundGas(params.RefundQuotientEIP3529)
 	}
 
-	if !contractCreation && !st.hasActiveSubscription(subscription) {
+	// Pay-as-You-Go rebates
+	if !contractCreation && !st.hasActiveSubscription(senderSubscription) && !st.hasActiveSubscription(receiverSubscription) {
 		// check to see if the destination address is eligible for Pay-as-You-Go rebates
 		deployer := pyag.GetDeployer(st.to(), st.state)
 		zeroAddr := common.Address{}
@@ -383,6 +428,8 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	}, nil
 }
 
+// Returns the remaining gas, plus a refund to the sender, because the initial gas that was provided
+// to the transaction might be bigger than was actually consumed
 func (st *StateTransition) refundGas(refundQuotient uint64) {
 	// Apply refund counter, capped to a refund quotient
 	refund := st.gasUsed() / refundQuotient
@@ -390,6 +437,9 @@ func (st *StateTransition) refundGas(refundQuotient uint64) {
 		refund = st.state.GetRefund()
 	}
 	st.gas += refund
+
+	// we have some gas to send back, distribute it according to a formula
+	// receiverSub, senderSub, sender
 
 	// Return wei for remaining gas, exchanged at the original rate.
 	remaining := new(big.Int).Mul(new(big.Int).SetUint64(st.gas), st.gasPrice)
@@ -405,12 +455,12 @@ func (st *StateTransition) gasUsed() uint64 {
 	return st.initialGas - st.gas
 }
 
-func (st *StateTransition) reduceBalance(units *big.Int) *big.Int {
+func (st *StateTransition) reduceBalance(target common.Address, units *big.Int) *big.Int {
 	if units.BitLen() == 0 {
 		return big.NewInt(0)
 	}
 	caller := &runner.SharedEVMRunner{EVM: st.evm}
-	result, err := subscriber.ReduceBalance(caller, st.msg.From(), units)
+	result, err := subscriber.ReduceBalance(caller, target, units)
 	if err != nil {
 		log.Error("Smart-contract call Subscribers::reduceBalance() failed")
 		return units
@@ -418,9 +468,9 @@ func (st *StateTransition) reduceBalance(units *big.Int) *big.Int {
 	return result
 }
 
-func (st *StateTransition) getSubscription() *subscriber.Subscription {
+func (st *StateTransition) getSubscription(address common.Address) *subscriber.Subscription {
 	caller := &runner.SharedEVMRunner{EVM: st.evm}
-	sub, err := subscriber.GetSubscription(caller, st.msg.From())
+	sub, err := subscriber.GetSubscription(caller, address)
 	if err != nil {
 		log.Error("Smart-contract call Subscribers::getSubscription() failed")
 		sub = nil
@@ -429,6 +479,10 @@ func (st *StateTransition) getSubscription() *subscriber.Subscription {
 }
 
 func (st *StateTransition) hasActiveSubscription(sub *subscriber.Subscription) bool {
+	if sub == nil {
+		return false
+	}
+
 	// if the gas price is zero, this is from eth_call or eth_estimateGas,
 	// so subscriptions are not applied
 	return st.msg.GasPrice().Cmp(big.NewInt(0)) > 0 &&

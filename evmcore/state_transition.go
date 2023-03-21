@@ -376,22 +376,6 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 		}
 	}
 
-	//stack := fmt.Sprint(debug.Stack())
-	//if !strings.Contains(stack, "DoEstimateGas") {
-	//	var to string
-	//	if contractCreation {
-	//		to = "nil"
-	//	} else {
-	//		to = st.msg.To().String()
-	//	}
-	//
-	//	log.Info("TX",
-	//		"From", st.msg.From().String(),
-	//		"To", to,
-	//		"Value", st.value.String(),
-	//		"Gas Used", st.gas)
-	//}
-
 	return &ExecutionResult{
 		UsedGas:    st.gasUsed(),
 		Err:        vmerr,
@@ -420,16 +404,6 @@ func (st *StateTransition) refundGas(refundQuotient uint64) {
 func (st *StateTransition) gasUsed() uint64 {
 	return st.initialGas - st.gas
 }
-
-//func (st *StateTransition) hasActiveSubscription() bool {
-//	caller := &runner.SharedEVMRunner{EVM: st.evm}
-//	activeSubscriber, err := subscriber.HasActiveSubscription(caller, st.msg.From())
-//	if err != nil {
-//		log.Error("Smart-contract call Subscribers::hasActiveSubscription() failed")
-//		activeSubscriber = false
-//	}
-//	return activeSubscriber
-//}
 
 func (st *StateTransition) reduceBalance(units *big.Int) *big.Int {
 	if units.BitLen() == 0 {

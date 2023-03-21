@@ -6,4 +6,5 @@ var (
 
 	MaxGasForHasActiveSubscription = 500 * thousand
 	MaxGasForReduceBalance         = 1 * million
+	MaxGasForGetSub                = 500 * thousand
 )

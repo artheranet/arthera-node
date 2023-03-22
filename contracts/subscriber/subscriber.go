@@ -48,17 +48,16 @@ func DebitSubscription(evmRunner runner.EVMRunner, subscriber common.Address, un
 	return result, nil
 }
 
-func CreditSubscription(evmRunner runner.EVMRunner, subscriber common.Address, units *big.Int) (*big.Int, error) {
-	var result *big.Int
+func CreditSubscription(evmRunner runner.EVMRunner, subscriber common.Address, units *big.Int) error {
 	if subscriber == contracts.ZeroAddress {
-		return units, nil
+		return nil
 	}
-	err := creditSubscription.Execute(evmRunner, &result, big.NewInt(0), subscriber, units)
+	err := creditSubscription.Execute(evmRunner, nil, big.NewInt(0), subscriber, units)
 	if err != nil {
-		return big.NewInt(0), err
+		return err
 	}
 
-	return result, nil
+	return nil
 }
 
 func GetSubscription(evmRunner runner.EVMRunner, subscriber common.Address) (*Subscription, error) {

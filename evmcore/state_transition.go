@@ -441,16 +441,12 @@ func (st *StateTransition) refundGas(refundQuotient uint64) {
 	if st.to() != contracts.ZeroAddress {
 		receiverGasRefund := st.gas * st.receiverSpentGas / st.initialGas
 		receiverRefund := new(big.Int).Mul(new(big.Int).SetUint64(receiverGasRefund), st.gasPrice)
-		if receiverRefund.BitLen() > 0 {
-			st.creditSubscription(st.to(), receiverRefund)
-		}
+		st.creditSubscription(st.to(), receiverRefund)
 	}
 
 	senderGasRefund := st.gas * st.senderSpentGas / st.initialGas
 	senderRefund := new(big.Int).Mul(new(big.Int).SetUint64(senderGasRefund), st.gasPrice)
-	if senderRefund.BitLen() > 0 {
-		st.creditSubscription(st.msg.From(), senderRefund)
-	}
+	st.creditSubscription(st.msg.From(), senderRefund)
 
 	pyagGasRefund := st.gas * st.pyagSpentGas / st.initialGas
 	pyagRefund := new(big.Int).Mul(new(big.Int).SetUint64(pyagGasRefund), st.gasPrice)
@@ -479,17 +475,15 @@ func (st *StateTransition) debitSubscription(target common.Address, units *big.I
 	return result
 }
 
-func (st *StateTransition) creditSubscription(target common.Address, units *big.Int) *big.Int {
+func (st *StateTransition) creditSubscription(target common.Address, units *big.Int) {
 	if units.BitLen() == 0 {
-		return big.NewInt(0)
+		return
 	}
 	caller := &runner.SharedEVMRunner{EVM: st.evm}
-	result, err := subscriber.CreditSubscription(caller, target, units)
+	err := subscriber.CreditSubscription(caller, target, units)
 	if err != nil {
 		log.Error("Smart-contract call Subscribers::creditSubscription() failed")
-		return units
 	}
-	return result
 }
 
 func (st *StateTransition) getSubscription(address common.Address) *subscriber.Subscription {

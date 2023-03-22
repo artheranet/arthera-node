@@ -58,7 +58,7 @@ func (ks Keystore) ReadKey(wantPubkey validatorpk.PubKey, filename, auth string)
 	keySecp256k1 := key.Decoded.(*ecdsa.PrivateKey)
 	gotPubkey := crypto.FromECDSAPub(&keySecp256k1.PublicKey)
 	if bytes.Compare(wantPubkey.Raw, gotPubkey) != 0 {
-		return nil, fmt.Errorf("key content mismatch: have public key %X, want %X", gotPubkey, wantPubkey.Raw)
+		return nil, fmt.Errorf("key content mismatch: have public key %X from file %s, want %X", gotPubkey, filename, wantPubkey.Raw)
 	}
 	return key, nil
 }

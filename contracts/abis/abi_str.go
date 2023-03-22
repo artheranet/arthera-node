@@ -738,6 +738,16 @@ const SubscribersStr = `[
           "type": "uint256"
         },
         {
+          "internalType": "enum SubscriptionPlan.CapFrequency",
+          "name": "capFrequency",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "capUnits",
+          "type": "uint256"
+        },
+        {
           "internalType": "bool",
           "name": "dapp",
           "type": "bool"
@@ -746,6 +756,124 @@ const SubscribersStr = `[
       "name": "createPlan",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "subscriber",
+          "type": "address"
+        },
+        {
+          "internalType": "uint56",
+          "name": "units",
+          "type": "uint56"
+        }
+      ],
+      "name": "credit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "subscriber",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "units",
+          "type": "uint256"
+        }
+      ],
+      "name": "debit",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "subscriber",
+          "type": "address"
+        }
+      ],
+      "name": "getBalance",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "subscriber",
+          "type": "address"
+        }
+      ],
+      "name": "getCapRemaining",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "subscriber",
+          "type": "address"
+        }
+      ],
+      "name": "getCapWindow",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "subscriber",
+          "type": "address"
+        }
+      ],
+      "name": "getEndTime",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -779,9 +907,38 @@ const SubscribersStr = `[
           "type": "uint256"
         },
         {
+          "internalType": "enum SubscriptionPlan.CapFrequency",
+          "name": "capFrequency",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "capUnits",
+          "type": "uint256"
+        },
+        {
           "internalType": "bool",
           "name": "dapp",
           "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "subscriber",
+          "type": "address"
+        }
+      ],
+      "name": "getStartTime",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -816,6 +973,16 @@ const SubscribersStr = `[
           "internalType": "uint256",
           "name": "endTime",
           "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lastCapReset",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "periodUsage",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -830,6 +997,25 @@ const SubscribersStr = `[
         }
       ],
       "name": "hasActiveSubscription",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "subscriber",
+          "type": "address"
+        }
+      ],
+      "name": "hasSubscription",
       "outputs": [
         {
           "internalType": "bool",
@@ -877,30 +1063,6 @@ const SubscribersStr = `[
         }
       ],
       "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "subscriber",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "units",
-          "type": "uint256"
-        }
-      ],
-      "name": "reduceBalance",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -994,6 +1156,16 @@ const SubscribersStr = `[
         {
           "internalType": "uint256",
           "name": "usdPrice",
+          "type": "uint256"
+        },
+        {
+          "internalType": "enum SubscriptionPlan.CapFrequency",
+          "name": "capFrequency",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "capUnits",
           "type": "uint256"
         }
       ],

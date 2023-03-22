@@ -22,6 +22,7 @@ import (
 	"github.com/artheranet/arthera-node/contracts/pyag"
 	"github.com/artheranet/arthera-node/contracts/runner"
 	"github.com/artheranet/arthera-node/contracts/subscriber"
+	"github.com/artheranet/arthera-node/inter"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
@@ -218,31 +219,47 @@ func (st *StateTransition) to() common.Address {
 func (st *StateTransition) buyGas(senderSub *subscriber.Subscription, receiverSub *subscriber.Subscription) error {
 	pyagGasUnits := new(big.Int).SetUint64(st.msg.Gas())
 
-	// first check to see if the target is a dapp and it can pay for all gas units from its subscription
-	if receiverSub != nil {
-		if st.hasActiveSubscription(receiverSub) {
-			// if the dapp has an active subscription, pay gas from its balance
-			if receiverSub.Balance.Cmp(pyagGasUnits) < 0 {
-				// receiver's subscription balance is not enough
-				// the overflowed value needs to be covered from the sender
-				pyagGasUnits = pyagGasUnits.Sub(pyagGasUnits, receiverSub.Balance)
-			} else {
-				// the subscription has enough balance to cover the gas, nothing left to pay
-				pyagGasUnits = big.NewInt(0)
+	if st.gasPrice.BitLen() > 0 {
+		log.Trace("Buying gas", "units", pyagGasUnits)
+	}
+
+	if st.gasPrice.BitLen() > 0 {
+		// first check to see if the target is a dapp and it can pay for all gas units from its subscription
+		if receiverSub != nil {
+			if st.hasActiveSubscription(receiverSub) {
+				log.Trace("Receiver has an active subscription")
+				// if the dapp has an active subscription, pay gas from its balance
+				if receiverSub.Balance.Cmp(pyagGasUnits) < 0 {
+					// receiver's subscription balance is not enough
+					// the overflowed value needs to be covered from the sender
+					pyagGasUnits = pyagGasUnits.Sub(pyagGasUnits, receiverSub.Balance)
+					log.Trace("Receiver's subscription balance overflows", "balance", senderSub.Balance, "overflow", pyagGasUnits)
+				} else {
+					// the subscription has enough balance to cover the gas, nothing left to pay
+					pyagGasUnits = big.NewInt(0)
+					log.Trace("Receiver's subscription balance is enough", "balance", senderSub.Balance)
+				}
+			}
+		} else {
+			// the dapp does not have a subscription, take fees from the user's subscription
+			if st.hasActiveSubscription(senderSub) {
+				log.Trace("Sender has an active subscription")
+				if senderSub.Balance.Cmp(pyagGasUnits) < 0 {
+					// the subscription balance is not enough
+					// the overflowed value needs to be covered from Pay-as-You-Go
+					pyagGasUnits = pyagGasUnits.Sub(pyagGasUnits, senderSub.Balance)
+					log.Trace("Sender's subscription balance overflows", "balance", senderSub.Balance, "overflow", pyagGasUnits)
+				} else {
+					// the subscription has enough balance to cover the gas, nothing left to pay
+					pyagGasUnits = big.NewInt(0)
+					log.Trace("Sender's subscription balance is enough", "balance", senderSub.Balance)
+				}
 			}
 		}
-	} else {
-		// the dapp does not have a subscription, take fees from the user's subscription
-		if st.hasActiveSubscription(senderSub) {
-			if senderSub.Balance.Cmp(pyagGasUnits) < 0 {
-				// the subscription balance is not enough
-				// the overflowed value needs to be covered from Pay-as-You-Go
-				pyagGasUnits = pyagGasUnits.Sub(pyagGasUnits, senderSub.Balance)
-			} else {
-				// the subscription has enough balance to cover the gas, nothing left to pay
-				pyagGasUnits = big.NewInt(0)
-			}
-		}
+	}
+
+	if st.gasPrice.BitLen() > 0 {
+		log.Trace("Pay-as-You-Go required balance", "units", pyagGasUnits)
 	}
 
 	// at this point, gas units were deducted from existing subscriptions
@@ -269,17 +286,31 @@ func (st *StateTransition) buyGas(senderSub *subscriber.Subscription, receiverSu
 
 	// debit the gas, redo the same logic as above
 	pyagGasUnits = new(big.Int).SetUint64(st.msg.Gas())
-	if receiverSub != nil && st.hasActiveSubscription(receiverSub) {
-		// receiver pays from his subscription the entire cost
-		pyagGasUnits = st.debitSubscription(*st.msg.To(), new(big.Int).SetUint64(st.msg.Gas()))
-		st.receiverSpentGas = st.msg.Gas() - pyagGasUnits.Uint64()
-	} else if st.hasActiveSubscription(senderSub) {
-		// sender pays the rest from his subscription
-		pyagGasUnits = st.debitSubscription(st.msg.From(), new(big.Int).SetUint64(st.msg.Gas()))
-		st.senderSpentGas = st.msg.Gas() - pyagGasUnits.Uint64()
+
+	if st.gasPrice.BitLen() > 0 {
+		if receiverSub != nil && st.hasActiveSubscription(receiverSub) {
+			// receiver pays from his subscription the entire cost
+			capWindow := st.getCapWindow(*st.msg.To())
+			capRemaining := st.getCapRemaining(*st.msg.To())
+			log.Trace("Receiver caps", "window", capWindow.Time().String(), "remaining", capRemaining)
+			log.Trace("Debit from receiver's subscription", "units", pyagGasUnits)
+			pyagGasUnits = st.debitSubscription(*st.msg.To(), pyagGasUnits)
+			st.receiverSpentGas = st.msg.Gas() - pyagGasUnits.Uint64()
+		} else if st.hasActiveSubscription(senderSub) {
+			// sender pays the rest from his subscription
+			capWindow := st.getCapWindow(st.msg.From())
+			capRemaining := st.getCapRemaining(st.msg.From())
+			log.Trace("Sender caps", "window", capWindow.Time().String(), "remaining", capRemaining)
+			log.Trace("Debit from sender's subscription", "units", pyagGasUnits)
+			pyagGasUnits = st.debitSubscription(st.msg.From(), pyagGasUnits)
+			st.senderSpentGas = st.msg.Gas() - pyagGasUnits.Uint64()
+		}
 	}
 
 	// if there's anything else to pay not covered by subscriptions, do a standard (Pay-as-You-Go) payment
+	if st.gasPrice.BitLen() > 0 {
+		log.Trace("Debit from Pay-as-You-Go", "units", pyagGasUnits)
+	}
 	pyagGasValue = pyagGasUnits.Mul(pyagGasUnits, st.gasPrice)
 	st.pyagSpentGas = pyagGasUnits.Uint64()
 	st.state.SubBalance(st.msg.From(), pyagGasValue)
@@ -437,20 +468,26 @@ func (st *StateTransition) refundGas(refundQuotient uint64) {
 	}
 	st.gas += refund
 
-	// we have st.gas units to send back proportionally, exchanged at the original rate.
-	if st.to() != contracts.ZeroAddress {
-		receiverGasRefund := st.gas * st.receiverSpentGas / st.initialGas
-		receiverRefund := new(big.Int).Mul(new(big.Int).SetUint64(receiverGasRefund), st.gasPrice)
-		st.creditSubscription(st.to(), receiverRefund)
+	if st.gasPrice.BitLen() > 0 {
+		// we have st.gas units to send back proportionally, exchanged at the original rate.
+		if st.to() != contracts.ZeroAddress {
+			receiverGasRefund := st.gas * st.receiverSpentGas / st.initialGas
+			log.Trace("Credit receiver subscription", "refund (units)", receiverGasRefund)
+			st.creditSubscription(st.to(), new(big.Int).SetUint64(receiverGasRefund))
+		}
+
+		senderGasRefund := st.gas * st.senderSpentGas / st.initialGas
+		log.Trace("Credit sender subscription", "refund (units)", senderGasRefund)
+		st.creditSubscription(st.msg.From(), new(big.Int).SetUint64(senderGasRefund))
+
+		pyagGasRefund := st.gas * st.pyagSpentGas / st.initialGas
+		pyagRefund := new(big.Int).Mul(new(big.Int).SetUint64(pyagGasRefund), st.gasPrice)
+		log.Trace("Credit PYAG", "refund (wei)", pyagRefund)
+		st.state.AddBalance(st.msg.From(), pyagRefund)
+	} else {
+		remaining := new(big.Int).Mul(new(big.Int).SetUint64(st.gas), st.gasPrice)
+		st.state.AddBalance(st.msg.From(), remaining)
 	}
-
-	senderGasRefund := st.gas * st.senderSpentGas / st.initialGas
-	senderRefund := new(big.Int).Mul(new(big.Int).SetUint64(senderGasRefund), st.gasPrice)
-	st.creditSubscription(st.msg.From(), senderRefund)
-
-	pyagGasRefund := st.gas * st.pyagSpentGas / st.initialGas
-	pyagRefund := new(big.Int).Mul(new(big.Int).SetUint64(pyagGasRefund), st.gasPrice)
-	st.state.AddBalance(st.msg.From(), pyagRefund)
 
 	// Also return remaining gas to the block gas counter so it is
 	// available for the next transaction.
@@ -496,6 +533,26 @@ func (st *StateTransition) getSubscription(address common.Address) *subscriber.S
 	return sub
 }
 
+func (st *StateTransition) getCapWindow(address common.Address) inter.Timestamp {
+	caller := &runner.SharedEVMRunner{EVM: st.evm}
+	ts, err := subscriber.GetCapWindow(caller, address)
+	if err != nil {
+		log.Error("Smart-contract call Subscribers::getCapWindow() failed")
+		ts = inter.FromUnix(0)
+	}
+	return ts
+}
+
+func (st *StateTransition) getCapRemaining(address common.Address) *big.Int {
+	caller := &runner.SharedEVMRunner{EVM: st.evm}
+	cap, err := subscriber.GetCapRemaining(caller, address)
+	if err != nil {
+		log.Error("Smart-contract call Subscribers::getCapRemaining() failed")
+		cap = big.NewInt(0)
+	}
+	return cap
+}
+
 func (st *StateTransition) hasActiveSubscription(sub *subscriber.Subscription) bool {
 	if sub == nil {
 		return false
@@ -506,6 +563,6 @@ func (st *StateTransition) hasActiveSubscription(sub *subscriber.Subscription) b
 	return st.msg.GasPrice().Cmp(big.NewInt(0)) > 0 &&
 		sub != nil &&
 		sub.PlanId.Cmp(big.NewInt(0)) > 0 &&
-		sub.EndTime.Cmp(st.evm.Context.Time) > 0 &&
+		sub.EndTime.Cmp(st.evm.Context.Time) >= 0 &&
 		sub.Balance.Cmp(big.NewInt(0)) > 0
 }

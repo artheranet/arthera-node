@@ -4,6 +4,7 @@ import (
 	"github.com/artheranet/arthera-node/contracts"
 	"github.com/artheranet/arthera-node/contracts/abis"
 	"github.com/artheranet/arthera-node/contracts/runner"
+	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/params"
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"
@@ -14,13 +15,17 @@ var (
 	debitSubscription     = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "debit", params.MaxGasForDebitSubscription)
 	creditSubscription    = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "credit", params.MaxGasForCreditSubscription)
 	getSubscription       = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "getSub", params.MaxGasForGetSub)
+	getCapRemaining       = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "getCapRemaining", params.MaxGasForGetSub)
+	getCapWindow          = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "getCapWindow", params.MaxGasForGetSub)
 )
 
 type Subscription struct {
-	PlanId    *big.Int
-	Balance   *big.Int
-	StartTime *big.Int
-	EndTime   *big.Int
+	PlanId       *big.Int
+	Balance      *big.Int
+	StartTime    *big.Int
+	EndTime      *big.Int
+	LastCapReset *big.Int
+	PeriodUsage  *big.Int
 }
 
 func HasActiveSubscription(evmRunner runner.EVMRunner, subscriber common.Address) (bool, error) {
@@ -71,4 +76,30 @@ func GetSubscription(evmRunner runner.EVMRunner, subscriber common.Address) (*Su
 		return nil, err
 	}
 	return &result, nil
+}
+
+func GetCapWindow(evmRunner runner.EVMRunner, subscriber common.Address) (inter.Timestamp, error) {
+	var result *big.Int
+	if subscriber == contracts.ZeroAddress {
+		return inter.FromUnix(0), nil
+	}
+	err := getCapWindow.Query(evmRunner, &result, subscriber)
+	if err != nil {
+		return inter.FromUnix(0), err
+	}
+
+	return inter.FromUnix(result.Int64()), nil
+}
+
+func GetCapRemaining(evmRunner runner.EVMRunner, subscriber common.Address) (*big.Int, error) {
+	var result *big.Int
+	if subscriber == contracts.ZeroAddress {
+		return big.NewInt(0), nil
+	}
+	err := getCapRemaining.Query(evmRunner, &result, subscriber)
+	if err != nil {
+		return big.NewInt(0), err
+	}
+
+	return result, nil
 }

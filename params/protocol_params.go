@@ -5,6 +5,7 @@ var (
 	million  = thousand * thousand
 
 	MaxGasForHasActiveSubscription = 500 * thousand
-	MaxGasForReduceBalance         = 1 * million
+	MaxGasForDebitSubscription     = 500 * thousand
+	MaxGasForCreditSubscription    = 500 * thousand
 	MaxGasForGetSub                = 500 * thousand
 )

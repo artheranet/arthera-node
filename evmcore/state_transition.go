@@ -376,11 +376,11 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	contractCreation := msg.To() == nil
 
 	// check if the user has an active subscription
-	senderSubscription := st.getSubscription(st.msg.From())
+	senderSubscription := st.getSubscriptionData(st.msg.From())
 	var receiverSubscription *subscriber.Subscription = nil
 	if !contractCreation && st.state.GetCodeSize(*st.msg.To()) > 0 {
 		// receiver is a smart contract, retrieve its subscription
-		receiverSubscription = st.getSubscription(*st.msg.To())
+		receiverSubscription = st.getSubscriptionData(*st.msg.To())
 	}
 
 	// Check clauses 1-3, buy gas if everything is correct
@@ -523,9 +523,9 @@ func (st *StateTransition) creditSubscription(target common.Address, units *big.
 	}
 }
 
-func (st *StateTransition) getSubscription(address common.Address) *subscriber.Subscription {
+func (st *StateTransition) getSubscriptionData(address common.Address) *subscriber.Subscription {
 	caller := &runner.SharedEVMRunner{EVM: st.evm}
-	sub, err := subscriber.GetSubscription(caller, address)
+	sub, err := subscriber.GetSubscriptionData(caller, address)
 	if err != nil {
 		log.Error("Smart-contract call Subscribers::getSubscription() failed")
 		sub = nil

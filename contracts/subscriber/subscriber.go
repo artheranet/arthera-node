@@ -14,12 +14,13 @@ var (
 	hasActiveSubscription = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "hasActiveSubscription", params.MaxGasForHasActiveSubscription)
 	debitSubscription     = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "debit", params.MaxGasForDebitSubscription)
 	creditSubscription    = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "credit", params.MaxGasForCreditSubscription)
-	getSubscription       = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "getSub", params.MaxGasForGetSub)
+	getSubscriptionData   = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "getSubscriptionData", params.MaxGasForGetSub)
 	getCapRemaining       = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "getCapRemaining", params.MaxGasForGetSub)
 	getCapWindow          = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "getCapWindow", params.MaxGasForGetSub)
 )
 
 type Subscription struct {
+	Id           *big.Int
 	PlanId       *big.Int
 	Balance      *big.Int
 	StartTime    *big.Int
@@ -65,13 +66,13 @@ func CreditSubscription(evmRunner runner.EVMRunner, subscriber common.Address, u
 	return nil
 }
 
-func GetSubscription(evmRunner runner.EVMRunner, subscriber common.Address) (*Subscription, error) {
+func GetSubscriptionData(evmRunner runner.EVMRunner, subscriber common.Address) (*Subscription, error) {
 	var result Subscription
 	if subscriber == contracts.ZeroAddress {
 		return nil, nil
 	}
 
-	err := getSubscription.Query(evmRunner, &result, subscriber)
+	err := getSubscriptionData.Query(evmRunner, &result, subscriber)
 	if err != nil {
 		return nil, err
 	}

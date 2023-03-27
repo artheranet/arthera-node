@@ -67,6 +67,7 @@ type StateTransition struct {
 	data             []byte
 	state            vm.StateDB
 	evm              *vm.EVM
+	evmRunner        runner.SharedEVMRunner
 }
 
 // Message represents a message sent to a contract.
@@ -169,13 +170,14 @@ func IntrinsicGas(data []byte, accessList types.AccessList, isContractCreation b
 // NewStateTransition initialises and returns a new state transition object.
 func NewStateTransition(evm *vm.EVM, msg Message, gp *GasPool) *StateTransition {
 	return &StateTransition{
-		gp:       gp,
-		evm:      evm,
-		msg:      msg,
-		gasPrice: msg.GasPrice(),
-		value:    msg.Value(),
-		data:     msg.Data(),
-		state:    evm.StateDB,
+		gp:        gp,
+		evm:       evm,
+		msg:       msg,
+		gasPrice:  msg.GasPrice(),
+		value:     msg.Value(),
+		data:      msg.Data(),
+		state:     evm.StateDB,
+		evmRunner: runner.SharedEVMRunner{EVM: evm},
 	}
 }
 
@@ -444,11 +446,13 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	// Pay-as-You-Go rebates
 	if !contractCreation && !st.hasActiveSubscription(senderSubscription) && !st.hasActiveSubscription(receiverSubscription) {
 		// check to see if the destination address is eligible for Pay-as-You-Go rebates
-		deployer := pyag.GetDeployer(st.to(), st.state)
-		if deployer != contracts.ZeroAddress {
+		owner, err := pyag.GetOwnerOfContract(&st.evmRunner, st.to())
+		if err != nil {
+			log.Error("GetOwnerOfContract() failed", "err", err)
+		} else if owner != contracts.ZeroAddress {
 			deployerGas := st.gasUsed() / 10
 			refund := new(big.Int).Mul(new(big.Int).SetUint64(deployerGas), st.gasPrice)
-			st.state.AddBalance(deployer, refund)
+			st.state.AddBalance(owner, refund)
 		}
 	}
 
@@ -510,8 +514,7 @@ func (st *StateTransition) debitSubscription(target common.Address, units *big.I
 	if units.BitLen() == 0 {
 		return big.NewInt(0)
 	}
-	caller := &runner.SharedEVMRunner{EVM: st.evm}
-	result, err := subscriber.DebitSubscription(caller, target, units)
+	result, err := subscriber.DebitSubscription(&st.evmRunner, target, units)
 	if err != nil {
 		log.Error("Smart-contract call Subscribers::debitSubscription() failed")
 		return units
@@ -523,16 +526,14 @@ func (st *StateTransition) creditSubscription(target common.Address, units *big.
 	if units.BitLen() == 0 {
 		return
 	}
-	caller := &runner.SharedEVMRunner{EVM: st.evm}
-	err := subscriber.CreditSubscription(caller, target, units)
+	err := subscriber.CreditSubscription(&st.evmRunner, target, units)
 	if err != nil {
 		log.Error("Smart-contract call Subscribers::creditSubscription() failed")
 	}
 }
 
 func (st *StateTransition) getSubscriptionData(address common.Address) *subscriber.Subscription {
-	caller := &runner.SharedEVMRunner{EVM: st.evm}
-	sub, err := subscriber.GetSubscriptionData(caller, address)
+	sub, err := subscriber.GetSubscriptionData(&st.evmRunner, address)
 	if err != nil {
 		log.Error("Smart-contract call Subscribers::getSubscription() failed")
 		sub = nil
@@ -541,8 +542,7 @@ func (st *StateTransition) getSubscriptionData(address common.Address) *subscrib
 }
 
 func (st *StateTransition) getCapWindow(address common.Address) inter.Timestamp {
-	caller := &runner.SharedEVMRunner{EVM: st.evm}
-	ts, err := subscriber.GetCapWindow(caller, address)
+	ts, err := subscriber.GetCapWindow(&st.evmRunner, address)
 	if err != nil {
 		log.Error("Smart-contract call Subscribers::getCapWindow() failed")
 		ts = inter.FromUnix(0)
@@ -551,8 +551,7 @@ func (st *StateTransition) getCapWindow(address common.Address) inter.Timestamp 
 }
 
 func (st *StateTransition) getCapRemaining(address common.Address) *big.Int {
-	caller := &runner.SharedEVMRunner{EVM: st.evm}
-	cap, err := subscriber.GetCapRemaining(caller, address)
+	cap, err := subscriber.GetCapRemaining(&st.evmRunner, address)
 	if err != nil {
 		log.Error("Smart-contract call Subscribers::getCapRemaining() failed")
 		cap = big.NewInt(0)

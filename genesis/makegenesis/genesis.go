@@ -284,7 +284,7 @@ func (b *GenesisBuilder) DeployBaseContracts() {
 	b.SetCode(contracts.StakingSmartContractAddress, contracts.StakingBytecode)
 	b.SetCode(contracts.ValidatorInfoSmartContractAddress, contracts.ValidatorInfoBytecode)
 	// pre deploy registry
-	b.SetCode(contracts.PayAsYouGoRebatesSmartContractAddress, contracts.PayAsYouGoRebatesBytecode)
+	b.SetCode(contracts.PayAsYouGoGasRewardsContractAddress, contracts.PayAsYouGoGasRewardsBytecode)
 	// pre deploy subscription
 	b.SetCode(contracts.SubscribersSmartContractAddress, contracts.SubscribersBytecode)
 	// set non-zero code for pre-compiled contracts

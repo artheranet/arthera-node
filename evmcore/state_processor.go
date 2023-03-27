@@ -19,7 +19,9 @@ package evmcore
 import (
 	"fmt"
 	"github.com/artheranet/arthera-node/contracts/pyag"
+	"github.com/artheranet/arthera-node/contracts/runner"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/log"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -132,7 +134,10 @@ func applyTransaction(
 
 	if msg.To() == nil {
 		contractAddress = crypto.CreateAddress(evm.TxContext.Origin, tx.Nonce())
-		pyag.AddDeployer(contractAddress, msg.From(), statedb)
+		err := pyag.SetOwnerOfContract(&runner.SharedEVMRunner{EVM: evm}, contractAddress, msg.From())
+		if err != nil {
+			log.Error("SetOwnerOfContract() failed", "err", err)
+		}
 	}
 
 	// Update the state with pending changes.

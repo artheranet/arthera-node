@@ -7,10 +7,11 @@ import (
 )
 
 var (
-	NodeDriver         *abi.ABI = mustParseAbi("NodeDriver", NodeDriverStr)
-	NetworkInitializer *abi.ABI = mustParseAbi("NetworkInitializer", NetworkInitializerStr)
-	EVMWriter          *abi.ABI = mustParseAbi("EVMWriter", EVMWriterStr)
-	Subscribers        *abi.ABI = mustParseAbi("Subscribers", SubscribersStr)
+	NodeDriver           *abi.ABI = mustParseAbi("NodeDriver", NodeDriverStr)
+	NetworkInitializer   *abi.ABI = mustParseAbi("NetworkInitializer", NetworkInitializerStr)
+	EVMWriter            *abi.ABI = mustParseAbi("EVMWriter", EVMWriterStr)
+	Subscribers          *abi.ABI = mustParseAbi("Subscribers", SubscribersStr)
+	PayAsYouGoGasRewards *abi.ABI = mustParseAbi("PayAsYouGoGasRewards", PayAsYouGoGasRewardsStr)
 )
 
 func mustParseAbi(name, abiStr string) *abi.ABI {

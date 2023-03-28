@@ -8,6 +8,7 @@ var (
 	MaxGasForDebitSubscription     = 500 * thousand
 	MaxGasForCreditSubscription    = 500 * thousand
 	MaxGasForGetSub                = 500 * thousand
+	MaxGasForIsWhitelisted         = 500 * thousand
 	MaxGasForSetOwnerOfContract    = 500 * thousand
 	MaxGasForAddReward             = 500 * thousand
 )

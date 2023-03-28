@@ -226,24 +226,27 @@ func (st *StateTransition) buyGas(senderSub *subscriber.Subscription, receiverSu
 	}
 
 	if st.gasPrice.BitLen() > 0 {
-		// first check to see if the target is a dapp and it can pay for all gas units from its subscription
+		// first check to see if the target is a contract account and it can pay for all gas units from its subscription
 		if receiverSub != nil {
 			if st.hasActiveSubscription(receiverSub) {
 				log.Info("Receiver has an active subscription")
-				// if the dapp has an active subscription, pay gas from its balance
-				if receiverSub.Balance.Cmp(pyagGasUnits) < 0 {
-					// receiver's subscription balance is not enough
-					// the overflowed value needs to be covered from the sender
-					pyagGasUnits = pyagGasUnits.Sub(pyagGasUnits, receiverSub.Balance)
-					log.Info("Receiver's subscription balance overflows", "balance", senderSub.Balance, "overflow", pyagGasUnits)
-				} else {
-					// the subscription has enough balance to cover the gas, nothing left to pay
-					pyagGasUnits = big.NewInt(0)
-					log.Info("Receiver's subscription balance is enough", "balance", senderSub.Balance)
+				// if the sender is whitelisted with the contract account
+				if st.isWhitelisted(*st.msg.To(), st.msg.From()) {
+					// if the contract account has an active subscription, pay gas from its balance
+					if receiverSub.Balance.Cmp(pyagGasUnits) < 0 {
+						// receiver's subscription balance is not enough
+						// the overflowed value needs to be covered from the sender
+						pyagGasUnits = pyagGasUnits.Sub(pyagGasUnits, receiverSub.Balance)
+						log.Info("Receiver's subscription balance overflows", "balance", senderSub.Balance, "overflow", pyagGasUnits)
+					} else {
+						// the subscription has enough balance to cover the gas, nothing left to pay
+						pyagGasUnits = big.NewInt(0)
+						log.Info("Receiver's subscription balance is enough", "balance", senderSub.Balance)
+					}
 				}
 			}
 		} else {
-			// the dapp does not have a subscription, take fees from the user's subscription
+			// the contract account does not have a subscription, take fees from the user's subscription
 			if st.hasActiveSubscription(senderSub) {
 				log.Trace("Sender has an active subscription")
 				if senderSub.Balance.Cmp(pyagGasUnits) < 0 {
@@ -291,13 +294,15 @@ func (st *StateTransition) buyGas(senderSub *subscriber.Subscription, receiverSu
 
 	if st.gasPrice.BitLen() > 0 {
 		if receiverSub != nil && st.hasActiveSubscription(receiverSub) {
-			// receiver pays from his subscription the entire cost
-			capWindow := st.getCapWindow(*st.msg.To())
-			capRemaining := st.getCapRemaining(*st.msg.To())
-			log.Info("Receiver caps", "window", capWindow.Time().String(), "remaining", capRemaining)
-			log.Info("Debit from receiver's subscription", "units", pyagGasUnits)
-			pyagGasUnits = st.debitSubscription(*st.msg.To(), pyagGasUnits)
-			st.receiverSpentGas = st.msg.Gas() - pyagGasUnits.Uint64()
+			if st.isWhitelisted(*st.msg.To(), st.msg.From()) {
+				// receiver pays from his subscription the entire cost is the caller is whitelisted
+				capWindow := st.getCapWindow(*st.msg.To())
+				capRemaining := st.getCapRemaining(*st.msg.To())
+				log.Info("Receiver caps", "window", capWindow.Time().String(), "remaining", capRemaining)
+				log.Info("Debit from receiver's subscription", "units", pyagGasUnits)
+				pyagGasUnits = st.debitSubscription(*st.msg.To(), pyagGasUnits)
+				st.receiverSpentGas = st.msg.Gas() - pyagGasUnits.Uint64()
+			}
 		} else if st.hasActiveSubscription(senderSub) {
 			// sender pays the rest from his subscription
 			capWindow := st.getCapWindow(st.msg.From())
@@ -551,12 +556,21 @@ func (st *StateTransition) getCapWindow(address common.Address) inter.Timestamp 
 }
 
 func (st *StateTransition) getCapRemaining(address common.Address) *big.Int {
-	cap, err := subscriber.GetCapRemaining(&st.evmRunner, address)
+	capRemaining, err := subscriber.GetCapRemaining(&st.evmRunner, address)
 	if err != nil {
 		log.Error("Smart-contract call Subscribers::getCapRemaining() failed")
-		cap = big.NewInt(0)
+		capRemaining = big.NewInt(0)
 	}
-	return cap
+	return capRemaining
+}
+
+func (st *StateTransition) isWhitelisted(_subscriber common.Address, _account common.Address) bool {
+	whitelisted, err := subscriber.IsWhitelisted(&st.evmRunner, _subscriber, _account)
+	if err != nil {
+		log.Error("Smart-contract call Subscribers::isWhitelisted() failed")
+		whitelisted = false
+	}
+	return whitelisted
 }
 
 func (st *StateTransition) hasActiveSubscription(sub *subscriber.Subscription) bool {

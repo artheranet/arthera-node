@@ -17,6 +17,7 @@ var (
 	getSubscriptionData   = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "getSubscriptionData", params.MaxGasForGetSub)
 	getCapRemaining       = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "getCapRemaining", params.MaxGasForGetSub)
 	getCapWindow          = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "getCapWindow", params.MaxGasForGetSub)
+	isWhitelisted         = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "isWhitelisted", params.MaxGasForIsWhitelisted)
 )
 
 type Subscription struct {
@@ -102,5 +103,17 @@ func GetCapRemaining(evmRunner runner.EVMRunner, subscriber common.Address) (*bi
 		return big.NewInt(0), err
 	}
 
+	return result, nil
+}
+
+func IsWhitelisted(evmRunner runner.EVMRunner, subscriber common.Address, account common.Address) (bool, error) {
+	var result bool
+	if subscriber == contracts.ZeroAddress || account == contracts.ZeroAddress {
+		return false, nil
+	}
+	err := isWhitelisted.Query(evmRunner, &result, subscriber, account)
+	if err != nil {
+		return false, err
+	}
 	return result, nil
 }

@@ -1375,6 +1375,56 @@ const SubscribersStr = `[
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "getPlans",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "planId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "duration",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "units",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "price",
+              "type": "uint256"
+            },
+            {
+              "internalType": "enum SubscriptionPlan.CapFrequency",
+              "name": "capFrequency",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "capUnits",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "forContract",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct SubscriptionPlan.Plan[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",

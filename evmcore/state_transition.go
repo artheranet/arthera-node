@@ -440,12 +440,20 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 		st.gas -= st.gas / 10
 	}
 
+	// check if the user has an active subscription again, because the transaction might be a terminate subscription
+	senderSubscription = st.getSubscriptionData(st.msg.From())
+	receiverSubscription = nil
+	if !contractCreation && st.state.GetCodeSize(*st.msg.To()) > 0 {
+		// receiver is a smart contract, retrieve its subscription
+		receiverSubscription = st.getSubscriptionData(*st.msg.To())
+	}
+
 	if !london {
 		// Before EIP-3529: refunds were capped to gasUsed / 2
-		st.refundGas(params.RefundQuotient)
+		st.refundGas(params.RefundQuotient, senderSubscription, receiverSubscription)
 	} else {
 		// After EIP-3529: refunds are capped to gasUsed / 5
-		st.refundGas(params.RefundQuotientEIP3529)
+		st.refundGas(params.RefundQuotientEIP3529, senderSubscription, receiverSubscription)
 	}
 
 	// Pay-as-You-Go rebates
@@ -470,7 +478,7 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 
 // Returns the remaining gas, plus a refund to the sender, because the initial gas that was provided
 // to the transaction might be bigger than was actually consumed
-func (st *StateTransition) refundGas(refundQuotient uint64) {
+func (st *StateTransition) refundGas(refundQuotient uint64, senderSubscription *subscriber.Subscription, receiverSubscription *subscriber.Subscription) {
 	// Apply refund counter, capped to a refund quotient
 	refund := st.gasUsed() / refundQuotient
 	if refund > st.state.GetRefund() {
@@ -480,18 +488,29 @@ func (st *StateTransition) refundGas(refundQuotient uint64) {
 
 	if st.gasPrice.BitLen() > 0 {
 		// we have st.gas units to send back proportionally, exchanged at the original rate.
+
 		if st.to() != contracts.ZeroAddress {
-			receiverGasRefund := st.gas * st.receiverSpentGas / st.initialGas
-			if receiverGasRefund > 0 {
-				log.Info("Credit receiver subscription", "refund (units)", receiverGasRefund)
-				st.creditSubscription(st.to(), new(big.Int).SetUint64(receiverGasRefund))
+			if st.hasActiveSubscription(receiverSubscription) {
+				receiverGasRefund := st.gas * st.receiverSpentGas / st.initialGas
+				if receiverGasRefund > 0 {
+					log.Info("Credit receiver subscription", "refund (units)", receiverGasRefund)
+					st.creditSubscription(st.to(), new(big.Int).SetUint64(receiverGasRefund))
+				}
+			} else {
+				// if the receiver does hot have an active subscription, give the refund to PYAG
+				st.pyagSpentGas += st.receiverSpentGas
 			}
 		}
 
 		senderGasRefund := st.gas * st.senderSpentGas / st.initialGas
 		if senderGasRefund > 0 {
-			log.Info("Credit sender subscription", "refund (units)", senderGasRefund)
-			st.creditSubscription(st.msg.From(), new(big.Int).SetUint64(senderGasRefund))
+			if st.hasActiveSubscription(senderSubscription) {
+				log.Info("Credit sender subscription", "refund (units)", senderGasRefund)
+				st.creditSubscription(st.msg.From(), new(big.Int).SetUint64(senderGasRefund))
+			} else {
+				// if the sender does hot have an active subscription, give the refund to PYAG
+				st.pyagSpentGas += st.senderSpentGas
+			}
 		}
 
 		pyagGasRefund := st.gas * st.pyagSpentGas / st.initialGas

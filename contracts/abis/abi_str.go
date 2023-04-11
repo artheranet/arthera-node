@@ -683,7 +683,7 @@ const NetworkInitializerStr = `[
 ]`
 
 const SubscribersStr = `[
-	{
+    {
       "inputs": [],
       "stateMutability": "nonpayable",
       "type": "constructor"
@@ -1640,7 +1640,7 @@ const SubscribersStr = `[
           "type": "string"
         }
       ],
-      "stateMutability": "view",
+      "stateMutability": "pure",
       "type": "function"
     },
     {
@@ -1844,7 +1844,7 @@ const SubscribersStr = `[
           "type": "string"
         }
       ],
-      "stateMutability": "view",
+      "stateMutability": "pure",
       "type": "function"
     },
     {
@@ -2016,7 +2016,7 @@ const SubscribersStr = `[
       "stateMutability": "nonpayable",
       "type": "function"
     }
-]`
+  ]`
 
 const PayAsYouGoGasRewardsStr = `[
 	{

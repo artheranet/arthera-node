@@ -26,7 +26,7 @@ func TestConfigFile(t *testing.T) {
 		Opera:         gossip.DefaultConfig(cacheRatio),
 		Emitter:       emitter.DefaultConfig(),
 		TxPool:        evmcore.DefaultTxPoolConfig,
-		OperaStore:    gossip.DefaultStoreConfig(cacheRatio),
+		ArtheraStore:  gossip.DefaultStoreConfig(cacheRatio),
 		Lachesis:      abft.DefaultConfig(),
 		LachesisStore: abft.DefaultStoreConfig(cacheRatio),
 		VectorClock:   vecmt.DefaultConfig(cacheRatio),

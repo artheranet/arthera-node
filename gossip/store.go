@@ -1,6 +1,7 @@
 package gossip
 
 import (
+	"github.com/artheranet/arthera-node/gossip/txtrace"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -30,6 +31,7 @@ type Store struct {
 
 	snapshotedEVMDB *switchable.Snapshot
 	evm             *evmstore.Store
+	txtrace         *txtrace.Store
 	table           struct {
 		Version kvdb.Store `table:"_"`
 
@@ -41,6 +43,9 @@ type Store struct {
 		EpochBlocks            kvdb.Store `table:"P"`
 		Genesis                kvdb.Store `table:"g"`
 		UpgradeHeights         kvdb.Store `table:"U"`
+
+		// Transaction traces
+		TransactionTraces kvdb.Store `table:"t"`
 
 		// P2P-only
 		HighestLamport kvdb.Store `table:"l"`
@@ -121,6 +126,9 @@ func NewStore(dbs kvdb.FlushableDBProducer, cfg StoreConfig) *Store {
 
 	s.initCache()
 	s.evm = evmstore.NewStore(dbs, cfg.EVM)
+	if cfg.TraceTransactions {
+		s.txtrace = txtrace.NewStore(s.table.TransactionTraces)
+	}
 
 	if err := s.migrateData(); err != nil {
 		s.Log.Crit("Failed to migrate Gossip DB", "err", err)
@@ -160,6 +168,10 @@ func (s *Store) Close() {
 	_ = table.CloseTables(&s.table)
 	table.MigrateTables(&s.table, nil)
 	table.MigrateCaches(&s.cache, setnil)
+
+	if s.txtrace != nil {
+		s.txtrace.Close()
+	}
 
 	_ = s.closeEpochStore()
 	s.evm.Close()
@@ -236,6 +248,10 @@ func (s *Store) flushDBs() error {
 
 func (s *Store) EvmStore() *evmstore.Store {
 	return s.evm
+}
+
+func (s *Store) TxTraceStore() *txtrace.Store {
+	return s.txtrace
 }
 
 func (s *Store) CaptureEvmKvdbSnapshot() {

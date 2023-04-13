@@ -117,7 +117,7 @@ func makeDirectDBsProducer(cfg *config) kvdb.FullDBProducer {
 }
 
 func makeGossipStore(producer kvdb.FlushableDBProducer, cfg *config) *gossip.Store {
-	return gossip.NewStore(producer, cfg.OperaStore)
+	return gossip.NewStore(producer, cfg.ArtheraStore)
 }
 
 func compact(ctx *cli.Context) error {

@@ -42,6 +42,7 @@ require (
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a
 	golang.org/x/tools v0.1.5 // indirect
 	gopkg.in/urfave/cli.v1 v1.20.0
+	github.com/holiman/uint256 v1.2.0
 )
 
 replace github.com/ethereum/go-ethereum => ../arthera-go-ethereum

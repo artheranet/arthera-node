@@ -17,7 +17,7 @@ var (
 		ArgsUsage: "<filename> (<filename 2> ... <filename N>) [check=false]",
 		Category:  "MISCELLANEOUS COMMANDS",
 		Description: `
-    opera import events
+    arthera-node import events
 
 The import command imports events from an RLP-encoded files.
 Events are fully verified by default, unless overridden by check=false flag.`,
@@ -44,9 +44,23 @@ Events are fully verified by default, unless overridden by --check=false flag.`,
 					DataDirFlag,
 				},
 				Description: `
-    opera import evm
+    arthera-node import evm
 
 The import command imports EVM storage (trie nodes, code, preimages) from files.`,
+			},
+			{
+				Name:      "txtraces",
+				Usage:     "Import transaction traces",
+				ArgsUsage: "<filename>",
+				Action:    utils.MigrateFlags(importTxTraces),
+				Flags: []cli.Flag{
+					DataDirFlag,
+				},
+				Description: `
+    arthera-node import txtraces
+The import command imports transaction traces and replaces the old ones 
+with traces from a file.
+`,
 			},
 		},
 	}
@@ -65,7 +79,7 @@ The import command imports EVM storage (trie nodes, code, preimages) from files.
 					DataDirFlag,
 				},
 				Description: `
-    opera export events
+    arthera-node export events
 
 Requires a first argument of the file to write to.
 Optional second and third arguments control the first and
@@ -83,7 +97,7 @@ be gzipped
 					EvmExportMode,
 				},
 				Description: `
-    opera export genesis
+    arthera-node export genesis
 
 Export current state into a genesis file.
 Requires a first argument of the file to write to.
@@ -91,6 +105,45 @@ Optional second and third arguments control the first and
 last epoch to write.
 Pass dry-run instead of filename for calculation of hashes without exporting data.
 EVM export mode is configured with --export.evm.mode.
+`,
+			},
+			{
+				Name:      "txtraces",
+				Usage:     "Export stored transaction traces",
+				ArgsUsage: "<filename> [<blockFrom> <blockTo>]",
+				Action:    utils.MigrateFlags(exportTxTraces),
+				Flags: []cli.Flag{
+					DataDirFlag,
+				},
+				Description: `
+    arthera-node export txtraces
+Requires a first argument of the file to write to.
+Optional second and third arguments control the first and
+last block to write transaction traces. If the file ends with .gz, the output will
+be gzipped
+`,
+			},
+		},
+	}
+	deleteCommand = cli.Command{
+		Name:     "delete",
+		Usage:    "Delete blockchain data",
+		Category: "MISCELLANEOUS COMMANDS",
+
+		Subcommands: []cli.Command{
+			{
+				Name:      "txtraces",
+				Usage:     "Delete transaction traces",
+				ArgsUsage: "[<blockFrom> <blockTo>]",
+				Action:    utils.MigrateFlags(deleteTxTraces),
+				Flags: []cli.Flag{
+					DataDirFlag,
+				},
+				Description: `
+    arthera-node delete txtraces
+Optional first and second arguments control the first and
+last block to delete transaction traces from. If the file ends with .gz, the output will
+be gzipped
 `,
 			},
 		},
@@ -109,7 +162,7 @@ EVM export mode is configured with --export.evm.mode.
 					DataDirFlag,
 				},
 				Description: `
-    opera check evm
+    arthera-node check evm
 
 Checks EVM storage roots and code hashes
 `,

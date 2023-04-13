@@ -113,6 +113,11 @@ var (
 		Name:  "exitwhensynced.epoch",
 		Usage: "Exits after synchronisation reaches the required epoch",
 	}
+	// TraceNodeFlag enables transaction tracing recording
+	TraceNodeFlag = cli.BoolFlag{
+		Name:  "tracenode",
+		Usage: "If present, than this node records inner transaction traces",
+	}
 
 	DBMigrationModeFlag = cli.StringFlag{
 		Name:  "db.migration.mode",
@@ -159,7 +164,7 @@ type config struct {
 	Opera         gossip.Config
 	Emitter       emitter.Config
 	TxPool        evmcore.TxPoolConfig
-	OperaStore    gossip.StoreConfig
+	ArtheraStore  gossip.StoreConfig
 	Lachesis      abft.Config
 	LachesisStore abft.StoreConfig
 	VectorClock   vecmt.IndexConfig
@@ -169,7 +174,7 @@ type config struct {
 func (c *config) AppConfigs() integration.Configs {
 	return integration.Configs{
 		Opera:         c.Opera,
-		OperaStore:    c.OperaStore,
+		OperaStore:    c.ArtheraStore,
 		Lachesis:      c.Lachesis,
 		LachesisStore: c.LachesisStore,
 		VectorClock:   c.VectorClock,
@@ -406,7 +411,7 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 		Opera:         gossip.DefaultConfig(cacheRatio),
 		Emitter:       emitter.DefaultConfig(),
 		TxPool:        evmcore.DefaultTxPoolConfig,
-		OperaStore:    gossip.DefaultStoreConfig(cacheRatio),
+		ArtheraStore:  gossip.DefaultStoreConfig(cacheRatio),
 		Lachesis:      abft.DefaultConfig(),
 		LachesisStore: abft.DefaultStoreConfig(cacheRatio),
 		VectorClock:   vecmt.DefaultConfig(cacheRatio),
@@ -460,7 +465,7 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 	if err != nil {
 		return nil, err
 	}
-	cfg.OperaStore, err = gossipStoreConfigWithFlags(ctx, cfg.OperaStore)
+	cfg.ArtheraStore, err = gossipStoreConfigWithFlags(ctx, cfg.ArtheraStore)
 	if err != nil {
 		return nil, err
 	}
@@ -478,6 +483,10 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 
 	if err := cfg.Opera.Validate(); err != nil {
 		return nil, err
+	}
+
+	if ctx.GlobalIsSet(TraceNodeFlag.Name) {
+		cfg.ArtheraStore.TraceTransactions = true
 	}
 
 	return &cfg, nil

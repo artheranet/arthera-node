@@ -27,3 +27,15 @@ var (
 	PayAsYouGoGasRewardsContractAddress    = common.BytesToAddress([]byte{0xAA, 0x06})
 	SubscribersSmartContractAddress        = common.BytesToAddress([]byte{0xAA, 0x07})
 )
+
+func IsSystemContract(address common.Address) bool {
+	return address == NetworkInitializerSmartContractAddress ||
+		address == NodeDriverSmartContractAddress ||
+		address == NodeDriverAuthSmartContractAddress ||
+		address == EvmWriterSmartContractAddress ||
+		address == PayAsYouGoGasRewardsContractAddress ||
+		address == StakingSmartContractAddress ||
+		address == SubscribersSmartContractAddress ||
+		address == ValidatorInfoSmartContractAddress
+
+}

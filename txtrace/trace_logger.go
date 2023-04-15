@@ -104,6 +104,9 @@ func stackPosFromEnd(stackData []uint256.Int, pos int) *big.Int {
 
 // CaptureState implements creating of traces based on getting opCodes from evm during contract processing
 func (tr *TraceStructLogger) CaptureState(env *vm.EVM, pc uint64, op vm.OpCode, gas, cost uint64, scope *vm.ScopeContext, rData []byte, depth int, err error) {
+	if tr.state == nil || tr.rootTrace == nil {
+		return
+	}
 
 	// When going back from inner call
 	for lastState(tr.state).level >= depth {
@@ -239,6 +242,10 @@ func (tr *TraceStructLogger) CaptureState(env *vm.EVM, pc uint64, op vm.OpCode, 
 
 // CaptureEnd is called after the call finishes to finalize the tracing.
 func (tr *TraceStructLogger) CaptureEnd(output []byte, gasUsed uint64, t time.Duration, err error) {
+	if tr.state == nil || tr.rootTrace == nil {
+		return
+	}
+
 	log.Debug("TraceStructLogger capture END", "tx hash", tr.tx.String(), "duration", t, "gasUsed", gasUsed)
 	if gasUsed > 0 {
 		if tr.rootTrace.Actions[0].Result != nil {
@@ -256,6 +263,10 @@ func (*TraceStructLogger) CaptureEnter(typ vm.OpCode, from common.Address, to co
 
 // CaptureExit is called when returning from an inner call
 func (tr *TraceStructLogger) CaptureExit(output []byte, gasUsed uint64, err error) {
+	if tr.state == nil || tr.rootTrace == nil {
+		return
+	}
+
 	// When going back from inner call
 	result := tr.rootTrace.Stack[len(tr.rootTrace.Stack)-1].Result
 	if result != nil {

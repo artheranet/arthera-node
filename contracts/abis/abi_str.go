@@ -847,6 +847,31 @@ const SubscribersStr = `[
           "internalType": "uint256",
           "name": "planId",
           "type": "uint256"
+        }
+      ],
+      "name": "PlanActivated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "planId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "description",
+          "type": "string"
         },
         {
           "indexed": false,
@@ -896,6 +921,31 @@ const SubscribersStr = `[
           "internalType": "uint256",
           "name": "planId",
           "type": "uint256"
+        }
+      ],
+      "name": "PlanDeactivated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "planId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "description",
+          "type": "string"
         },
         {
           "indexed": false,
@@ -966,6 +1016,25 @@ const SubscribersStr = `[
         }
       ],
       "name": "RenewSubscription",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "oldPlanId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newPlanId",
+          "type": "uint256"
+        }
+      ],
+      "name": "SwitchPlan",
       "type": "event"
     },
     {
@@ -1152,6 +1221,16 @@ const SubscribersStr = `[
     },
     {
       "inputs": [
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "description",
+          "type": "string"
+        },
         {
           "internalType": "uint256",
           "name": "duration",
@@ -1341,6 +1420,16 @@ const SubscribersStr = `[
           "type": "uint256"
         },
         {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "description",
+          "type": "string"
+        },
+        {
           "internalType": "uint256",
           "name": "duration",
           "type": "uint256"
@@ -1369,6 +1458,11 @@ const SubscribersStr = `[
           "internalType": "bool",
           "name": "forContract",
           "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "active",
+          "type": "bool"
         }
       ],
       "stateMutability": "view",
@@ -1384,6 +1478,16 @@ const SubscribersStr = `[
               "internalType": "uint256",
               "name": "planId",
               "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "description",
+              "type": "string"
             },
             {
               "internalType": "uint256",
@@ -1413,6 +1517,11 @@ const SubscribersStr = `[
             {
               "internalType": "bool",
               "name": "forContract",
+              "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "active",
               "type": "bool"
             }
           ],
@@ -1787,6 +1896,24 @@ const SubscribersStr = `[
     {
       "inputs": [
         {
+          "internalType": "uint256",
+          "name": "planId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "active",
+          "type": "bool"
+        }
+      ],
+      "name": "setActive",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "address",
           "name": "operator",
           "type": "address"
@@ -1832,6 +1959,19 @@ const SubscribersStr = `[
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "newPlanId",
+          "type": "uint256"
+        }
+      ],
+      "name": "switchPlan",
+      "outputs": [],
+      "stateMutability": "payable",
       "type": "function"
     },
     {
@@ -1971,6 +2111,16 @@ const SubscribersStr = `[
           "internalType": "uint256",
           "name": "planId",
           "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "description",
+          "type": "string"
         },
         {
           "internalType": "uint256",

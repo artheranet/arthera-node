@@ -151,7 +151,8 @@ func applyTransaction(
 
 	if msg.To() == nil {
 		contractAddress = crypto.CreateAddress(evm.TxContext.Origin, tx.Nonce())
-		err := pyag.SetOwnerOfContract(&runner.SharedEVMRunner{EVM: evm}, contractAddress, msg.From())
+		log.Info("Setting owner", "contract", contractAddress.String(), "owner", msg.From().String())
+		err = pyag.SetOwnerOfContract(&runner.SharedEVMRunner{EVM: evm}, contractAddress, msg.From())
 		if err != nil {
 			log.Error("SetOwnerOfContract() failed", "err", err)
 		}

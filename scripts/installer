@@ -31,6 +31,7 @@ main() {
 
   case "$_ostype" in
   Linux)
+
     _ostype=unknown-linux-gnu
     ;;
   *)
@@ -42,7 +43,7 @@ main() {
   if id "arthera" &>/dev/null; then
     echo "no action needed."
   else
-    adduser arthera --gecos "" --disabled-password --quiet
+    useradd arthera
     echo "added."
   fi
 

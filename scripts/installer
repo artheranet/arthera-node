@@ -43,7 +43,7 @@ main() {
   if id "arthera" &>/dev/null; then
     echo "no action needed."
   else
-    useradd arthera
+    useradd -m -s /bin/bash arthera
     echo "added."
   fi
 

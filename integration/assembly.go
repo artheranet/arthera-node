@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Fantom-foundation/lachesis-base/kvdb/multidb"
-	"github.com/artheranet/arthera-node/utils/compactdb"
+	"github.com/artheranet/arthera-node/utils/dbutil/compactdb"
 	"path"
 
 	"github.com/Fantom-foundation/lachesis-base/abft"

@@ -1,7 +1,7 @@
 package launcher
 
 import (
-	"github.com/artheranet/arthera-node/utils/compactdb"
+	"github.com/artheranet/arthera-node/utils/dbutil/compactdb"
 	"os"
 	"path"
 	"strings"

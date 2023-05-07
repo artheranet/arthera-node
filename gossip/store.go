@@ -2,6 +2,7 @@ package gossip
 
 import (
 	"github.com/artheranet/arthera-node/gossip/txtrace"
+	"github.com/artheranet/arthera-node/utils/dbutil/switchable"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -21,7 +22,6 @@ import (
 	"github.com/artheranet/arthera-node/utils/eventid"
 	"github.com/artheranet/arthera-node/utils/randat"
 	"github.com/artheranet/arthera-node/utils/rlpstore"
-	"github.com/artheranet/arthera-node/utils/switchable"
 )
 
 // Store is a node persistent storage working over physical key-value database.

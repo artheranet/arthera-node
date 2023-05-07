@@ -16,7 +16,7 @@ func (s *Snapshot) SwitchTo(snap kvdb.Snapshot) kvdb.Snapshot {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	old := s.Snapshot
-	s.Snapshot = snap
+	s.Snapshot = itergc.Wrap(snap, &sync.Mutex{})
 	return old
 }
 
@@ -97,8 +97,8 @@ func (it *switchableIterator) mayReopen() {
 // Next scans key-value pair by key in lexicographic order. Looks in cache first,
 // then - in DB.
 func (it *switchableIterator) Next() bool {
-	it.mu.RLock()
-	defer it.mu.RUnlock()
+	it.mu.Lock()
+	defer it.mu.Unlock()
 
 	it.mayReopen()
 
@@ -116,8 +116,8 @@ func (it *switchableIterator) Next() bool {
 // Error returns any accumulated error. Exhausting all the key/value pairs
 // is not considered to be an error. A memory iterator cannot encounter errors.
 func (it *switchableIterator) Error() error {
-	it.mu.RLock()
-	defer it.mu.RUnlock()
+	it.mu.Lock()
+	defer it.mu.Unlock()
 
 	it.mayReopen()
 
@@ -141,8 +141,8 @@ func (it *switchableIterator) Value() []byte {
 // Release releases associated resources. Release should always succeed and can
 // be called multiple times without causing error.
 func (it *switchableIterator) Release() {
-	it.mu.RLock()
-	defer it.mu.RUnlock()
+	it.mu.Lock()
+	defer it.mu.Unlock()
 
 	it.mayReopen()
 

@@ -11,17 +11,35 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
-type pool struct {
-	mu    sync.Mutex
-	sum   int
-	queue []int
+const GoroutinesPerThread = 100
+
+// threadPool counts threads in use
+type threadPool struct {
+	mu          sync.Mutex
+	initialized bool
+	sum         int
 }
 
-func (p *pool) Lock(want int) (got int, release func()) {
+var globalPool threadPool
+
+func (p *threadPool) init() {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	if !p.initialized {
+		p.initialized = true
+		p.sum = getMaxThreads() * GoroutinesPerThread
+	}
+}
+
+func (p *threadPool) Lock(want int) (got int, release func()) {
+	if !p.initialized {
+		p.init()
+	}
+
 	if want < 1 {
 		want = 0
 	}
-
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
@@ -36,16 +54,13 @@ func (p *pool) Lock(want int) (got int, release func()) {
 	return
 }
 
-var globalPool = &pool{
-	sum: getMaxThreads(),
-}
-
 func getMaxThreads() int {
 	was := debug.SetMaxThreads(10000)
 	debug.SetMaxThreads(was)
 	return was
 }
 
+// withThreadPool wraps the index and limits its threads in use
 type withThreadPool struct {
 	*index
 }
@@ -100,8 +115,12 @@ func (tt *withThreadPool) ForEachInBlocks(ctx context.Context, from, to idx.Bloc
 		got, release := globalPool.Lock(threads + len(rest))
 		if got <= threads {
 			release()
-			time.Sleep(time.Microsecond)
-			continue
+			select {
+			case <-time.After(time.Microsecond):
+				continue
+			case <-ctx.Done():
+				return ctx.Err()
+			}
 		}
 
 		pattern[splitby] = rest[:got-threads]

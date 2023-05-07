@@ -20,6 +20,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/artheranet/arthera-node/utils/adapters/ethdb2kvdb"
+	"github.com/artheranet/arthera-node/utils/compactdb"
 	"github.com/ethereum/go-ethereum/eth/tracers"
 	ethparams "github.com/ethereum/go-ethereum/params"
 	"math/big"
@@ -2376,12 +2378,9 @@ func (api *PrivateDebugAPI) ChaindbProperty(property string) (string, error) {
 // ChaindbCompact flattens the entire key-value database into a single level,
 // removing all unused slots and merging all keys.
 func (api *PrivateDebugAPI) ChaindbCompact() error {
-	for b := byte(0); b < 255; b++ {
-		log.Info("Compacting chain database", "range", fmt.Sprintf("0x%0.2X-0x%0.2X", b, b+1))
-		if err := api.b.ChainDb().Compact([]byte{b}, []byte{b + 1}); err != nil {
-			log.Error("Database compaction failed", "err", err)
-			return err
-		}
+	if err := compactdb.Compact(ethdb2kvdb.Wrap(api.b.ChainDb()), "EVM"); err != nil {
+		log.Error("Database compaction failed", "err", err)
+		return err
 	}
 	return nil
 }

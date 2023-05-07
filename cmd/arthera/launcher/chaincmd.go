@@ -123,6 +123,20 @@ last block to write transaction traces. If the file ends with .gz, the output wi
 be gzipped
 `,
 			},
+			{
+				Name:      "evm-keys",
+				Usage:     "Export EVM node keys",
+				ArgsUsage: "<directory>",
+				Action:    utils.MigrateFlags(exportEvmKeys),
+				Flags: []cli.Flag{
+					DataDirFlag,
+				},
+				Description: `
+    opera export evm-keys
+
+Requires a first argument of the DB directory to write to.
+`,
+			},
 		},
 	}
 	deleteCommand = cli.Command{

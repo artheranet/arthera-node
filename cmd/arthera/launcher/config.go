@@ -92,6 +92,11 @@ var (
 		Usage: "Sets a cap on transaction fee (in ART) that can be sent via the RPC APIs (0 = no cap)",
 		Value: gossip.DefaultConfig(cachescale.Identity).RPCTxFeeCap,
 	}
+	RPCGlobalTimeoutFlag = cli.DurationFlag{
+		Name:  "rpc.timeout",
+		Usage: "Time limit for RPC calls execution",
+		Value: gossip.DefaultConfig(cachescale.Identity).RPCTimeout,
+	}
 
 	SyncModeFlag = cli.StringFlag{
 		Name:  "syncmode",

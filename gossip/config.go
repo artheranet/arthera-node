@@ -97,6 +97,9 @@ type (
 		// send-transction variants. The unit is ether.
 		RPCTxFeeCap float64 `toml:",omitempty"`
 
+		// RPCTimeout is a global time limit for RPC methods execution.
+		RPCTimeout time.Duration
+
 		// allows only for EIP155 transactions.
 		AllowUnprotectedTxs bool
 

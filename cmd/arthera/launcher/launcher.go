@@ -160,6 +160,7 @@ func initFlags() {
 		utils.IPCPathFlag,
 		RPCGlobalGasCapFlag,
 		RPCGlobalTxFeeCapFlag,
+		RPCGlobalTimeoutFlag,
 	}
 
 	metricsFlags = []cli.Flag{

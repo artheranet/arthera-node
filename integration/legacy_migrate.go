@@ -3,6 +3,7 @@ package integration
 import (
 	"errors"
 	"fmt"
+	"github.com/artheranet/arthera-node/utils/compactdb"
 	"os"
 	"path"
 	"strings"
@@ -110,6 +111,10 @@ func transform(m transformTask) error {
 			it = src.NewIterator(nil, keys[len(keys)-1])
 		}
 		keys = keys[:0]
+	}
+	// compact the new DB
+	if err := compactdb.Compact(dst, m.name); err != nil {
+		return err
 	}
 	return nil
 }

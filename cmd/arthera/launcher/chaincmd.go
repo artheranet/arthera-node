@@ -8,12 +8,17 @@ import (
 var (
 	EvmExportMode = cli.StringFlag{
 		Name:  "export.evm.mode",
-		Usage: `EVM export mode ("full" or "ext-mpt" or "mpt" or "none")`,
+		Usage: `EVM export mode ("full" or "ext-mpt" or "mpt")`,
 		Value: "mpt",
 	}
 	EvmExportExclude = cli.StringFlag{
 		Name:  "export.evm.exclude",
 		Usage: `DB of EVM keys to exclude from genesis`,
+	}
+	GenesisExportSections = cli.StringFlag{
+		Name:  "export.sections",
+		Usage: `Genesis sections to export separated by comma (e.g. "brs-1" or "ers" or "evm-2")`,
+		Value: "brs,ers,evm",
 	}
 	importCommand = cli.Command{
 		Name:      "import",
@@ -99,6 +104,8 @@ be gzipped
 				Flags: []cli.Flag{
 					DataDirFlag,
 					EvmExportMode,
+					EvmExportExclude,
+					GenesisExportSections,
 				},
 				Description: `
     arthera-node export genesis

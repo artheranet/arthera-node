@@ -50,7 +50,7 @@ type ProtocolRulesRLP struct {
 	Upgrades Upgrades `rlp:"-"`
 }
 
-// ProtocolRules describes opera net.
+// ProtocolRules describes arthera net.
 // Note keep track of all the non-copiable variables in Copy()
 type ProtocolRules ProtocolRulesRLP
 

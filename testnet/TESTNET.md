@@ -5,7 +5,7 @@ go-ethereum/build/bin/devp2p key generate node2.testnet.key
 go-ethereum/build/bin/devp2p key generate node3.testnet.key
 
 2. Create 3 validators
-./build/opera validator new
+./build/arthera validator new
 
 ID: 0
 Stake: 1_000_000
@@ -23,7 +23,7 @@ Public key:  0xc004c39c38dc49cc4c9b64ea9d817545e713635f808d692f2f500ad801e002c50
 Address:     0xF51e935061731a129765ff63b3Af0Adb5e4486aC
 
 3. Create 3 accounts
-./build/opera account new
+./build/arthera account new
 
 Balance: 10_000_000
 

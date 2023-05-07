@@ -41,7 +41,7 @@ var (
 
 	// errSnapWithoutOpera is returned if a peer attempts to connect only on the
 	// snap protocol without advertizing the opera main protocol.
-	errSnapWithoutOpera = errors.New("peer connected on snap without compatible opera support")
+	errSnapWithoutOpera = errors.New("peer connected on snap without compatible arthera support")
 )
 
 // peerSet represents the collection of active peers currently participating in

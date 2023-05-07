@@ -268,7 +268,7 @@ func Launch(args []string) error {
 	return app.Run(args)
 }
 
-// opera is the main entry point into the system if no special subcommand is ran.
+// arthera is the main entry point into the system if no special subcommand is ran.
 // It creates a default node based on the command line arguments and runs it in
 // blocking mode, waiting for it to be shut down.
 func lachesisMain(ctx *cli.Context) error {
@@ -413,7 +413,7 @@ func startNode(ctx *cli.Context, stack *node.Node) {
 	events := make(chan accounts.WalletEvent, 16)
 	stack.AccountManager().Subscribe(events)
 
-	// Create a client to interact with local opera node.
+	// Create a client to interact with local arthera node.
 	rpcClient, err := stack.Attach()
 	if err != nil {
 		utils.Fatalf("Failed to attach to self: %v", err)

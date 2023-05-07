@@ -23,7 +23,7 @@ const (
 // Tests that a node embedded within a console can be started up properly and
 // then terminated by closing the input stream.
 func TestConsoleWelcome(t *testing.T) {
-	// Start an opera console, make sure it's cleaned up and terminate the console
+	// Start an arthera console, make sure it's cleaned up and terminate the console
 	cli := exec(t,
 		"--fakenet", "0/1", "--port", "0", "--maxpeers", "0", "--nodiscover", "--nat", "none",
 		"console")
@@ -38,9 +38,9 @@ func TestConsoleWelcome(t *testing.T) {
 
 	// Verify the actual welcome message to the required template
 	cli.Expect(`
-Welcome to the Lachesis JavaScript console!
+Welcome to the Arthera JavaScript console!
 
-instance: go-opera/v{{version}}/{{goos}}-{{goarch}}/{{gover}}
+instance: arthera-node/v{{version}}/{{goos}}-{{goarch}}/{{gover}}
 coinbase: {{.Coinbase}}
 at block: 1 ({{niltime}})
  datadir: {{.Datadir}}
@@ -104,7 +104,7 @@ func TestWSAttachWelcome(t *testing.T) {
 }
 
 func testAttachWelcome(t *testing.T, cli *testcli, endpoint, apis string) {
-	// Attach to a running opera node and terminate immediately
+	// Attach to a running arthera node and terminate immediately
 	attach := exec(t, "attach", endpoint)
 
 	// Gather all the infos the welcome message needs to contain
@@ -122,7 +122,7 @@ func testAttachWelcome(t *testing.T, cli *testcli, endpoint, apis string) {
 	attach.Expect(`
 Welcome to the Lachesis JavaScript console!
 
-instance: go-opera/v{{version}}/{{goos}}-{{goarch}}/{{gover}}
+instance: arthera-node/v{{version}}/{{goos}}-{{goarch}}/{{gover}}
 coinbase: {{coinbase}}
 at block: 1 ({{niltime}}){{if ipc}}
  datadir: {{datadir}}{{end}}

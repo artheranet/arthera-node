@@ -1,6 +1,7 @@
 package launcher
 
 import (
+	"github.com/artheranet/arthera-node/genesis/makefakegenesis"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -10,12 +11,11 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/params"
 
-	"github.com/artheranet/arthera-node/integration/makefakegenesis"
 	"github.com/artheranet/arthera-node/inter/validatorpk"
 )
 
 func TestFakeNetFlag_NonValidator(t *testing.T) {
-	// Start an opera console, make sure it's cleaned up and terminate the console
+	// Start an arthera console, make sure it's cleaned up and terminate the console
 	cli := exec(t,
 		"--fakenet", "0/3",
 		"--port", "0", "--maxpeers", "0", "--nodiscover", "--nat", "none",
@@ -35,7 +35,7 @@ func TestFakeNetFlag_NonValidator(t *testing.T) {
 	cli.Expect(`
 Welcome to the Lachesis JavaScript console!
 
-instance: go-opera/v{{version}}/{{goos}}-{{goarch}}/{{gover}}
+instance: arthera-node/v{{version}}/{{goos}}-{{goarch}}/{{gover}}
 coinbase: {{.Coinbase}}
 at block: 1 ({{niltime}})
  datadir: {{.Datadir}}
@@ -57,7 +57,7 @@ To exit, press ctrl-d
 }
 
 func TestFakeNetFlag_Validator(t *testing.T) {
-	// Start an opera console, make sure it's cleaned up and terminate the console
+	// Start an arthera console, make sure it's cleaned up and terminate the console
 	cli := exec(t,
 		"--fakenet", "3/3",
 		"--port", "0", "--maxpeers", "0", "--nodiscover", "--nat", "none",
@@ -79,7 +79,7 @@ func TestFakeNetFlag_Validator(t *testing.T) {
 	cli.Expect(`
 Welcome to the Lachesis JavaScript console!
 
-instance: go-opera/v{{version}}/{{goos}}-{{goarch}}/{{gover}}
+instance: arthera-node/v{{version}}/{{goos}}-{{goarch}}/{{gover}}
 coinbase: {{.Coinbase}}
 at block: 1 ({{niltime}})
  datadir: {{.Datadir}}

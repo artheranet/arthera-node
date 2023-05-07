@@ -34,7 +34,7 @@ func (s *Store) migrateData() error {
 
 func (s *Store) migrations() *migration.Migration {
 	return migration.
-		Begin("opera-gossip-store").
+		Begin("arthera-gossip-store").
 		Next("used gas recovery", unsupportedMigration).
 		Next("tx hashes recovery", unsupportedMigration).
 		Next("DAG heads recovery", unsupportedMigration).

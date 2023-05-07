@@ -39,7 +39,7 @@ func calcAppHelpFlagGroups() []flags.FlagGroup {
 	initFlags()
 	return []flags.FlagGroup{
 		{
-			Name:  "OPERA",
+			Name:  "ARTHERA",
 			Flags: operaFlags,
 		},
 		{

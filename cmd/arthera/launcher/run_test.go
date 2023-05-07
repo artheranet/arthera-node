@@ -17,7 +17,7 @@ import (
 )
 
 func tmpdir(t *testing.T) string {
-	dir, err := ioutil.TempDir("", "opera-test")
+	dir, err := ioutil.TempDir("", "arthera-test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -40,8 +40,8 @@ func (tt *testcli) readConfig() {
 }
 
 func init() {
-	// Run the app if we've been exec'd as "opera-test" in exec().
-	reexec.Register("opera-test", func() {
+	// Run the app if we've been exec'd as "arthera-test" in exec().
+	reexec.Register("arthera-test", func() {
 		if err := app.Run(os.Args); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
@@ -88,9 +88,9 @@ func exec(t *testing.T, args ...string) *testcli {
 		}()
 	}
 
-	// Boot "opera". This actually runs the test binary but the TestMain
+	// Boot "arthera". This actually runs the test binary but the TestMain
 	// function will prevent any tests from running.
-	tt.Run("opera-test", args...)
+	tt.Run("arthera-test", args...)
 
 	// Read the generated key
 	tt.readConfig()

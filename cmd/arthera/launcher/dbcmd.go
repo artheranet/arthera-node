@@ -38,7 +38,7 @@ var (
 					utils.DataDirFlag,
 				},
 				Description: `
-opera db compact
+arthera db compact
 will compact all databases under datadir's chaindata.
 `,
 			},
@@ -52,7 +52,7 @@ will compact all databases under datadir's chaindata.
 					utils.DataDirFlag,
 				},
 				Description: `
-opera db transform
+arthera db transform
 will migrate tables layout according to the configuration.
 `,
 			},
@@ -67,7 +67,7 @@ will migrate tables layout according to the configuration.
 					experimentalFlag,
 				},
 				Description: `
-opera db heal --experimental
+arthera db heal --experimental
 Experimental - try to heal dirty DB.
 `,
 			},

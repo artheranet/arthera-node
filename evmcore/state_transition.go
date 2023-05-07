@@ -376,7 +376,7 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	// 4. the purchased gas is enough to cover intrinsic usage
 	// 5. there is no overflow when calculating intrinsic gas
 
-	// Note: insufficient balance for **topmost** call isn't a consensus error in Opera, unlike Ethereum
+	// Note: insufficient balance for **topmost** call isn't a consensus error in Arthera, unlike Ethereum
 	// Such transaction will revert and consume sender's gas
 
 	msg := st.msg
@@ -435,7 +435,6 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	// There is no single proposer who originated transactions for a block and so validator doesn't know in advance
 	// how much gas will be spent by a transaction, this is different from Ethereum and so adjustments were made
 	// to address this issue. The penalty (10% charge of unspent gas) is introduced to avoid many of such cases.
-	// https://github.com/Fantom-foundation/go-opera/wiki/EVM
 	if !st.internal() {
 		st.gas -= st.gas / 10
 	}

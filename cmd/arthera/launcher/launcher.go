@@ -2,6 +2,7 @@ package launcher
 
 import (
 	"fmt"
+	"github.com/ethereum/go-ethereum/p2p/discover/discfilter"
 	"path"
 	"sort"
 	"strings"
@@ -198,6 +199,7 @@ func initFlags() {
 
 // init the CLI app.
 func init() {
+	discfilter.Enable()
 	overrideFlags()
 	overrideParams()
 

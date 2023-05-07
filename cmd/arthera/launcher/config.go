@@ -342,6 +342,9 @@ func gossipConfigWithFlags(ctx *cli.Context, src gossip.Config) (gossip.Config, 
 	if ctx.GlobalIsSet(RPCGlobalTxFeeCapFlag.Name) {
 		cfg.RPCTxFeeCap = ctx.GlobalFloat64(RPCGlobalTxFeeCapFlag.Name)
 	}
+	if ctx.GlobalIsSet(RPCGlobalTimeoutFlag.Name) {
+		cfg.RPCTimeout = ctx.GlobalDuration(RPCGlobalTimeoutFlag.Name)
+	}
 	if ctx.GlobalIsSet(SyncModeFlag.Name) {
 		if syncmode := ctx.GlobalString(SyncModeFlag.Name); syncmode != "full" && syncmode != "snap" {
 			utils.Fatalf("--%s must be either 'full' or 'snap'", SyncModeFlag.Name)

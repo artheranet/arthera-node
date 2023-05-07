@@ -1,6 +1,7 @@
 package switchable
 
 import (
+	"github.com/artheranet/arthera-node/utils/dbutil/itergc"
 	"sync"
 
 	"github.com/Fantom-foundation/lachesis-base/kvdb"

@@ -149,7 +149,7 @@ func compactDB(typ multidb.TypeName, name string, producer kvdb.DBProducer) erro
 	log.Info("Stats before compaction", "db", humanName)
 	showDbStats(db)
 
-	err = compactdb.Compact(db, humanName)
+	err = compactdb.Compact(db, humanName, 16*opt.GiB)
 	if err != nil {
 		log.Error("Database compaction failed", "err", err)
 		return err

@@ -2,6 +2,7 @@ package launcher
 
 import (
 	"github.com/artheranet/arthera-node/utils/dbutil/compactdb"
+	"github.com/syndtr/goleveldb/leveldb/opt"
 	"os"
 	"path"
 	"strings"
@@ -290,7 +291,7 @@ func transformComponent(datadir string, dbTypes, tmpDbTypes map[multidb.TypeName
 					keys = keys[:0]
 					values = values[:0]
 				}
-				err = compactdb.Compact(newTable, newHumanName)
+				err = compactdb.Compact(newTable, newHumanName, 16*opt.GiB)
 				if err != nil {
 					log.Error("Database compaction failed", "err", err)
 					return err

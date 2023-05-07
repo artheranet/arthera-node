@@ -8,8 +8,10 @@ import (
 	"github.com/artheranet/arthera-node/genesis/makefakegenesis"
 	"github.com/artheranet/arthera-node/params"
 	utils2 "github.com/artheranet/arthera-node/utils"
+	"github.com/artheranet/arthera-node/utils/memory"
 	"github.com/ethereum/go-ethereum/core/vm"
 	ethparams "github.com/ethereum/go-ethereum/params"
+	"github.com/syndtr/goleveldb/leveldb/opt"
 	"os"
 	"path"
 	"path/filepath"
@@ -143,7 +145,7 @@ const (
 	// DefaultCacheSize is calculated as memory consumption in a worst case scenario with default configuration
 	// Average memory consumption might be 3-5 times lower than the maximum
 	DefaultCacheSize  = 3600
-	ConstantCacheSize = 600
+	ConstantCacheSize = 400
 )
 
 // These settings ensure that TOML keys use the same names as Go struct fields.
@@ -389,14 +391,28 @@ func nodeConfigWithFlags(ctx *cli.Context, cfg node.Config) node.Config {
 }
 
 func cacheScaler(ctx *cli.Context) cachescale.Func {
-	if !ctx.GlobalIsSet(CacheFlag.Name) {
-		return cachescale.Identity
-	}
 	targetCache := ctx.GlobalInt(CacheFlag.Name)
 	baseSize := DefaultCacheSize
+	totalMemory := int(memory.TotalMemory() / opt.MiB)
+	maxCache := totalMemory * 3 / 5
+	if maxCache < baseSize {
+		maxCache = baseSize
+	}
+	if !ctx.GlobalIsSet(CacheFlag.Name) {
+		recommendedCache := totalMemory / 2
+		if recommendedCache > baseSize {
+			log.Warn(fmt.Sprintf("Please add '--%s %d' flag to allocate more cache for Opera. Total memory is %d MB.", CacheFlag.Name, recommendedCache, totalMemory))
+		}
+		return cachescale.Identity
+	}
 	if targetCache < baseSize {
 		log.Crit("Invalid flag", "flag", CacheFlag.Name, "err", fmt.Sprintf("minimum cache size is %d MB", baseSize))
 	}
+	if targetCache > maxCache {
+		log.Warn(fmt.Sprintf("Requested cache size exceeds 60%% of availible memory. Reducing cache size to %d MB.", maxCache))
+		targetCache = maxCache
+	}
+
 	return cachescale.Ratio{
 		Base:   uint64(baseSize - ConstantCacheSize),
 		Target: uint64(targetCache - ConstantCacheSize),

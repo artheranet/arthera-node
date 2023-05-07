@@ -3,6 +3,7 @@ package topicsdb
 import (
 	"context"
 	"fmt"
+	"github.com/artheranet/arthera-node/logger"
 	"math/rand"
 	"testing"
 
@@ -12,8 +13,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/stretchr/testify/require"
-
-	"github.com/artheranet/arthera-node/logger"
 )
 
 func TestIndexSearchMultyVariants(t *testing.T) {
@@ -47,7 +46,7 @@ func TestIndexSearchMultyVariants(t *testing.T) {
 	},
 	}
 
-	index := New(memorydb.NewProducer(""))
+	index := newIndex(memorydb.NewProducer(""))
 
 	for _, l := range testdata {
 		err := index.Push(l)
@@ -69,7 +68,7 @@ func TestIndexSearchMultyVariants(t *testing.T) {
 		}
 	}
 
-	pooled := WithThreadPool{index}
+	pooled := withThreadPool{index}
 
 	for dsc, method := range map[string]func(context.Context, idx.Block, idx.Block, [][]common.Hash) ([]*types.Log, error){
 		"index":  index.FindInBlocks,
@@ -172,14 +171,14 @@ func TestIndexSearchShortCircuits(t *testing.T) {
 	},
 	}
 
-	index := New(memorydb.NewProducer(""))
+	index := newIndex(memorydb.NewProducer(""))
 
 	for _, l := range testdata {
 		err := index.Push(l)
 		require.NoError(t, err)
 	}
 
-	pooled := WithThreadPool{index}
+	pooled := withThreadPool{index}
 
 	for dsc, method := range map[string]func(context.Context, idx.Block, idx.Block, [][]common.Hash) ([]*types.Log, error){
 		"index":  index.FindInBlocks,
@@ -232,14 +231,14 @@ func TestIndexSearchSingleVariant(t *testing.T) {
 
 	topics, recs, topics4rec := genTestData(100)
 
-	index := New(memorydb.NewProducer(""))
+	index := newIndex(memorydb.NewProducer(""))
 
 	for _, rec := range recs {
 		err := index.Push(rec)
 		require.NoError(t, err)
 	}
 
-	pooled := WithThreadPool{index}
+	pooled := withThreadPool{index}
 
 	for dsc, method := range map[string]func(context.Context, idx.Block, idx.Block, [][]common.Hash) ([]*types.Log, error){
 		"index":  index.FindInBlocks,
@@ -304,7 +303,7 @@ func TestIndexSearchSimple(t *testing.T) {
 	},
 	}
 
-	index := New(memorydb.NewProducer(""))
+	index := newIndex(memorydb.NewProducer(""))
 
 	for _, l := range testdata {
 		err := index.Push(l)
@@ -316,7 +315,7 @@ func TestIndexSearchSimple(t *testing.T) {
 		err error
 	)
 
-	pooled := WithThreadPool{index}
+	pooled := withThreadPool{index}
 
 	for dsc, method := range map[string]func(context.Context, idx.Block, idx.Block, [][]common.Hash) ([]*types.Log, error){
 		"index":  index.FindInBlocks,
@@ -356,9 +355,9 @@ func TestMaxTopicsCount(t *testing.T) {
 	testdata := &types.Log{
 		BlockNumber: 1,
 		Address:     randAddress(),
-		Topics:      make([]common.Hash, MaxTopicsCount),
+		Topics:      make([]common.Hash, maxTopicsCount),
 	}
-	pattern := make([][]common.Hash, MaxTopicsCount+1)
+	pattern := make([][]common.Hash, maxTopicsCount+1)
 	pattern[0] = []common.Hash{testdata.Address.Hash()}
 	for i := range testdata.Topics {
 		testdata.Topics[i] = common.BytesToHash([]byte(fmt.Sprintf("topic%d", i)))
@@ -366,11 +365,11 @@ func TestMaxTopicsCount(t *testing.T) {
 		pattern[i+1] = []common.Hash{testdata.Topics[i]}
 	}
 
-	index := New(memorydb.NewProducer(""))
+	index := newIndex(memorydb.NewProducer(""))
 	err := index.Push(testdata)
 	require.NoError(t, err)
 
-	pooled := WithThreadPool{index}
+	pooled := withThreadPool{index}
 
 	for dsc, method := range map[string]func(context.Context, idx.Block, idx.Block, [][]common.Hash) ([]*types.Log, error){
 		"index":  index.FindInBlocks,
@@ -382,12 +381,12 @@ func TestMaxTopicsCount(t *testing.T) {
 			got, err := method(nil, 0, 0xffffffff, pattern)
 			require.NoError(err)
 			require.Equal(1, len(got))
-			require.Equal(MaxTopicsCount, len(got[0].Topics))
+			require.Equal(maxTopicsCount, len(got[0].Topics))
 		})
 	}
 
-	require.Equal(t, MaxTopicsCount+1, len(pattern))
-	require.Equal(t, MaxTopicsCount+1, len(pattern[0]))
+	require.Equal(t, maxTopicsCount+1, len(pattern))
+	require.Equal(t, maxTopicsCount+1, len(pattern[0]))
 }
 
 func TestPatternLimit(t *testing.T) {
@@ -424,8 +423,8 @@ func TestPatternLimit(t *testing.T) {
 			err: nil,
 		},
 		{
-			pattern: append(append(make([][]common.Hash, MaxTopicsCount), []common.Hash{hash.FakeHash(1)}), []common.Hash{hash.FakeHash(1)}),
-			exp:     append(make([][]common.Hash, MaxTopicsCount), []common.Hash{hash.FakeHash(1)}),
+			pattern: append(append(make([][]common.Hash, maxTopicsCount), []common.Hash{hash.FakeHash(1)}), []common.Hash{hash.FakeHash(1)}),
+			exp:     append(make([][]common.Hash, maxTopicsCount), []common.Hash{hash.FakeHash(1)}),
 			err:     nil,
 		},
 	}

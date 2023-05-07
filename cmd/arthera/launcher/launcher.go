@@ -162,6 +162,7 @@ func initFlags() {
 		RPCGlobalGasCapFlag,
 		RPCGlobalTxFeeCapFlag,
 		RPCGlobalTimeoutFlag,
+		RPCGlobalEVMTimeoutFlag,
 	}
 
 	metricsFlags = []cli.Flag{

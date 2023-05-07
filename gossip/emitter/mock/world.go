@@ -11,11 +11,11 @@ import (
 	evmcore "github.com/artheranet/arthera-node/evmcore"
 	inter "github.com/artheranet/arthera-node/inter"
 	validatorpk "github.com/artheranet/arthera-node/inter/validatorpk"
-	opera "github.com/artheranet/arthera-node/opera"
 	vecmt "github.com/artheranet/arthera-node/vecmt"
 	common "github.com/ethereum/go-ethereum/common"
 	types "github.com/ethereum/go-ethereum/core/types"
 	event "github.com/ethereum/go-ethereum/event"
+	"github.com/ethereum/go-ethereum/params"
 	gomock "github.com/golang/mock/gomock"
 	big "math/big"
 	reflect "reflect"
@@ -296,10 +296,10 @@ func (mr *MockExternalMockRecorder) GetLowestEpochToDecide() *gomock.Call {
 }
 
 // GetRules mocks base method
-func (m *MockExternal) GetRules() opera.Rules {
+func (m *MockExternal) GetRules() params.Rules {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetRules")
-	ret0, _ := ret[0].(opera.Rules)
+	ret0, _ := ret[0].(params.Rules)
 	return ret0
 }
 

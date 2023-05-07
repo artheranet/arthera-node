@@ -1,6 +1,8 @@
 package emitter
 
 import (
+	"github.com/artheranet/arthera-node/genesis/makefakegenesis"
+	"github.com/artheranet/arthera-node/params"
 	"math/big"
 	"testing"
 	"time"
@@ -14,9 +16,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/artheranet/arthera-node/gossip/emitter/mock"
-	"github.com/artheranet/arthera-node/integration/makefakegenesis"
 	"github.com/artheranet/arthera-node/inter"
-	"github.com/artheranet/arthera-node/opera"
 	"github.com/artheranet/arthera-node/vecmt"
 )
 
@@ -61,7 +61,7 @@ func TestEmitter(t *testing.T) {
 
 	t.Run("init", func(t *testing.T) {
 		external.EXPECT().GetRules().
-			Return(opera.FakeNetRules()).
+			Return(params.FakeNetRules()).
 			AnyTimes()
 
 		external.EXPECT().GetEpochValidators().

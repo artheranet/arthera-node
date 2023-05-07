@@ -1,13 +1,13 @@
 package integration
 
 import (
+	"github.com/artheranet/arthera-node/utils"
 	"os"
 	"path"
 )
 
 func isInterrupted(chaindataDir string) bool {
-	_, err := os.Stat(path.Join(chaindataDir, "unfinished"))
-	return err == nil
+	return utils.FileExists(path.Join(chaindataDir, "unfinished"))
 }
 
 func setGenesisProcessing(chaindataDir string) {

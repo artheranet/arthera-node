@@ -232,7 +232,7 @@ func WriteGenesisStore(fn string, gs *genesisstore.Store, genesisHash hash.Hash)
 	plain = fh
 
 	writer := newUnitWriter(plain)
-	err = writer.Start(gs.Header(), genesisstore.EpochsSection, "/tmp/gentmp")
+	err = writer.Start(gs.Header(), genesisstore.EpochsSection(0), "/tmp/gentmp")
 	if err != nil {
 		return err
 	}
@@ -254,7 +254,7 @@ func WriteGenesisStore(fn string, gs *genesisstore.Store, genesisHash hash.Hash)
 	log.Info("Exported epochs", "hash", epochsHash.String())
 
 	writer = newUnitWriter(plain)
-	err = writer.Start(gs.Header(), genesisstore.BlocksSection, "/tmp/gentmp")
+	err = writer.Start(gs.Header(), genesisstore.BlocksSection(0), "/tmp/gentmp")
 	if err != nil {
 		return err
 	}
@@ -275,7 +275,7 @@ func WriteGenesisStore(fn string, gs *genesisstore.Store, genesisHash hash.Hash)
 	log.Info("Exported blocks", "hash", blocksHash.String())
 
 	writer = newUnitWriter(plain)
-	err = writer.Start(gs.Header(), genesisstore.EvmSection, "/tmp/gentmp")
+	err = writer.Start(gs.Header(), genesisstore.EvmSection(0), "/tmp/gentmp")
 	if err != nil {
 		return err
 	}

@@ -44,6 +44,8 @@ func AddReward(evmRunner runner.EVMRunner, contract common.Address, reward *big.
 	if contract == contracts.ZeroAddress {
 		return nil
 	}
+	evmRunner.StopGasMetering()
+	defer evmRunner.StartGasMetering()
 	err := addReward.Execute(evmRunner, nil, big.NewInt(0), contract, reward)
 	if err != nil {
 		return err
@@ -57,6 +59,8 @@ func GetOwnerOfContract(evmRunner runner.EVMRunner, contract common.Address) (co
 	if contract == contracts.ZeroAddress {
 		return contracts.ZeroAddress, nil
 	}
+	evmRunner.StopGasMetering()
+	defer evmRunner.StartGasMetering()
 	err := getOwnerOfContract.Query(evmRunner, &result, contract)
 	if err != nil {
 		return contracts.ZeroAddress, err
@@ -68,6 +72,8 @@ func SetOwnerOfContract(evmRunner runner.EVMRunner, contract common.Address, own
 	if contract == contracts.ZeroAddress {
 		return nil
 	}
+	evmRunner.StopGasMetering()
+	defer evmRunner.StartGasMetering()
 	err := setOwnerOfContract.Execute(evmRunner, nil, big.NewInt(0), contract, owner)
 	if err != nil {
 		return err

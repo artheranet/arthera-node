@@ -32,7 +32,7 @@ import (
 	"github.com/artheranet/arthera-node/inter"
 )
 
-var FakeGenesisTime = inter.Timestamp(1608600000 * time.Second)
+var FakeGenesisTime = inter.FromUnix(time.Now().Unix())
 
 // ApplyFakeGenesis writes or updates the genesis block in db.
 func ApplyFakeGenesis(statedb *state.StateDB, time inter.Timestamp, balances map[common.Address]*big.Int) (*EvmBlock, error) {

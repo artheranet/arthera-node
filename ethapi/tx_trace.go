@@ -67,10 +67,7 @@ func (s *PublicTxTraceAPI) traceTx(
 
 	// Setup context so it may be cancelled the call has completed
 	// or, in case of unmetered gas, setup a context with a timeout.
-	var timeout time.Duration = 5 * time.Second
-	if s.b.RPCEVMTimeout() > 0 {
-		timeout = s.b.RPCEVMTimeout()
-	}
+	var timeout = s.b.RPCEVMTimeout()
 	var cancel context.CancelFunc
 	ctx, cancel = context.WithTimeout(ctx, timeout)
 

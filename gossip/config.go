@@ -209,7 +209,7 @@ func DefaultConfig(scale cachescale.Func) Config {
 			PeerCache:                DefaultPeerCacheConfig(scale),
 		},
 
-		RPCEVMTimeout: 50 * time.Second,
+		RPCEVMTimeout: 20 * time.Second,
 
 		GPO: gasprice.Config{
 			MaxGasPrice:      gasprice.DefaultMaxGasPrice,
@@ -220,7 +220,8 @@ func DefaultConfig(scale cachescale.Func) Config {
 		RPCBlockExt: true,
 
 		RPCGasCap:   50000000,
-		RPCTxFeeCap: 100, // 100 ART
+		RPCTxFeeCap: 100, // 100 ART,
+		RPCTimeout:  20 * time.Second,
 	}
 	sessionCfg := cfg.Protocol.DagStreamLeecher.Session
 	cfg.Protocol.DagProcessor.EventsBufferLimit.Num = idx.Event(sessionCfg.ParallelChunksDownload)*

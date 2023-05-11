@@ -27,6 +27,7 @@ import (
 	"io"
 	"math/big"
 	"os"
+	"time"
 )
 
 var genesisTypeFlag = cli.StringFlag{
@@ -97,7 +98,7 @@ var (
 	MainnetValidators = []GenesisValidator{}
 	MainnetAccounts   = []GenesisAccount{}
 
-	GenesisTime = inter.FromUnix(1677067996)
+	GenesisTime = inter.FromUnix(time.Now().Unix())
 )
 
 func createGenesisCmd(ctx *cli.Context) error {

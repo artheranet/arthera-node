@@ -218,7 +218,7 @@ func mayGetGenesisStore(ctx *cli.Context) *genesisstore.Store {
 	switch {
 	case ctx.GlobalIsSet(FakeNetFlag.Name):
 		_, num, err := parseFakeGen(ctx.GlobalString(FakeNetFlag.Name))
-		if num >= 11 || err != nil {
+		if err != nil {
 			log.Crit("Invalid flag", "flag", FakeNetFlag.Name, "err", err)
 		}
 		return makefakegenesis.FakeGenesisStore(num, futils.ToArt(1_000_000_000), futils.ToArt(5_000_000))
@@ -286,7 +286,7 @@ func setDataDir(ctx *cli.Context, cfg *node.Config) {
 		cfg.DataDir = ctx.GlobalString(DataDirFlag.Name)
 	case ctx.GlobalIsSet(FakeNetFlag.Name):
 		_, num, err := parseFakeGen(ctx.GlobalString(FakeNetFlag.Name))
-		if num >= 11 || err != nil {
+		if err != nil {
 			log.Crit("Invalid flag", "flag", FakeNetFlag.Name, "err", err)
 		}
 		cfg.DataDir = filepath.Join(defaultDataDir, fmt.Sprintf("fakenet-%d", num))
@@ -522,7 +522,7 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 
 	if ctx.GlobalIsSet(FakeNetFlag.Name) {
 		_, num, err := parseFakeGen(ctx.GlobalString(FakeNetFlag.Name))
-		if num >= 11 || err != nil {
+		if err != nil {
 			return nil, fmt.Errorf("invalid fakenet flag")
 		}
 		cfg.Emitter = emitter.FakeConfig(num)

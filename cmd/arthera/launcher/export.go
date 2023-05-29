@@ -4,6 +4,7 @@ import (
 	"compress/gzip"
 	"github.com/Fantom-foundation/lachesis-base/kvdb/batched"
 	"github.com/Fantom-foundation/lachesis-base/kvdb/pebble"
+	"github.com/artheranet/arthera-node/utils/dbutil/autocompact"
 	"io"
 	"os"
 	"strconv"
@@ -134,7 +135,7 @@ func exportEvmKeys(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	keysDB := batched.Wrap(keysDB_)
+	keysDB := batched.Wrap(autocompact.Wrap2M(keysDB_, opt.GiB, 16*opt.GiB, true, "evm-keys"))
 	defer keysDB.Close()
 
 	it := gdb.EvmStore().EvmDb.NewIterator(nil, nil)

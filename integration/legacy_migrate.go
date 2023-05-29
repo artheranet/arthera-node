@@ -3,6 +3,7 @@ package integration
 import (
 	"errors"
 	"fmt"
+	"github.com/artheranet/arthera-node/utils/dbutil/autocompact"
 	"github.com/artheranet/arthera-node/utils/dbutil/compactdb"
 	"os"
 	"path"
@@ -45,7 +46,7 @@ type transformTask struct {
 
 func transform(m transformTask) error {
 	openDst := func() *batched.Store {
-		return batched.Wrap(m.openDst())
+		return batched.Wrap(autocompact.Wrap(autocompact.Wrap(m.openDst(), 1*opt.GiB), 16*opt.GiB))
 	}
 	openSrc := func() *batched.Store {
 		return batched.Wrap(m.openSrc())

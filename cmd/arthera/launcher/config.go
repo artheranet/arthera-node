@@ -218,7 +218,7 @@ func mayGetGenesisStore(ctx *cli.Context) *genesisstore.Store {
 	switch {
 	case ctx.GlobalIsSet(FakeNetFlag.Name):
 		_, num, err := parseFakeGen(ctx.GlobalString(FakeNetFlag.Name))
-		if err != nil {
+		if num >= 11 || err != nil {
 			log.Crit("Invalid flag", "flag", FakeNetFlag.Name, "err", err)
 		}
 		return makefakegenesis.FakeGenesisStore(num, futils.ToArt(1_000_000_000), futils.ToArt(5_000_000))

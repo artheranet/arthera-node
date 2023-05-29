@@ -2,6 +2,7 @@ package integration
 
 import (
 	"fmt"
+	"github.com/artheranet/arthera-node/utils/dbutil/threads"
 
 	"github.com/Fantom-foundation/lachesis-base/kvdb"
 	"github.com/Fantom-foundation/lachesis-base/kvdb/cachedproducer"
@@ -38,7 +39,7 @@ func MakeMultiProducer(rawProducers map[multidb.TypeName]kvdb.IterableDBProducer
 	}
 
 	p, err := makeMultiProducer(cachedProducers, cfg)
-	return p, err
+	return threads.CountedFullDBProducer(p), err
 }
 
 func MakeDirectMultiProducer(rawProducers map[multidb.TypeName]kvdb.IterableDBProducer, cfg RoutingConfig) (kvdb.FullDBProducer, error) {

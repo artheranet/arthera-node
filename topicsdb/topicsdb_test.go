@@ -4,7 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/artheranet/arthera-node/logger"
+	"github.com/artheranet/arthera-node/utils/dbutil/threads"
 	"math/rand"
+	"os"
+	"runtime/debug"
 	"testing"
 
 	"github.com/Fantom-foundation/lachesis-base/hash"
@@ -14,6 +17,17 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/stretchr/testify/require"
 )
+
+func TestMain(m *testing.M) {
+	debug.SetMaxThreads(20)
+
+	os.Exit(m.Run())
+}
+
+func newTestIndex() *index {
+	mem := threads.CountedDBProducer(memorydb.NewProducer(""))
+	return newIndex(mem)
+}
 
 func TestIndexSearchMultyVariants(t *testing.T) {
 	logger.SetTestMode(t)
@@ -46,7 +60,7 @@ func TestIndexSearchMultyVariants(t *testing.T) {
 	},
 	}
 
-	index := newIndex(memorydb.NewProducer(""))
+	index := newTestIndex()
 
 	for _, l := range testdata {
 		err := index.Push(l)
@@ -171,7 +185,7 @@ func TestIndexSearchShortCircuits(t *testing.T) {
 	},
 	}
 
-	index := newIndex(memorydb.NewProducer(""))
+	index := newTestIndex()
 
 	for _, l := range testdata {
 		err := index.Push(l)
@@ -231,7 +245,7 @@ func TestIndexSearchSingleVariant(t *testing.T) {
 
 	topics, recs, topics4rec := genTestData(100)
 
-	index := newIndex(memorydb.NewProducer(""))
+	index := newTestIndex()
 
 	for _, rec := range recs {
 		err := index.Push(rec)
@@ -303,7 +317,7 @@ func TestIndexSearchSimple(t *testing.T) {
 	},
 	}
 
-	index := newIndex(memorydb.NewProducer(""))
+	index := newTestIndex()
 
 	for _, l := range testdata {
 		err := index.Push(l)
@@ -365,7 +379,7 @@ func TestMaxTopicsCount(t *testing.T) {
 		pattern[i+1] = []common.Hash{testdata.Topics[i]}
 	}
 
-	index := newIndex(memorydb.NewProducer(""))
+	index := newTestIndex()
 	err := index.Push(testdata)
 	require.NoError(t, err)
 
@@ -436,6 +450,57 @@ func TestPatternLimit(t *testing.T) {
 			require.ElementsMatch(x.exp[j], got[j], i, j)
 		}
 		require.Equal(x.err, err, i)
+	}
+}
+
+func TestKvdbThreadsPoolLimit(t *testing.T) {
+	logger.SetTestMode(t)
+
+	const N = 100
+
+	_, recs, _ := genTestData(N)
+	index := newTestIndex()
+	for _, rec := range recs {
+		err := index.Push(rec)
+		require.NoError(t, err)
+	}
+
+	pooled := withThreadPool{index}
+
+	for dsc, method := range map[string]func(context.Context, idx.Block, idx.Block, [][]common.Hash) ([]*types.Log, error){
+		"index":  index.FindInBlocks,
+		"pooled": pooled.FindInBlocks,
+	} {
+		t.Run(dsc, func(t *testing.T) {
+			require := require.New(t)
+
+			topics := make([]common.Hash, threads.GlobalPool.Cap()+1)
+			for i := range topics {
+				topics[i] = hash.FakeHash(int64(i))
+			}
+			require.Less(threads.GlobalPool.Cap(), len(topics))
+			qq := make([][]common.Hash, 3)
+
+			// one big pattern
+			qq[1] = topics
+			got, err := method(nil, 0, 1000, qq)
+			require.NoError(err)
+			require.Equal(N, len(got))
+
+			// more than one big pattern
+			qq[1], qq[2] = topics, topics
+			got, err = method(nil, 0, 1000, qq)
+			switch dsc {
+			case "index":
+				require.NoError(err)
+				require.Equal(N, len(got))
+			case "pooled":
+				require.Equal(ErrTooBigTopics, err)
+				require.Equal(0, len(got))
+
+			}
+
+		})
 	}
 }
 

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
+	"github.com/Fantom-foundation/lachesis-base/kvdb/memorydb"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/stretchr/testify/require"
@@ -13,7 +14,8 @@ import (
 func BenchmarkSearch(b *testing.B) {
 	topics, recs, topics4rec := genTestData(1000)
 
-	index := newTestIndex()
+	mem := memorydb.NewProducer("")
+	index := New(mem)
 
 	for _, rec := range recs {
 		err := index.Push(rec)
@@ -33,11 +35,9 @@ func BenchmarkSearch(b *testing.B) {
 		query = append(query, qq)
 	}
 
-	pooled := withThreadPool{index}
-
 	for dsc, method := range map[string]func(context.Context, idx.Block, idx.Block, [][]common.Hash) ([]*types.Log, error){
-		"index":  index.FindInBlocks,
-		"pooled": pooled.FindInBlocks,
+		"sync":  index.FindInBlocks,
+		"async": index.FindInBlocksAsync,
 	} {
 		b.Run(dsc, func(b *testing.B) {
 			b.ResetTimer()

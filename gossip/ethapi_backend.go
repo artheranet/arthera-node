@@ -5,11 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/artheranet/arthera-node/txtrace"
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"math/big"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/Fantom-foundation/lachesis-base/hash"
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
@@ -106,58 +104,9 @@ func (b *EthAPIBackend) TxTraceByHash(ctx context.Context, h common.Hash) (*[]tx
 	traces := make([]txtrace.ActionTrace, 0)
 	json.Unmarshal(txBytes, &traces)
 	if len(traces) == 0 {
-		return nil, fmt.Errorf("no trace for tx hash: %s", h.String())
+		return nil, fmt.Errorf("No trace for tx hash: %s", h.String())
 	}
-	lookForNillMandatoryFields(&traces)
 	return &traces, nil
-}
-
-func lookForNillMandatoryFields(actionTraces *[]txtrace.ActionTrace) {
-	for _, actionTrace := range *actionTraces {
-
-		switch actionTrace.TraceType {
-		case txtrace.CREATE:
-			if actionTrace.Action.From == nil {
-				actionTrace.Action.From = &common.Address{}
-			}
-			if actionTrace.Action.Init == nil || len(*actionTrace.Action.Init) == 0 {
-				actionTrace.Action.Init = &hexutil.Bytes{}
-			}
-			if actionTrace.Result != nil {
-
-				if actionTrace.Result.Code == nil {
-					actionTrace.Result.Code = &hexutil.Bytes{}
-				}
-				if actionTrace.Result.Address == nil {
-					actionTrace.Result.Address = &common.Address{}
-				}
-			}
-		case txtrace.CALL:
-			if actionTrace.Action.CallType == nil {
-				calltype := txtrace.CALL
-				actionTrace.Action.CallType = &calltype
-			}
-			if actionTrace.Action.From == nil {
-				actionTrace.Action.From = &common.Address{}
-			}
-			if actionTrace.Action.Input == nil {
-				actionTrace.Action.Input = &hexutil.Bytes{}
-			}
-			if actionTrace.Result != nil && actionTrace.Result.Output == nil {
-				actionTrace.Result.Output = &hexutil.Bytes{}
-			}
-		case txtrace.SELFDESTRUCT:
-			if actionTrace.Action.Address == nil {
-				actionTrace.Action.Address = &common.Address{}
-			}
-			if actionTrace.Action.RefundAddress == nil {
-				actionTrace.Action.RefundAddress = &common.Address{}
-			}
-			if actionTrace.Action.Balance == nil {
-				actionTrace.Action.Balance = &hexutil.Big{}
-			}
-		}
-	}
 }
 
 // TxTraceSave saves transaction trace into store db
@@ -536,15 +485,11 @@ func (b *EthAPIBackend) RPCGasCap() uint64 {
 	return b.svc.config.RPCGasCap
 }
 
-func (b *EthAPIBackend) RPCEVMTimeout() time.Duration {
-	return b.svc.config.RPCEVMTimeout
-}
-
 func (b *EthAPIBackend) RPCTxFeeCap() float64 {
 	return b.svc.config.RPCTxFeeCap
 }
 
-func (b *EthAPIBackend) EvmLogIndex() topicsdb.Index {
+func (b *EthAPIBackend) EvmLogIndex() *topicsdb.Index {
 	return b.svc.store.evm.EvmLogs
 }
 

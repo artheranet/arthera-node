@@ -27,7 +27,6 @@ import (
 	"io"
 	"math/big"
 	"os"
-	"time"
 )
 
 var genesisTypeFlag = cli.StringFlag{
@@ -98,7 +97,7 @@ var (
 	MainnetValidators = []GenesisValidator{}
 	MainnetAccounts   = []GenesisAccount{}
 
-	GenesisTime = inter.FromUnix(time.Now().Unix())
+	GenesisTime = inter.FromUnix(1677067996)
 )
 
 func createGenesisCmd(ctx *cli.Context) error {
@@ -233,7 +232,7 @@ func WriteGenesisStore(fn string, gs *genesisstore.Store, genesisHash hash.Hash)
 	plain = fh
 
 	writer := newUnitWriter(plain)
-	err = writer.Start(gs.Header(), genesisstore.EpochsSection(0), "/tmp/gentmp")
+	err = writer.Start(gs.Header(), genesisstore.EpochsSection, "/tmp/gentmp")
 	if err != nil {
 		return err
 	}
@@ -255,7 +254,7 @@ func WriteGenesisStore(fn string, gs *genesisstore.Store, genesisHash hash.Hash)
 	log.Info("Exported epochs", "hash", epochsHash.String())
 
 	writer = newUnitWriter(plain)
-	err = writer.Start(gs.Header(), genesisstore.BlocksSection(0), "/tmp/gentmp")
+	err = writer.Start(gs.Header(), genesisstore.BlocksSection, "/tmp/gentmp")
 	if err != nil {
 		return err
 	}
@@ -276,7 +275,7 @@ func WriteGenesisStore(fn string, gs *genesisstore.Store, genesisHash hash.Hash)
 	log.Info("Exported blocks", "hash", blocksHash.String())
 
 	writer = newUnitWriter(plain)
-	err = writer.Start(gs.Header(), genesisstore.EvmSection(0), "/tmp/gentmp")
+	err = writer.Start(gs.Header(), genesisstore.EvmSection, "/tmp/gentmp")
 	if err != nil {
 		return err
 	}

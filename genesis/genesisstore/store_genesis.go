@@ -39,7 +39,7 @@ func getSectionName(base string, i int) string {
 	if i == 0 {
 		return base
 	}
-	return fmt.Sprintf("%s-%d", base, i)
+	return fmt.Sprintf("%s-%d", BlocksSection, i)
 }
 
 func (s Store) Header() genesis.Header {
@@ -51,10 +51,10 @@ func (s *Store) Blocks() genesis.Blocks {
 }
 
 func (s Blocks) ForEach(fn func(ibr.LlrIdxFullBlockRecord) bool) {
-	for i := 1000; i >= 0; i-- {
-		f, err := s.fMap(BlocksSection(i))
+	for i := 0; ; i++ {
+		f, err := s.fMap(getSectionName(BlocksSection, i))
 		if err != nil {
-			continue
+			return
 		}
 		stream := rlp.NewStream(f, 0)
 		for {
@@ -78,10 +78,10 @@ func (s *Store) Epochs() genesis.Epochs {
 }
 
 func (s Epochs) ForEach(fn func(ier.LlrIdxFullEpochRecord) bool) {
-	for i := 1000; i >= 0; i-- {
-		f, err := s.fMap(EpochsSection(i))
+	for i := 0; ; i++ {
+		f, err := s.fMap(getSectionName(EpochsSection, i))
 		if err != nil {
-			continue
+			return
 		}
 		stream := rlp.NewStream(f, 0)
 		for {
@@ -105,10 +105,10 @@ func (s *Store) RawEvmItems() genesis.EvmItems {
 }
 
 func (s RawEvmItems) ForEach(fn func(key, value []byte) bool) {
-	for i := 1000; i >= 0; i-- {
-		f, err := s.fMap(EvmSection(i))
+	for i := 0; ; i++ {
+		f, err := s.fMap(getSectionName(EvmSection, i))
 		if err != nil {
-			continue
+			return
 		}
 		it := iodb.NewIterator(f)
 		for it.Next() {
@@ -119,13 +119,12 @@ func (s RawEvmItems) ForEach(fn func(key, value []byte) bool) {
 		if it.Error() != nil {
 			log.Crit("Failed to decode RawEvmItems genesis section", "err", it.Error())
 		}
-		it.Release()
 	}
 }
 
 func (s RawEvmItems) Iterator(fn func(iter kvdb.Iterator) bool) {
-	for i := 1000; i >= 0; i-- {
-		f, err := s.fMap(EvmSection(i))
+	for i := 0; ; i++ {
+		f, err := s.fMap(getSectionName(EvmSection, i))
 		if err != nil {
 			return
 		}
@@ -134,6 +133,5 @@ func (s RawEvmItems) Iterator(fn func(iter kvdb.Iterator) bool) {
 		if it.Error() != nil {
 			log.Crit("Failed to decode RawEvmItems genesis section", "err", it.Error())
 		}
-		it.Release()
 	}
 }

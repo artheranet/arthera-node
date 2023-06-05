@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"github.com/artheranet/arthera-node/genesis/makefakegenesis"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -13,6 +12,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/artheranet/arthera-node/gossip"
+	"github.com/artheranet/arthera-node/integration/makefakegenesis"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/utils"
 	"github.com/artheranet/arthera-node/vecmt"

@@ -2,7 +2,6 @@ package launcher
 
 import (
 	"fmt"
-	"github.com/ethereum/go-ethereum/p2p/discover/discfilter"
 	"path"
 	"sort"
 	"strings"
@@ -161,8 +160,6 @@ func initFlags() {
 		utils.IPCPathFlag,
 		RPCGlobalGasCapFlag,
 		RPCGlobalTxFeeCapFlag,
-		RPCGlobalTimeoutFlag,
-		RPCGlobalEVMTimeoutFlag,
 	}
 
 	metricsFlags = []cli.Flag{
@@ -201,7 +198,6 @@ func initFlags() {
 
 // init the CLI app.
 func init() {
-	discfilter.Enable()
 	overrideFlags()
 	overrideParams()
 
@@ -312,7 +308,6 @@ func makeNode(ctx *cli.Context, cfg *config, genesisStore *genesisstore.Store) (
 		_ = genesisStore.Close()
 	}
 	metrics.SetDataDir(cfg.Node.DataDir)
-	memorizeDBPreset(cfg)
 
 	// substitute default bootnodes if requested
 	networkName := ""

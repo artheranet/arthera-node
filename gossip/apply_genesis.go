@@ -2,8 +2,6 @@ package gossip
 
 import (
 	"errors"
-	"github.com/artheranet/arthera-node/utils/dbutil/autocompact"
-	"github.com/syndtr/goleveldb/leveldb/opt"
 
 	"github.com/Fantom-foundation/lachesis-base/hash"
 	"github.com/Fantom-foundation/lachesis-base/kvdb/batched"
@@ -78,7 +76,7 @@ func (s *Store) ApplyGenesis(g genesis.Genesis) (genesisHash hash.Hash, err erro
 func (s *Store) WrapTablesAsBatched() (unwrap func()) {
 	origTables := s.table
 
-	batchedBlocks := batched.Wrap(autocompact.Wrap2M(s.table.Blocks, opt.GiB, 16*opt.GiB, false, "blocks"))
+	batchedBlocks := batched.Wrap(s.table.Blocks)
 	s.table.Blocks = batchedBlocks
 
 	batchedBlockHashes := batched.Wrap(s.table.BlockHashes)

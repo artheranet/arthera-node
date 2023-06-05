@@ -1,28 +1,37 @@
 package evmstore
 
 import (
+	"github.com/Fantom-foundation/lachesis-base/kvdb"
 	"github.com/Fantom-foundation/lachesis-base/kvdb/batched"
-	"github.com/artheranet/arthera-node/utils/adapters/ethdb2kvdb"
-	"github.com/artheranet/arthera-node/utils/dbutil/autocompact"
-	"github.com/syndtr/goleveldb/leveldb/opt"
 
 	"github.com/artheranet/arthera-node/genesis"
 )
 
 // ApplyGenesis writes initial state.
 func (s *Store) ApplyGenesis(g genesis.Genesis) (err error) {
-	db := batched.Wrap(autocompact.Wrap2M(ethdb2kvdb.Wrap(s.EvmDb), opt.GiB, 16*opt.GiB, true, "evm"))
+	batch := s.EvmDb.NewBatch()
+	defer batch.Reset()
 	g.RawEvmItems.ForEach(func(key, value []byte) bool {
-		err = db.Put(key, value)
 		if err != nil {
 			return false
+		}
+		err = batch.Put(key, value)
+		if err != nil {
+			return false
+		}
+		if batch.ValueSize() > kvdb.IdealBatchSize {
+			err = batch.Write()
+			if err != nil {
+				return false
+			}
+			batch.Reset()
 		}
 		return true
 	})
 	if err != nil {
 		return err
 	}
-	return db.Write()
+	return batch.Write()
 }
 
 func (s *Store) WrapTablesAsBatched() (unwrap func()) {
@@ -36,7 +45,7 @@ func (s *Store) WrapTablesAsBatched() (unwrap func()) {
 
 	unwrapLogs := s.EvmLogs.WrapTablesAsBatched()
 
-	batchedReceipts := batched.Wrap(autocompact.Wrap2M(s.table.Receipts, opt.GiB, 16*opt.GiB, false, "receipts"))
+	batchedReceipts := batched.Wrap(s.table.Receipts)
 	s.table.Receipts = batchedReceipts
 	return func() {
 		_ = batchedTxs.Flush()

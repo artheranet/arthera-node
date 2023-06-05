@@ -21,12 +21,6 @@ type EVMRunner interface {
 	// Query performs a read operation over the runner's state
 	// It can be seen as a message (input,value) from sender to recipient that returns `ret`
 	Query(recipient common.Address, input []byte, gas uint64) (ret []byte, err error)
-
-	// StopGasMetering stop gas metering
-	StopGasMetering()
-
-	// StartGasMetering start gas metering
-	StartGasMetering()
 }
 
 type SharedEVMRunner struct{ *vm.EVM }

@@ -245,19 +245,19 @@ func (f *memFile) Close() error {
 func (b *GenesisBuilder) Build(head genesis.Header) *genesisstore.Store {
 	return genesisstore.NewStore(func(name string) (io.Reader, error) {
 		buf := &memFile{bytes.NewBuffer(nil)}
-		if name == genesisstore.BlocksSection(0) {
+		if name == genesisstore.BlocksSection {
 			for i := len(b.blocks) - 1; i >= 0; i-- {
 				_ = rlp.Encode(buf, b.blocks[i])
 			}
 			return buf, nil
 		}
-		if name == genesisstore.EpochsSection(0) {
+		if name == genesisstore.EpochsSection {
 			for i := len(b.epochs) - 1; i >= 0; i-- {
 				_ = rlp.Encode(buf, b.epochs[i])
 			}
 			return buf, nil
 		}
-		if name == genesisstore.EvmSection(0) {
+		if name == genesisstore.EvmSection {
 			it := b.tmpEvmStore.EvmDb.NewIterator(nil, nil)
 			defer it.Release()
 			_ = iodb.Write(buf, it)

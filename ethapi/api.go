@@ -20,11 +20,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/artheranet/arthera-node/utils/adapters/ethdb2kvdb"
-	"github.com/artheranet/arthera-node/utils/dbutil/compactdb"
 	"github.com/ethereum/go-ethereum/eth/tracers"
 	ethparams "github.com/ethereum/go-ethereum/params"
-	"github.com/syndtr/goleveldb/leveldb/opt"
 	"math/big"
 	"runtime"
 	"sync"
@@ -1050,7 +1047,7 @@ func (e *revertError) ErrorData() interface{} {
 // Note, this function doesn't make and changes in the state/blockchain and is
 // useful to execute and retrieve values.
 func (s *PublicBlockChainAPI) Call(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, overrides *StateOverride) (hexutil.Bytes, error) {
-	result, err := DoCall(ctx, s.b, args, blockNrOrHash, overrides, s.b.RPCEVMTimeout(), s.b.RPCGasCap())
+	result, err := DoCall(ctx, s.b, args, blockNrOrHash, overrides, 50*time.Second, s.b.RPCGasCap())
 	if err != nil {
 		return nil, err
 	}
@@ -2379,9 +2376,12 @@ func (api *PrivateDebugAPI) ChaindbProperty(property string) (string, error) {
 // ChaindbCompact flattens the entire key-value database into a single level,
 // removing all unused slots and merging all keys.
 func (api *PrivateDebugAPI) ChaindbCompact() error {
-	if err := compactdb.Compact(ethdb2kvdb.Wrap(api.b.ChainDb()), "EVM", 16*opt.GiB); err != nil {
-		log.Error("Database compaction failed", "err", err)
-		return err
+	for b := byte(0); b < 255; b++ {
+		log.Info("Compacting chain database", "range", fmt.Sprintf("0x%0.2X-0x%0.2X", b, b+1))
+		if err := api.b.ChainDb().Compact([]byte{b}, []byte{b + 1}); err != nil {
+			log.Error("Database compaction failed", "err", err)
+			return err
+		}
 	}
 	return nil
 }

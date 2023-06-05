@@ -7,11 +7,9 @@ import (
 	"github.com/artheranet/arthera-node/genesis"
 	"github.com/artheranet/arthera-node/genesis/makefakegenesis"
 	"github.com/artheranet/arthera-node/params"
-	futils "github.com/artheranet/arthera-node/utils"
-	"github.com/artheranet/arthera-node/utils/memory"
+	utils2 "github.com/artheranet/arthera-node/utils"
 	"github.com/ethereum/go-ethereum/core/vm"
 	ethparams "github.com/ethereum/go-ethereum/params"
-	"github.com/syndtr/goleveldb/leveldb/opt"
 	"os"
 	"path"
 	"path/filepath"
@@ -89,20 +87,10 @@ var (
 		Usage: "Sets a cap on gas that can be used in art_call/estimateGas (0=infinite)",
 		Value: gossip.DefaultConfig(cachescale.Identity).RPCGasCap,
 	}
-	RPCGlobalEVMTimeoutFlag = &cli.DurationFlag{
-		Name:  "rpc.evmtimeout",
-		Usage: "Sets a timeout used for eth_call (0=infinite)",
-		Value: gossip.DefaultConfig(cachescale.Identity).RPCEVMTimeout,
-	}
 	RPCGlobalTxFeeCapFlag = cli.Float64Flag{
 		Name:  "rpc.txfeecap",
 		Usage: "Sets a cap on transaction fee (in ART) that can be sent via the RPC APIs (0 = no cap)",
 		Value: gossip.DefaultConfig(cachescale.Identity).RPCTxFeeCap,
-	}
-	RPCGlobalTimeoutFlag = cli.DurationFlag{
-		Name:  "rpc.timeout",
-		Usage: "Time limit for RPC calls execution",
-		Value: gossip.DefaultConfig(cachescale.Identity).RPCTimeout,
 	}
 
 	SyncModeFlag = cli.StringFlag{
@@ -155,7 +143,7 @@ const (
 	// DefaultCacheSize is calculated as memory consumption in a worst case scenario with default configuration
 	// Average memory consumption might be 3-5 times lower than the maximum
 	DefaultCacheSize  = 3600
-	ConstantCacheSize = 400
+	ConstantCacheSize = 600
 )
 
 // These settings ensure that TOML keys use the same names as Go struct fields.
@@ -221,7 +209,7 @@ func mayGetGenesisStore(ctx *cli.Context) *genesisstore.Store {
 		if err != nil {
 			log.Crit("Invalid flag", "flag", FakeNetFlag.Name, "err", err)
 		}
-		return makefakegenesis.FakeGenesisStore(num, futils.ToArt(1_000_000_000), futils.ToArt(5_000_000))
+		return makefakegenesis.FakeGenesisStore(num, utils2.ToArt(1_000_000_000), utils2.ToArt(5_000_000))
 	case ctx.GlobalIsSet(TestnetFlag.Name):
 		gen, _ := CreateGenesis("testnet")
 		return gen
@@ -346,14 +334,8 @@ func gossipConfigWithFlags(ctx *cli.Context, src gossip.Config) (gossip.Config, 
 	if ctx.GlobalIsSet(RPCGlobalGasCapFlag.Name) {
 		cfg.RPCGasCap = ctx.GlobalUint64(RPCGlobalGasCapFlag.Name)
 	}
-	if ctx.GlobalIsSet(RPCGlobalEVMTimeoutFlag.Name) {
-		cfg.RPCEVMTimeout = ctx.GlobalDuration(RPCGlobalEVMTimeoutFlag.Name)
-	}
 	if ctx.GlobalIsSet(RPCGlobalTxFeeCapFlag.Name) {
 		cfg.RPCTxFeeCap = ctx.GlobalFloat64(RPCGlobalTxFeeCapFlag.Name)
-	}
-	if ctx.GlobalIsSet(RPCGlobalTimeoutFlag.Name) {
-		cfg.RPCTimeout = ctx.GlobalDuration(RPCGlobalTimeoutFlag.Name)
 	}
 	if ctx.GlobalIsSet(SyncModeFlag.Name) {
 		if syncmode := ctx.GlobalString(SyncModeFlag.Name); syncmode != "full" && syncmode != "snap" {
@@ -380,82 +362,21 @@ func gossipStoreConfigWithFlags(ctx *cli.Context, src gossip.StoreConfig) (gossi
 func setDBConfig(ctx *cli.Context, cfg integration.DBsConfig, cacheRatio cachescale.Func) integration.DBsConfig {
 	if ctx.GlobalIsSet(DBPresetFlag.Name) {
 		preset := ctx.GlobalString(DBPresetFlag.Name)
-		cfg = setDBConfigStr(cfg, cacheRatio, preset)
+		switch preset {
+		case "pbl-1":
+			cfg = integration.Pbl1DBsConfig(cacheRatio.U64, uint64(utils.MakeDatabaseHandles()))
+		case "ldb-1":
+			cfg = integration.Ldb1DBsConfig(cacheRatio.U64, uint64(utils.MakeDatabaseHandles()))
+		case "legacy-ldb":
+			cfg = integration.LdbLegacyDBsConfig(cacheRatio.U64, uint64(utils.MakeDatabaseHandles()))
+		case "legacy-pbl":
+			cfg = integration.PblLegacyDBsConfig(cacheRatio.U64, uint64(utils.MakeDatabaseHandles()))
+		default:
+			utils.Fatalf("--%s must be 'pbl-1', 'ldb-1', 'legacy-pbl' or 'legacy-ldb'", DBPresetFlag.Name)
+		}
 	}
 	if ctx.GlobalIsSet(DBMigrationModeFlag.Name) {
 		cfg.MigrationMode = ctx.GlobalString(DBMigrationModeFlag.Name)
-	}
-	return cfg
-}
-
-func setDBConfigStr(cfg integration.DBsConfig, cacheRatio cachescale.Func, preset string) integration.DBsConfig {
-	switch preset {
-	case "pbl-1":
-		cfg = integration.Pbl1DBsConfig(cacheRatio.U64, uint64(utils.MakeDatabaseHandles()))
-	case "ldb-1":
-		cfg = integration.Ldb1DBsConfig(cacheRatio.U64, uint64(utils.MakeDatabaseHandles()))
-	case "legacy-ldb":
-		cfg = integration.LdbLegacyDBsConfig(cacheRatio.U64, uint64(utils.MakeDatabaseHandles()))
-	case "legacy-pbl":
-		cfg = integration.PblLegacyDBsConfig(cacheRatio.U64, uint64(utils.MakeDatabaseHandles()))
-	default:
-		utils.Fatalf("--%s must be 'pbl-1', 'ldb-1', 'legacy-pbl' or 'legacy-ldb'", DBPresetFlag.Name)
-	}
-	// sanity check
-	if preset != reversePresetName(cfg.Routing) {
-		log.Error("Preset name cannot be reversed")
-	}
-	return cfg
-}
-
-func reversePresetName(cfg integration.RoutingConfig) string {
-	pbl1 := integration.Pbl1RoutingConfig()
-	ldb1 := integration.Ldb1RoutingConfig()
-	ldbLegacy := integration.LdbLegacyRoutingConfig()
-	pblLegacy := integration.PblLegacyRoutingConfig()
-	if cfg.Equal(pbl1) {
-		return "pbl-1"
-	}
-	if cfg.Equal(ldb1) {
-		return "ldb-1"
-	}
-	if cfg.Equal(ldbLegacy) {
-		return "legacy-ldb"
-	}
-	if cfg.Equal(pblLegacy) {
-		return "legacy-pbl"
-	}
-	return ""
-}
-
-func memorizeDBPreset(cfg *config) {
-	preset := reversePresetName(cfg.DBs.Routing)
-	pPath := path.Join(cfg.Node.DataDir, "chaindata", "preset")
-	if len(preset) != 0 {
-		futils.FilePut(pPath, []byte(preset), true)
-	} else {
-		_ = os.Remove(pPath)
-	}
-}
-
-func setDBConfigDefault(cfg config, cacheRatio cachescale.Func) config {
-	if len(cfg.DBs.Routing.Table) == 0 && len(cfg.DBs.GenesisCache.Table) == 0 && len(cfg.DBs.RuntimeCache.Table) == 0 {
-		// Substitute memorized db preset from datadir, unless already set
-		datadirPreset := futils.FileGet(path.Join(cfg.Node.DataDir, "chaindata", "preset"))
-		if len(datadirPreset) != 0 {
-			cfg.DBs = setDBConfigStr(cfg.DBs, cacheRatio, string(datadirPreset))
-		}
-	}
-	// apply default for DB config if it wasn't touched by config file or flags, and there's no datadir's default value
-	dbDefault := integration.DefaultDBsConfig(cacheRatio.U64, uint64(utils.MakeDatabaseHandles()))
-	if len(cfg.DBs.Routing.Table) == 0 {
-		cfg.DBs.Routing = dbDefault.Routing
-	}
-	if len(cfg.DBs.GenesisCache.Table) == 0 {
-		cfg.DBs.GenesisCache = dbDefault.GenesisCache
-	}
-	if len(cfg.DBs.RuntimeCache.Table) == 0 {
-		cfg.DBs.RuntimeCache = dbDefault.RuntimeCache
 	}
 	return cfg
 }
@@ -468,28 +389,14 @@ func nodeConfigWithFlags(ctx *cli.Context, cfg node.Config) node.Config {
 }
 
 func cacheScaler(ctx *cli.Context) cachescale.Func {
-	targetCache := ctx.GlobalInt(CacheFlag.Name)
-	baseSize := DefaultCacheSize
-	totalMemory := int(memory.TotalMemory() / opt.MiB)
-	maxCache := totalMemory * 3 / 5
-	if maxCache < baseSize {
-		maxCache = baseSize
-	}
 	if !ctx.GlobalIsSet(CacheFlag.Name) {
-		recommendedCache := totalMemory / 2
-		if recommendedCache > baseSize {
-			log.Warn(fmt.Sprintf("Please add '--%s %d' flag to allocate more cache for Arthera. Total memory is %d MB.", CacheFlag.Name, recommendedCache, totalMemory))
-		}
 		return cachescale.Identity
 	}
+	targetCache := ctx.GlobalInt(CacheFlag.Name)
+	baseSize := DefaultCacheSize
 	if targetCache < baseSize {
 		log.Crit("Invalid flag", "flag", CacheFlag.Name, "err", fmt.Sprintf("minimum cache size is %d MB", baseSize))
 	}
-	if totalMemory != 0 && targetCache > maxCache {
-		log.Warn(fmt.Sprintf("Requested cache size exceeds 60%% of available memory. Reducing cache size to %d MB.", maxCache))
-		targetCache = maxCache
-	}
-
 	return cachescale.Ratio{
 		Base:   uint64(baseSize - ConstantCacheSize),
 		Target: uint64(targetCache - ConstantCacheSize),
@@ -521,10 +428,7 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 	}
 
 	if ctx.GlobalIsSet(FakeNetFlag.Name) {
-		_, num, err := parseFakeGen(ctx.GlobalString(FakeNetFlag.Name))
-		if err != nil {
-			return nil, fmt.Errorf("invalid fakenet flag")
-		}
+		_, num, _ := parseFakeGen(ctx.GlobalString(FakeNetFlag.Name))
 		cfg.Emitter = emitter.FakeConfig(num)
 		setBootnodes(ctx, []string{}, &cfg.Node)
 	} else if ctx.GlobalIsSet(TestnetFlag.Name) {
@@ -542,6 +446,17 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 		if err := loadAllConfigs(file, &cfg); err != nil {
 			return &cfg, err
 		}
+	}
+	// apply default for DB config if it wasn't touched by config file
+	dbDefault := integration.DefaultDBsConfig(cacheRatio.U64, uint64(utils.MakeDatabaseHandles()))
+	if len(cfg.DBs.Routing.Table) == 0 {
+		cfg.DBs.Routing = dbDefault.Routing
+	}
+	if len(cfg.DBs.GenesisCache.Table) == 0 {
+		cfg.DBs.GenesisCache = dbDefault.GenesisCache
+	}
+	if len(cfg.DBs.RuntimeCache.Table) == 0 {
+		cfg.DBs.RuntimeCache = dbDefault.RuntimeCache
 	}
 
 	// Apply flags (high priority)
@@ -565,9 +480,6 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 		cfg.Emitter.PrevEmittedEventFile.Path = cfg.Node.ResolvePath(path.Join("emitter", fmt.Sprintf("last-%d", cfg.Emitter.Validator.ID)))
 	}
 	setTxPool(ctx, &cfg.TxPool)
-
-	// Process DBs defaults in the end because they are applied only in absence of config or flags
-	cfg = setDBConfigDefault(cfg, cacheRatio)
 
 	if err := cfg.Opera.Validate(); err != nil {
 		return nil, err

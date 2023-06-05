@@ -16,6 +16,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/state/snapshot"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/trie"
 	"github.com/syndtr/goleveldb/leveldb/opt"
 
@@ -42,7 +43,7 @@ type Store struct {
 
 	EvmDb    ethdb.Database
 	EvmState state.Database
-	EvmLogs  topicsdb.Index
+	EvmLogs  *topicsdb.Index
 	Snaps    *snapshot.Tree
 
 	cache struct {
@@ -77,7 +78,7 @@ func NewStore(dbs kvdb.DBProducer, cfg StoreConfig) *Store {
 	}
 
 	s.initEVMDB()
-	s.EvmLogs = topicsdb.NewWithThreadPool(dbs)
+	s.EvmLogs = topicsdb.New(dbs)
 	s.initCache()
 
 	return s
@@ -261,8 +262,8 @@ func (s *Store) Cap() {
 		nodes, imgs = triedb.Size()
 		limit       = common.StorageSize(s.cfg.Cache.TrieDirtyLimit)
 	)
-	// If we exceeded our memory allowance, flush matured singleton nodes to disk
 	if nodes > limit+ethdb.IdealBatchSize || imgs > 4*1024*1024 {
+		log.Warn("If we exceeded our memory allowance, flush matured singleton nodes to disk")
 		triedb.Cap(limit)
 	}
 }

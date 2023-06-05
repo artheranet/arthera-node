@@ -16,8 +16,9 @@ import (
 	"github.com/ethereum/go-ethereum/p2p/enode"
 
 	"github.com/artheranet/arthera-node/evmcore"
-	"github.com/artheranet/arthera-node/genesis/makefakegenesis"
+	"github.com/artheranet/arthera-node/integration/makefakegenesis"
 	"github.com/artheranet/arthera-node/inter"
+	"github.com/artheranet/arthera-node/opera"
 	"github.com/artheranet/arthera-node/utils"
 	"github.com/artheranet/arthera-node/utils/signers/gsignercache"
 )

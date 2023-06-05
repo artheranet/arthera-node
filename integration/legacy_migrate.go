@@ -3,8 +3,6 @@ package integration
 import (
 	"errors"
 	"fmt"
-	"github.com/artheranet/arthera-node/utils/dbutil/autocompact"
-	"github.com/artheranet/arthera-node/utils/dbutil/compactdb"
 	"os"
 	"path"
 	"strings"
@@ -46,7 +44,7 @@ type transformTask struct {
 
 func transform(m transformTask) error {
 	openDst := func() *batched.Store {
-		return batched.Wrap(autocompact.Wrap2M(m.openDst(), opt.GiB, 16*opt.GiB, true, ""))
+		return batched.Wrap(m.openDst())
 	}
 	openSrc := func() *batched.Store {
 		return batched.Wrap(m.openSrc())
@@ -112,10 +110,6 @@ func transform(m transformTask) error {
 			it = src.NewIterator(nil, keys[len(keys)-1])
 		}
 		keys = keys[:0]
-	}
-	// compact the new DB
-	if err := compactdb.Compact(dst, m.name, 16*opt.GiB); err != nil {
-		return err
 	}
 	return nil
 }
@@ -190,6 +184,18 @@ func translateGossipPrefix(p byte) byte {
 		return byte('F')
 	}
 	return p
+}
+
+func equalRoutingConfig(a, b RoutingConfig) bool {
+	if len(a.Table) != len(b.Table) {
+		return false
+	}
+	for k, v := range a.Table {
+		if b.Table[k] != v {
+			return false
+		}
+	}
+	return true
 }
 
 func migrateLegacyDBs(chaindataDir string, dbs kvdb.FlushableDBProducer, mode string, layout RoutingConfig) error {
@@ -296,7 +302,7 @@ func migrateLegacyDBs(chaindataDir string, dbs kvdb.FlushableDBProducer, mode st
 			}
 		case "reformat":
 			if oldDBsType == "ldb" {
-				if !layout.Equal(LdbLegacyRoutingConfig()) {
+				if !equalRoutingConfig(layout, LdbLegacyRoutingConfig()) {
 					return errors.New("reformatting DBs: missing --db.preset=legacy-ldb flag")
 				}
 				err = os.Rename(path.Join(chaindataDir, "gossip"), path.Join(chaindataDir, "leveldb-fsh", "main"))
@@ -312,7 +318,7 @@ func migrateLegacyDBs(chaindataDir string, dbs kvdb.FlushableDBProducer, mode st
 					}
 				}
 			} else {
-				if !layout.Equal(PblLegacyRoutingConfig()) {
+				if !equalRoutingConfig(layout, PblLegacyRoutingConfig()) {
 					return errors.New("reformatting DBs: missing --db.preset=legacy-pbl flag")
 				}
 				err = os.Rename(path.Join(chaindataDir, "gossip"), path.Join(chaindataDir, "pebble-fsh", "main"))

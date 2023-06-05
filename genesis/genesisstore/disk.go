@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"strings"
 	"time"
 
 	"github.com/Fantom-foundation/lachesis-base/common/bigendian"
@@ -134,19 +133,14 @@ func OpenGenesisStore(rawReader ReadAtSeekerCloser) (*Store, genesis.Hashes, err
 		// wrap with a logger
 		// human-readable name
 		name := unit.UnitName
-		scanfName := strings.ReplaceAll(name, "-", "")
-		if scanfName[len(scanfName)-1] < '0' || scanfName[len(scanfName)-1] > '9' {
-			scanfName += "0"
+		if unit.UnitName == BlocksSection {
+			name = "blocks"
 		}
-		var part int
-		if _, err := fmt.Sscanf(scanfName, "brs%d", &part); err == nil {
-			name = fmt.Sprintf("blocks unit %d", part)
+		if unit.UnitName == EpochsSection {
+			name = "epochs"
 		}
-		if _, err := fmt.Sscanf(scanfName, "ers%d", &part); err == nil {
-			name = fmt.Sprintf("epochs unit %d", part)
-		}
-		if _, err := fmt.Sscanf(scanfName, "evm%d", &part); err == nil {
-			name = fmt.Sprintf("EVM unit %d", part)
+		if unit.UnitName == EvmSection {
+			name = "EVM data"
 		}
 		loggedReader := filelog.Wrap(gzipReader, name, uncompressedSize, time.Minute)
 

@@ -36,7 +36,7 @@ func healDirty(ctx *cli.Context) error {
 	multiProducer := makeDirectDBsProducerFrom(dbTypes, cfg)
 
 	// reverts the gossip database state
-	epochState, topEpoch, err := fixDirtyGossipDb(multiProducer, cfg)
+	epochState, err := fixDirtyGossipDb(multiProducer, cfg)
 	if err != nil {
 		return err
 	}
@@ -44,8 +44,8 @@ func healDirty(ctx *cli.Context) error {
 	// drop epoch-related databases and consensus database
 	log.Info("Removing epoch DBs - will be recreated on next start")
 	for _, name := range []string{
-		fmt.Sprintf("gossip-%d", topEpoch),
-		fmt.Sprintf("lachesis-%d", topEpoch),
+		fmt.Sprintf("gossip-%d", epochState.Epoch),
+		fmt.Sprintf("lachesis-%d", epochState.Epoch),
 		"lachesis",
 	} {
 		err = eraseTable(name, multiProducer)
@@ -79,25 +79,24 @@ func healDirty(ctx *cli.Context) error {
 		}
 	}
 
-	log.Info("Recovery is complete")
+	log.Info("Fixing done")
 	return nil
 }
 
 // fixDirtyGossipDb reverts the gossip database into state, when was one of last epochs sealed
 func fixDirtyGossipDb(producer kvdb.FlushableDBProducer, cfg *config) (
-	epochState *iblockproc.EpochState, topEpoch idx.Epoch, err error) {
+	epochState *iblockproc.EpochState, err error) {
 	gdb := makeGossipStore(producer, cfg) // requires FlushIDKey present (not clean) in all dbs
 	defer gdb.Close()
-	topEpoch = gdb.GetEpoch()
 
 	// find the last closed epoch with the state available
 	epochIdx, blockState, epochState := getLastEpochWithState(gdb, maxEpochsToTry)
 	if blockState == nil || epochState == nil {
-		return nil, 0, fmt.Errorf("state for last %d closed epochs is pruned, recovery isn't possible", maxEpochsToTry)
+		return nil, fmt.Errorf("state for last %d closed epochs is not available", maxEpochsToTry)
 	}
 
 	// set the historic state to be the current
-	log.Info("Reverting to epoch state", "epoch", epochIdx)
+	log.Info("Setting block epoch state", "epoch", epochIdx)
 	gdb.SetBlockEpochState(*blockState, *epochState)
 	gdb.FlushBlockEpochState()
 
@@ -112,7 +111,7 @@ func fixDirtyGossipDb(producer kvdb.FlushableDBProducer, cfg *config) (
 		return true
 	})
 
-	return epochState, topEpoch, nil
+	return epochState, nil
 }
 
 // getLastEpochWithState finds the last closed epoch with the state available
@@ -126,14 +125,14 @@ func getLastEpochWithState(gdb *gossip.Store, epochsToTry idx.Epoch) (epochIdx i
 	for epochIdx = currentEpoch; epochIdx > endEpoch; epochIdx-- {
 		blockState, epochState = gdb.GetHistoryBlockEpochState(epochIdx)
 		if blockState == nil || epochState == nil {
-			log.Debug("Epoch is not available", "epoch", epochIdx)
+			log.Info("Last closed epoch is not available", "epoch", epochIdx)
 			continue
 		}
 		if !gdb.EvmStore().HasStateDB(blockState.FinalizedStateRoot) {
-			log.Debug("EVM state for the epoch is not available", "epoch", epochIdx)
+			log.Info("State for the last closed epoch is not available", "epoch", epochIdx)
 			continue
 		}
-		log.Debug("Latest epoch with available state found", "epoch", epochIdx)
+		log.Info("Last closed epoch with available state found", "epoch", epochIdx)
 		return epochIdx, blockState, epochState
 	}
 

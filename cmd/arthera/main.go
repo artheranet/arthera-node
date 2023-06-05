@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/artheranet/arthera-node/cmd/arthera/launcher"
 	"os"
+
+	"github.com/artheranet/arthera-node/cmd/arthera/launcher"
 )
 
 func main() {

@@ -1,7 +1,6 @@
 package switchable
 
 import (
-	"github.com/artheranet/arthera-node/utils/dbutil/dbcounter"
 	"math/rand"
 	"sync"
 	"sync/atomic"
@@ -20,19 +19,19 @@ func decodePair(b []byte) (uint32, uint32) {
 	return v1, v2
 }
 
-type UncallableAfterRelease struct {
+type UncallabaleAfterRelease struct {
 	kvdb.Snapshot
-	iterators []*uncallableAfterReleaseIterator
+	iterators []*uncallabaleAfterReleaseIterator
 	mu        sync.Mutex
 }
 
-type uncallableAfterReleaseIterator struct {
+type uncallabaleAfterReleaseIterator struct {
 	kvdb.Iterator
 }
 
-func (db *UncallableAfterRelease) NewIterator(prefix []byte, start []byte) kvdb.Iterator {
+func (db *UncallabaleAfterRelease) NewIterator(prefix []byte, start []byte) kvdb.Iterator {
 	it := db.Snapshot.NewIterator(prefix, start)
-	wrapped := &uncallableAfterReleaseIterator{it}
+	wrapped := &uncallabaleAfterReleaseIterator{it}
 
 	db.mu.Lock()
 	defer db.mu.Unlock()
@@ -41,7 +40,7 @@ func (db *UncallableAfterRelease) NewIterator(prefix []byte, start []byte) kvdb.
 	return wrapped
 }
 
-func (db *UncallableAfterRelease) Release() {
+func (db *UncallabaleAfterRelease) Release() {
 	db.Snapshot.Release()
 	// ensure nil pointer exception on any next call
 	db.Snapshot = nil
@@ -63,7 +62,7 @@ func TestSnapshot_SwitchTo(t *testing.T) {
 	const duration = time.Millisecond * 400
 
 	// fill DB with data
-	memdb := dbcounter.WrapStore(memorydb.New(), "", false)
+	memdb := memorydb.New()
 	for i := uint32(0); i < prefixes; i++ {
 		for j := uint32(0); j < keys; j++ {
 			key := append(bigendian.Uint32ToBytes(i), bigendian.Uint32ToBytes(j)...)
@@ -75,7 +74,7 @@ func TestSnapshot_SwitchTo(t *testing.T) {
 	// 4 readers, one interrupter
 	snap, err := memdb.GetSnapshot()
 	require.NoError(err)
-	switchable := Wrap(&UncallableAfterRelease{
+	switchable := Wrap(&UncallabaleAfterRelease{
 		Snapshot: snap,
 	})
 
@@ -136,7 +135,7 @@ func TestSnapshot_SwitchTo(t *testing.T) {
 			for atomic.LoadUint32(&stop) == 0 {
 				snap, err := memdb.GetSnapshot()
 				require.NoError(err)
-				old := switchable.SwitchTo(&UncallableAfterRelease{
+				old := switchable.SwitchTo(&UncallabaleAfterRelease{
 					Snapshot: snap,
 				})
 				old.Release()
@@ -146,6 +145,4 @@ func TestSnapshot_SwitchTo(t *testing.T) {
 	time.Sleep(duration)
 	atomic.StoreUint32(&stop, 1)
 	wg.Wait()
-	switchable.Release()
-	require.NoError(memdb.Close())
 }

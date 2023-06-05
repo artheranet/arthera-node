@@ -1,7 +1,6 @@
 package gasprice
 
 import (
-	"github.com/artheranet/arthera-node/params"
 	"math/big"
 	"testing"
 
@@ -9,6 +8,8 @@ import (
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/stretchr/testify/require"
+
+	"github.com/artheranet/arthera-node/opera"
 )
 
 type fakeTx struct {
@@ -20,8 +21,8 @@ type fakeTx struct {
 type TestBackend struct {
 	block             idx.Block
 	totalGasPowerLeft uint64
-	rules             params.ProtocolRules
-	pendingRules      params.ProtocolRules
+	rules             opera.Rules
+	pendingRules      opera.Rules
 	pendingTxs        []fakeTx
 }
 
@@ -33,11 +34,11 @@ func (t TestBackend) TotalGasPowerLeft() uint64 {
 	return t.totalGasPowerLeft
 }
 
-func (t TestBackend) GetRules() params.ProtocolRules {
+func (t TestBackend) GetRules() opera.Rules {
 	return t.rules
 }
 
-func (t TestBackend) GetPendingRules() params.ProtocolRules {
+func (t TestBackend) GetPendingRules() opera.Rules {
 	return t.pendingRules
 }
 
@@ -57,8 +58,8 @@ func TestOracle_EffectiveMinGasPrice(t *testing.T) {
 	backend := &TestBackend{
 		block:             1,
 		totalGasPowerLeft: 0,
-		rules:             params.FakeNetRules(),
-		pendingRules:      params.FakeNetRules(),
+		rules:             opera.FakeNetRules(),
+		pendingRules:      opera.FakeNetRules(),
 	}
 
 	gpo := NewOracle(Config{})
@@ -117,8 +118,8 @@ func TestOracle_EffectiveMinGasPrice(t *testing.T) {
 func TestOracle_constructiveGasPrice(t *testing.T) {
 	backend := &TestBackend{
 		totalGasPowerLeft: 0,
-		rules:             params.FakeNetRules(),
-		pendingRules:      params.FakeNetRules(),
+		rules:             opera.FakeNetRules(),
+		pendingRules:      opera.FakeNetRules(),
 	}
 
 	gpo := NewOracle(Config{})
@@ -159,8 +160,8 @@ func TestOracle_constructiveGasPrice(t *testing.T) {
 func TestOracle_reactiveGasPrice(t *testing.T) {
 	backend := &TestBackend{
 		totalGasPowerLeft: 0,
-		rules:             params.FakeNetRules(),
-		pendingRules:      params.FakeNetRules(),
+		rules:             opera.FakeNetRules(),
+		pendingRules:      opera.FakeNetRules(),
 	}
 
 	gpo := NewOracle(Config{})

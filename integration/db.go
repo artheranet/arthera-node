@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"github.com/artheranet/arthera-node/utils/dbutil/dbcounter"
 	"io"
 	"io/ioutil"
 	"os"
@@ -50,12 +49,12 @@ func SupportedDBs(chaindataDir string, cfg DBsCacheConfig) (map[multidb.TypeName
 		utils.Fatalf("Failed to create DB cacher: %v", err)
 	}
 
-	leveldbFsh := dbcounter.Wrap(leveldb.NewProducer(path.Join(chaindataDir, "leveldb-fsh"), cacher), true)
-	leveldbFlg := dbcounter.Wrap(leveldb.NewProducer(path.Join(chaindataDir, "leveldb-flg"), cacher), true)
-	leveldbDrc := dbcounter.Wrap(leveldb.NewProducer(path.Join(chaindataDir, "leveldb-drc"), cacher), true)
-	pebbleFsh := dbcounter.Wrap(pebble.NewProducer(path.Join(chaindataDir, "pebble-fsh"), cacher), true)
-	pebbleFlg := dbcounter.Wrap(pebble.NewProducer(path.Join(chaindataDir, "pebble-flg"), cacher), true)
-	pebbleDrc := dbcounter.Wrap(pebble.NewProducer(path.Join(chaindataDir, "pebble-drc"), cacher), true)
+	leveldbFsh := leveldb.NewProducer(path.Join(chaindataDir, "leveldb-fsh"), cacher)
+	leveldbFlg := leveldb.NewProducer(path.Join(chaindataDir, "leveldb-flg"), cacher)
+	leveldbDrc := leveldb.NewProducer(path.Join(chaindataDir, "leveldb-drc"), cacher)
+	pebbleFsh := pebble.NewProducer(path.Join(chaindataDir, "pebble-fsh"), cacher)
+	pebbleFlg := pebble.NewProducer(path.Join(chaindataDir, "pebble-flg"), cacher)
+	pebbleDrc := pebble.NewProducer(path.Join(chaindataDir, "pebble-drc"), cacher)
 
 	if metrics.Enabled {
 		leveldbFsh = WrapDatabaseWithMetrics(leveldbFsh)

@@ -83,7 +83,7 @@ func (ds *StoreWithMetrics) meter(refresh time.Duration) {
 			continue
 		}
 		var nDiskSize int64
-		if n, err := fmt.Sscanf(diskSize, "%d", &nDiskSize); n != 1 || err != nil {
+		if n, err := fmt.Sscanf(diskSize, "Size(B):%d", &nDiskSize); n != 1 || err != nil {
 			ds.log.Error("Bad syntax of disk size entry", "size", diskSize)
 			merr = err
 			continue
@@ -148,7 +148,7 @@ func (db *DBProducerWithMetrics) OpenDB(name string) (kvdb.Store, error) {
 	dm := WrapStoreWithMetrics(ds)
 	// disk size gauge should be meter separatly for each db name; otherwise,
 	// the last db siae metric will overwrite all the previoius one
-	dm.diskSizeGauge = metrics.GetOrRegisterGauge("opera/chaindata/"+strings.ReplaceAll(name, "-", "_")+"/disk/size", nil)
+	dm.diskSizeGauge = metrics.GetOrRegisterGauge("arthera/chaindata/"+name+"/disk/size", nil)
 	if strings.HasPrefix(name, "gossip-") || strings.HasPrefix(name, "lachesis-") {
 		name = "epochs"
 	}

@@ -14,8 +14,12 @@ var (
 			Y: 1.0 * piecefunc.DecimalUnit,
 		},
 		{
-			X: 0.78 * piecefunc.DecimalUnit,
-			Y: 1.1 * piecefunc.DecimalUnit,
+			X: 0.34 * piecefunc.DecimalUnit,
+			Y: 1.05 * piecefunc.DecimalUnit,
+		},
+		{
+			X: 0.67 * piecefunc.DecimalUnit,
+			Y: 1.20 * piecefunc.DecimalUnit,
 		},
 		{
 			X: 0.8 * piecefunc.DecimalUnit,
@@ -95,11 +99,11 @@ var (
 		},
 		{
 			X: 50,
-			Y: 0.1 * piecefunc.DecimalUnit,
+			Y: 0.2 * piecefunc.DecimalUnit,
 		},
 		{
 			X: 100,
-			Y: 0.4 * piecefunc.DecimalUnit,
+			Y: 0.7 * piecefunc.DecimalUnit,
 		},
 		{
 			X: 200,

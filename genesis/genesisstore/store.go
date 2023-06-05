@@ -7,17 +7,11 @@ import (
 	"github.com/artheranet/arthera-node/logger"
 )
 
-func BlocksSection(i int) string {
-	return getSectionName("brs", i)
-}
-
-func EpochsSection(i int) string {
-	return getSectionName("ers", i)
-}
-
-func EvmSection(i int) string {
-	return getSectionName("evm", i)
-}
+const (
+	BlocksSection = "brs"
+	EpochsSection = "ers"
+	EvmSection    = "evm"
+)
 
 type FilesMap func(string) (io.Reader, error)
 

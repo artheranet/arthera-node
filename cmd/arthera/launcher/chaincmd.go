@@ -8,17 +8,8 @@ import (
 var (
 	EvmExportMode = cli.StringFlag{
 		Name:  "export.evm.mode",
-		Usage: `EVM export mode ("full" or "ext-mpt" or "mpt")`,
+		Usage: `EVM export mode ("full" or "ext-mpt" or "mpt" or "none")`,
 		Value: "mpt",
-	}
-	EvmExportExclude = cli.StringFlag{
-		Name:  "export.evm.exclude",
-		Usage: `DB of EVM keys to exclude from genesis`,
-	}
-	GenesisExportSections = cli.StringFlag{
-		Name:  "export.sections",
-		Usage: `Genesis sections to export separated by comma (e.g. "brs-1" or "ers" or "evm-2")`,
-		Value: "brs,ers,evm",
 	}
 	importCommand = cli.Command{
 		Name:      "import",
@@ -104,8 +95,6 @@ be gzipped
 				Flags: []cli.Flag{
 					DataDirFlag,
 					EvmExportMode,
-					EvmExportExclude,
-					GenesisExportSections,
 				},
 				Description: `
     arthera-node export genesis
@@ -132,20 +121,6 @@ Requires a first argument of the file to write to.
 Optional second and third arguments control the first and
 last block to write transaction traces. If the file ends with .gz, the output will
 be gzipped
-`,
-			},
-			{
-				Name:      "evm-keys",
-				Usage:     "Export EVM node keys",
-				ArgsUsage: "<directory>",
-				Action:    utils.MigrateFlags(exportEvmKeys),
-				Flags: []cli.Flag{
-					DataDirFlag,
-				},
-				Description: `
-    opera export evm-keys
-
-Requires a first argument of the DB directory to write to.
 `,
 			},
 		},

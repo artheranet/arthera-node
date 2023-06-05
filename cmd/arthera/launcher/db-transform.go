@@ -1,8 +1,6 @@
 package launcher
 
 import (
-	"github.com/artheranet/arthera-node/utils/dbutil/autocompact"
-	"github.com/syndtr/goleveldb/leveldb/opt"
 	"os"
 	"path"
 	"strings"
@@ -115,7 +113,6 @@ func dbTransform(ctx *cli.Context) error {
 		}
 	}
 
-	memorizeDBPreset(cfg)
 	log.Info("DB transformation is complete")
 
 	return nil
@@ -258,17 +255,16 @@ func transformComponent(datadir string, dbTypes, tmpDbTypes map[multidb.TypeName
 				}
 				oldDB = batched.Wrap(oldDB)
 				defer oldDB.Close()
-				oldHumanName := path.Join(string(e.Old.Type), e.Old.Name)
 				newDB, err := tmpDbTypes[e.New.Type].OpenDB(e.New.Name)
 				if err != nil {
 					return err
 				}
 				toMove[dbLocatorOf(e.New)] = true
-				newHumanName := path.Join("tmp", string(e.New.Type), e.New.Name)
-				newDB = batched.Wrap(autocompact.Wrap2M(newDB, opt.GiB, 16*opt.GiB, true, newHumanName))
+				newDbName := "tmp/" + e.New.Name
+				newDB = batched.Wrap(newDB)
 				defer newDB.Close()
-				log.Info("Copying DB table", "req", e.Req, "old_db", oldHumanName, "old_table", e.Old.Table,
-					"new_db", newHumanName, "new_table", e.New.Table)
+				log.Info("Copying DB table", "req", e.Req, "old_db_type", e.Old.Type, "old_db_name", e.Old.Name, "old_table", e.Old.Table,
+					"new_db_type", e.New.Type, "new_db_name", newDbName, "new_table", e.New.Table)
 				oldTable := table.New(oldDB, []byte(e.Old.Table))
 				newTable := table.New(newDB, []byte(e.New.Table))
 				it := oldTable.NewIterator(nil, nil)

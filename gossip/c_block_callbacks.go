@@ -1,7 +1,6 @@
 package gossip
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/artheranet/arthera-node/txtrace"
 	"sort"
@@ -368,21 +367,6 @@ func consensusCallbackBeginBlockFn(
 						for _, tx := range evmBlock.Transactions {
 							// not skipped txs only
 							store.evm.SetTxPosition(tx.Hash(), txPositions[tx.Hash()].TxPosition)
-
-							// transaction traces need correction of transaction position when skipped txs
-							if len(skippedTxs) > 0 && store.txtrace != nil {
-								txBytes := store.txtrace.GetTx(tx.Hash())
-								if txBytes != nil {
-									traces := make([]txtrace.ActionTrace, 0)
-									json.Unmarshal(txBytes, &traces)
-									pos := uint64(txPositions[tx.Hash()].TxPosition.BlockOffset)
-									for i := range traces {
-										traces[i].TransactionPosition = pos
-									}
-									jsonTraceBytes, _ := json.Marshal(traces)
-									store.txtrace.SetTxTrace(tx.Hash(), jsonTraceBytes)
-								}
-							}
 						}
 
 						// Index receipts

@@ -11,39 +11,39 @@ import (
 	"github.com/artheranet/arthera-node/inter/iblockproc"
 )
 
-type OperaEpochsSealerModule struct{}
+type ArtheraEpochsSealerModule struct{}
 
-func New() *OperaEpochsSealerModule {
-	return &OperaEpochsSealerModule{}
+func New() *ArtheraEpochsSealerModule {
+	return &ArtheraEpochsSealerModule{}
 }
 
-func (m *OperaEpochsSealerModule) Start(block iblockproc.BlockCtx, bs iblockproc.BlockState, es iblockproc.EpochState) blockproc.SealerProcessor {
-	return &OperaEpochsSealer{
+func (m *ArtheraEpochsSealerModule) Start(block iblockproc.BlockCtx, bs iblockproc.BlockState, es iblockproc.EpochState) blockproc.SealerProcessor {
+	return &ArtheraEpochsSealer{
 		block: block,
 		es:    es,
 		bs:    bs,
 	}
 }
 
-type OperaEpochsSealer struct {
+type ArtheraEpochsSealer struct {
 	block iblockproc.BlockCtx
 	es    iblockproc.EpochState
 	bs    iblockproc.BlockState
 }
 
-func (s *OperaEpochsSealer) EpochSealing() bool {
+func (s *ArtheraEpochsSealer) EpochSealing() bool {
 	sealEpoch := s.bs.EpochGas >= s.es.Rules.Epochs.MaxEpochGas
 	sealEpoch = sealEpoch || (s.block.Time-s.es.EpochStart) >= s.es.Rules.Epochs.MaxEpochDuration
 	sealEpoch = sealEpoch || s.bs.AdvanceEpochs > 0
 	return sealEpoch || s.bs.EpochCheaters.Len() != 0
 }
 
-func (p *OperaEpochsSealer) Update(bs iblockproc.BlockState, es iblockproc.EpochState) {
+func (p *ArtheraEpochsSealer) Update(bs iblockproc.BlockState, es iblockproc.EpochState) {
 	p.bs, p.es = bs, es
 }
 
 // SealEpoch is called after pre-internal transactions are executed
-func (s *OperaEpochsSealer) SealEpoch() (iblockproc.BlockState, iblockproc.EpochState) {
+func (s *ArtheraEpochsSealer) SealEpoch() (iblockproc.BlockState, iblockproc.EpochState) {
 	// Select new validators
 	oldValidators := s.es.Validators
 	builder := pos.NewBigBuilder()

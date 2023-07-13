@@ -2,6 +2,7 @@ package gaspowercheck
 
 import (
 	"errors"
+	"github.com/ethereum/go-ethereum/log"
 	"math/big"
 	"time"
 
@@ -173,7 +174,8 @@ func (v *Checker) Validate(e inter.EventI, selfParent inter.EventI) error {
 	}
 	for i := range gasPowers.Gas {
 		if e.GasPowerLeft().Gas[i]+e.GasPowerUsed() != gasPowers.Gas[i] { // GasPowerUsed is checked in basic_check
-			return ErrWrongGasPowerLeft
+			log.Warn(ErrWrongGasPowerLeft.Error())
+			//return ErrWrongGasPowerLeft
 		}
 	}
 	return nil

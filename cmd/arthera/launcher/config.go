@@ -120,15 +120,6 @@ var (
 		Name:  "tracenode",
 		Usage: "If present, than this node records inner transaction traces",
 	}
-
-	DBMigrationModeFlag = cli.StringFlag{
-		Name:  "db.migration.mode",
-		Usage: "MultiDB migration mode ('reformat' or 'rebuild')",
-	}
-	DBPresetFlag = cli.StringFlag{
-		Name:  "db.preset",
-		Usage: "DBs layout preset ('pbl-1' or 'ldb-1' or 'legacy-ldb' or 'legacy-pbl')",
-	}
 	TestnetFlag = cli.BoolFlag{
 		Name:  "testnet",
 		Usage: "Run a testnet node",
@@ -235,7 +226,7 @@ func mayGetGenesisStore(ctx *cli.Context) *genesisstore.Store {
 				NetworkID:   g.NetworkID,
 				NetworkName: g.NetworkName,
 			}
-			for _, allowed := range AllowedOperaGenesis {
+			for _, allowed := range AllowedArtheraGenesis {
 				if allowed.Hashes.Equal(genesisHashes) && allowed.Header.Equal(gHeader) {
 					log.Info("Genesis file is a known preset", "name", allowed.Name)
 					goto notExperimental
@@ -361,28 +352,6 @@ func gossipStoreConfigWithFlags(ctx *cli.Context, src gossip.StoreConfig) (gossi
 	return cfg, nil
 }
 
-func setDBConfig(ctx *cli.Context, cfg integration.DBsConfig, cacheRatio cachescale.Func) integration.DBsConfig {
-	if ctx.GlobalIsSet(DBPresetFlag.Name) {
-		preset := ctx.GlobalString(DBPresetFlag.Name)
-		switch preset {
-		case "pbl-1":
-			cfg = integration.Pbl1DBsConfig(cacheRatio.U64, uint64(utils.MakeDatabaseHandles()))
-		case "ldb-1":
-			cfg = integration.Ldb1DBsConfig(cacheRatio.U64, uint64(utils.MakeDatabaseHandles()))
-		case "legacy-ldb":
-			cfg = integration.LdbLegacyDBsConfig(cacheRatio.U64, uint64(utils.MakeDatabaseHandles()))
-		case "legacy-pbl":
-			cfg = integration.PblLegacyDBsConfig(cacheRatio.U64, uint64(utils.MakeDatabaseHandles()))
-		default:
-			utils.Fatalf("--%s must be 'pbl-1', 'ldb-1', 'legacy-pbl' or 'legacy-ldb'", DBPresetFlag.Name)
-		}
-	}
-	if ctx.GlobalIsSet(DBMigrationModeFlag.Name) {
-		cfg.MigrationMode = ctx.GlobalString(DBMigrationModeFlag.Name)
-	}
-	return cfg
-}
-
 func nodeConfigWithFlags(ctx *cli.Context, cfg node.Config) node.Config {
 	utils.SetNodeConfig(ctx, &cfg)
 
@@ -465,6 +434,7 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 	}
 	// apply default for DB config if it wasn't touched by config file
 	dbDefault := integration.DefaultDBsConfig(cacheRatio.U64, uint64(utils.MakeDatabaseHandles()))
+
 	if len(cfg.DBs.Routing.Table) == 0 {
 		cfg.DBs.Routing = dbDefault.Routing
 	}
@@ -486,7 +456,6 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 		return nil, err
 	}
 	cfg.Node = nodeConfigWithFlags(ctx, cfg.Node)
-	cfg.DBs = setDBConfig(ctx, cfg.DBs, cacheRatio)
 
 	err = setValidator(ctx, &cfg.Emitter)
 	if err != nil {

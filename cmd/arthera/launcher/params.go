@@ -31,7 +31,7 @@ var (
 		NetworkName: "test",
 	}
 
-	AllowedOperaGenesis = []GenesisTemplate{
+	AllowedArtheraGenesis = []GenesisTemplate{
 		{
 			Name:   "Mainnet",
 			Header: mainnetHeader,

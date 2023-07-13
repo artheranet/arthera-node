@@ -55,7 +55,7 @@ var (
 	performanceFlags []cli.Flag
 	networkingFlags  []cli.Flag
 	txpoolFlags      []cli.Flag
-	operaFlags       []cli.Flag
+	artheraFlags     []cli.Flag
 	legacyRpcFlags   []cli.Flag
 	rpcFlags         []cli.Flag
 	metricsFlags     []cli.Flag
@@ -106,7 +106,7 @@ func initFlags() {
 		utils.TxPoolGlobalQueueFlag,
 		utils.TxPoolLifetimeFlag,
 	}
-	operaFlags = []cli.Flag{
+	artheraFlags = []cli.Flag{
 		GenesisFlag,
 		ExperimentalGenesisFlag,
 		utils.IdentityFlag,
@@ -125,8 +125,6 @@ func initFlags() {
 		TraceNodeFlag,
 		SyncModeFlag,
 		GCModeFlag,
-		DBPresetFlag,
-		DBMigrationModeFlag,
 		genesisTypeFlag,
 		TestnetFlag,
 	}
@@ -192,7 +190,7 @@ func initFlags() {
 	nodeFlags = append(nodeFlags, performanceFlags...)
 	nodeFlags = append(nodeFlags, networkingFlags...)
 	nodeFlags = append(nodeFlags, txpoolFlags...)
-	nodeFlags = append(nodeFlags, operaFlags...)
+	nodeFlags = append(nodeFlags, artheraFlags...)
 	nodeFlags = append(nodeFlags, legacyRpcFlags...)
 	nodeFlags = append(nodeFlags, vmFlags...)
 }

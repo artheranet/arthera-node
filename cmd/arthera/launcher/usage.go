@@ -40,7 +40,7 @@ func calcAppHelpFlagGroups() []flags.FlagGroup {
 	return []flags.FlagGroup{
 		{
 			Name:  "ARTHERA",
-			Flags: operaFlags,
+			Flags: artheraFlags,
 		},
 		{
 			Name:  "TRANSACTION POOL",

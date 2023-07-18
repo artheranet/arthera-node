@@ -1,23 +1,24 @@
-FROM golang:1.14-alpine as builder
+FROM golang:1.19.11-alpine as builder
 
 RUN apk add --no-cache make gcc musl-dev linux-headers git
 
 WORKDIR /arthera
 
-COPY ../arthera-go-ethereum .
-COPY ../arthera-node .
+RUN git clone --depth 1 https://github.com/artheranet/lachesis.git
+RUN git clone --depth 1 https://github.com/artheranet/arthera-go-ethereum.git
 
-RUN cd arthera-node
-ARG GOPROXY
-RUN go mod download
+COPY . arthera-node
+
+WORKDIR /arthera/arthera-node
+
 RUN make
 
 FROM alpine:latest
 
 RUN apk add --no-cache ca-certificates
 
-COPY --from=builder /arthera/arthera-node/build/arthera-node /
+COPY --from=builder /arthera/arthera-node/build/arthera-node /usr/local/bin/
 
-EXPOSE 5050 18545 18546 18547 19090
+EXPOSE 6060 18545 18546
 
-ENTRYPOINT ["/arthera-node"]
+ENTRYPOINT ["arthera-node"]

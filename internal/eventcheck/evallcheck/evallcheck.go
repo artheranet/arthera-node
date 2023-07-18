@@ -1,7 +1,7 @@
 package evallcheck
 
 import (
-	"github.com/artheranet/arthera-node/inter"
+	"github.com/artheranet/arthera-node/internal/inter"
 )
 
 type Checker struct {

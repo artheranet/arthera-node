@@ -8,7 +8,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/artheranet/arthera-node/inter/validatorpk"
+	"github.com/artheranet/arthera-node/internal/inter/validatorpk"
 )
 
 type encryptedAccountKeyJSONV3 struct {

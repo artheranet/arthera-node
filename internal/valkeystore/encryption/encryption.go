@@ -13,7 +13,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 
-	"github.com/artheranet/arthera-node/inter/validatorpk"
+	"github.com/artheranet/arthera-node/internal/inter/validatorpk"
 )
 
 var (

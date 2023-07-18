@@ -22,7 +22,7 @@ import (
 	"github.com/artheranet/arthera-node/gossip/protocols/blockvotes/bvstream"
 	"github.com/artheranet/arthera-node/gossip/protocols/dag/dagstream"
 	"github.com/artheranet/arthera-node/gossip/protocols/epochpacks/epstream"
-	"github.com/artheranet/arthera-node/inter"
+	"github.com/artheranet/arthera-node/internal/inter"
 )
 
 var (

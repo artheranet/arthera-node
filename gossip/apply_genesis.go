@@ -7,9 +7,9 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/kvdb/batched"
 
 	"github.com/artheranet/arthera-node/genesis"
-	"github.com/artheranet/arthera-node/inter/iblockproc"
-	"github.com/artheranet/arthera-node/inter/ibr"
-	"github.com/artheranet/arthera-node/inter/ier"
+	"github.com/artheranet/arthera-node/internal/inter/iblockproc"
+	"github.com/artheranet/arthera-node/internal/inter/ibr"
+	"github.com/artheranet/arthera-node/internal/inter/ier"
 )
 
 // ApplyGenesis writes initial state.

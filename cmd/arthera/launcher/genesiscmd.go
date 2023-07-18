@@ -23,8 +23,8 @@ import (
 	"github.com/artheranet/arthera-node/genesis/genesisstore"
 	"github.com/artheranet/arthera-node/genesis/genesisstore/fileshash"
 	"github.com/artheranet/arthera-node/gossip/evmstore"
-	"github.com/artheranet/arthera-node/inter/ibr"
-	"github.com/artheranet/arthera-node/inter/ier"
+	"github.com/artheranet/arthera-node/internal/inter/ibr"
+	"github.com/artheranet/arthera-node/internal/inter/ier"
 	"github.com/artheranet/arthera-node/utils/devnullfile"
 	"github.com/artheranet/arthera-node/utils/iodb"
 )

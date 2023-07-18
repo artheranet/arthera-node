@@ -7,9 +7,9 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/artheranet/arthera-node/gossip/emitter"
-	"github.com/artheranet/arthera-node/inter"
-	"github.com/artheranet/arthera-node/inter/ibr"
-	"github.com/artheranet/arthera-node/inter/iep"
+	"github.com/artheranet/arthera-node/internal/inter"
+	"github.com/artheranet/arthera-node/internal/inter/ibr"
+	"github.com/artheranet/arthera-node/internal/inter/iep"
 )
 
 // Constants to match up protocol versions and messages

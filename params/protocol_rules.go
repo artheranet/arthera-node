@@ -12,7 +12,7 @@ import (
 	ethparams "github.com/ethereum/go-ethereum/params"
 
 	"github.com/artheranet/arthera-node/contracts/evmwriter"
-	"github.com/artheranet/arthera-node/inter"
+	"github.com/artheranet/arthera-node/internal/inter"
 )
 
 const (

@@ -10,7 +10,7 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/rpc"
 
-	"github.com/artheranet/arthera-node/inter"
+	"github.com/artheranet/arthera-node/internal/inter"
 )
 
 // PublicDAGChainAPI provides an API to access the directed acyclic graph chain.

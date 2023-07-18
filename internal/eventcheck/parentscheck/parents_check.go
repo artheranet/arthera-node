@@ -5,7 +5,7 @@ import (
 
 	base "github.com/Fantom-foundation/lachesis-base/eventcheck/parentscheck"
 
-	"github.com/artheranet/arthera-node/inter"
+	"github.com/artheranet/arthera-node/internal/inter"
 )
 
 var (

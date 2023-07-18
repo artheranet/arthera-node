@@ -12,8 +12,8 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/internal/eventcheck/basiccheck"
+	"github.com/artheranet/arthera-node/internal/inter"
 )
 
 type LLRBasicCheckTestSuite struct {

@@ -9,9 +9,9 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/utils/datasemaphore"
 	"github.com/Fantom-foundation/lachesis-base/utils/workers"
 
-	"github.com/artheranet/arthera-node/inter"
-	"github.com/artheranet/arthera-node/inter/iep"
-	"github.com/artheranet/arthera-node/inter/ier"
+	"github.com/artheranet/arthera-node/internal/inter"
+	"github.com/artheranet/arthera-node/internal/inter/iep"
+	"github.com/artheranet/arthera-node/internal/inter/ier"
 )
 
 var (

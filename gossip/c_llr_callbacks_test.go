@@ -25,12 +25,12 @@ import (
 
 	"github.com/artheranet/arthera-node/gossip/contract/ballot"
 	"github.com/artheranet/arthera-node/gossip/filters"
-	"github.com/artheranet/arthera-node/inter"
-	"github.com/artheranet/arthera-node/inter/ibr"
-	"github.com/artheranet/arthera-node/inter/ier"
 	"github.com/artheranet/arthera-node/internal/eventcheck"
 	"github.com/artheranet/arthera-node/internal/eventcheck/epochcheck"
 	"github.com/artheranet/arthera-node/internal/evmcore"
+	"github.com/artheranet/arthera-node/internal/inter"
+	"github.com/artheranet/arthera-node/internal/inter/ibr"
+	"github.com/artheranet/arthera-node/internal/inter/ier"
 )
 
 type IntegrationTestSuite struct {

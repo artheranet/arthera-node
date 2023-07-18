@@ -29,10 +29,10 @@ import (
 
 	"github.com/artheranet/arthera-node/gossip/blockproc"
 	"github.com/artheranet/arthera-node/gossip/emitter"
-	"github.com/artheranet/arthera-node/inter"
-	"github.com/artheranet/arthera-node/inter/iblockproc"
-	"github.com/artheranet/arthera-node/inter/validatorpk"
 	"github.com/artheranet/arthera-node/internal/evmcore"
+	"github.com/artheranet/arthera-node/internal/inter"
+	"github.com/artheranet/arthera-node/internal/inter/iblockproc"
+	"github.com/artheranet/arthera-node/internal/inter/validatorpk"
 	"github.com/artheranet/arthera-node/internal/valkeystore"
 	"github.com/artheranet/arthera-node/internal/vecmt"
 	"github.com/artheranet/arthera-node/utils"

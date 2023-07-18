@@ -23,9 +23,9 @@ import (
 	"github.com/artheranet/arthera-node/gossip/blockproc/verwatcher"
 	"github.com/artheranet/arthera-node/gossip/emitter"
 	"github.com/artheranet/arthera-node/gossip/evmstore"
-	"github.com/artheranet/arthera-node/inter"
-	"github.com/artheranet/arthera-node/inter/iblockproc"
 	"github.com/artheranet/arthera-node/internal/evmcore"
+	"github.com/artheranet/arthera-node/internal/inter"
+	"github.com/artheranet/arthera-node/internal/inter/iblockproc"
 	"github.com/artheranet/arthera-node/params"
 	"github.com/artheranet/arthera-node/utils"
 )

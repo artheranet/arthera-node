@@ -15,10 +15,10 @@ import (
 
 	"github.com/artheranet/arthera-node/contracts/driver"
 	"github.com/artheranet/arthera-node/gossip/blockproc"
-	"github.com/artheranet/arthera-node/inter"
-	"github.com/artheranet/arthera-node/inter/drivertype"
-	"github.com/artheranet/arthera-node/inter/iblockproc"
-	"github.com/artheranet/arthera-node/inter/validatorpk"
+	"github.com/artheranet/arthera-node/internal/inter"
+	"github.com/artheranet/arthera-node/internal/inter/drivertype"
+	"github.com/artheranet/arthera-node/internal/inter/iblockproc"
+	"github.com/artheranet/arthera-node/internal/inter/validatorpk"
 )
 
 const (

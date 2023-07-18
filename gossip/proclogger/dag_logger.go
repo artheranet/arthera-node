@@ -3,7 +3,7 @@ package proclogger
 import (
 	"time"
 
-	"github.com/artheranet/arthera-node/inter"
+	"github.com/artheranet/arthera-node/internal/inter"
 	"github.com/artheranet/arthera-node/logger"
 	"github.com/artheranet/arthera-node/utils"
 )

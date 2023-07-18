@@ -1,8 +1,8 @@
 package iep
 
 import (
-	"github.com/artheranet/arthera-node/inter"
-	"github.com/artheranet/arthera-node/inter/ier"
+	"github.com/artheranet/arthera-node/internal/inter"
+	"github.com/artheranet/arthera-node/internal/inter/ier"
 )
 
 type LlrEpochPack struct {

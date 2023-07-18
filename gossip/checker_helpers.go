@@ -6,9 +6,9 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
 	"github.com/Fantom-foundation/lachesis-base/inter/pos"
 
-	"github.com/artheranet/arthera-node/inter"
-	"github.com/artheranet/arthera-node/inter/validatorpk"
 	"github.com/artheranet/arthera-node/internal/eventcheck/gaspowercheck"
+	"github.com/artheranet/arthera-node/internal/inter"
+	"github.com/artheranet/arthera-node/internal/inter/validatorpk"
 	"github.com/artheranet/arthera-node/params"
 )
 

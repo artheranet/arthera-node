@@ -4,7 +4,7 @@ import (
 	"github.com/artheranet/arthera-node/contracts"
 	"github.com/artheranet/arthera-node/contracts/abis"
 	"github.com/artheranet/arthera-node/contracts/runner"
-	"github.com/artheranet/arthera-node/inter"
+	"github.com/artheranet/arthera-node/internal/inter"
 	"github.com/artheranet/arthera-node/params"
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"

@@ -18,7 +18,7 @@ import (
 
 	"github.com/artheranet/arthera-node/gossip"
 	"github.com/artheranet/arthera-node/integration"
-	"github.com/artheranet/arthera-node/inter/iblockproc"
+	"github.com/artheranet/arthera-node/internal/inter/iblockproc"
 )
 
 // maxEpochsToTry represents amount of last closed epochs to try (in case that the last one has the state unavailable)

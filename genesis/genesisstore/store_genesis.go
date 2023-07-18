@@ -9,8 +9,8 @@ import (
 	"github.com/ethereum/go-ethereum/rlp"
 
 	"github.com/artheranet/arthera-node/genesis"
-	"github.com/artheranet/arthera-node/inter/ibr"
-	"github.com/artheranet/arthera-node/inter/ier"
+	"github.com/artheranet/arthera-node/internal/inter/ibr"
+	"github.com/artheranet/arthera-node/internal/inter/ier"
 	"github.com/artheranet/arthera-node/utils/iodb"
 )
 

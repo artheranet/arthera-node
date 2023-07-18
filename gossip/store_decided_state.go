@@ -7,7 +7,7 @@ import (
 	ethparams "github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/rlp"
 
-	"github.com/artheranet/arthera-node/inter/iblockproc"
+	"github.com/artheranet/arthera-node/internal/inter/iblockproc"
 	"github.com/artheranet/arthera-node/params"
 )
 

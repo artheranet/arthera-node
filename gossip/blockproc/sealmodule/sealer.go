@@ -8,7 +8,7 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/lachesis"
 
 	"github.com/artheranet/arthera-node/gossip/blockproc"
-	"github.com/artheranet/arthera-node/inter/iblockproc"
+	"github.com/artheranet/arthera-node/internal/inter/iblockproc"
 )
 
 type ArtheraEpochsSealerModule struct{}

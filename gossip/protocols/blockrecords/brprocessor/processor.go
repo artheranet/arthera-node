@@ -9,7 +9,7 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/utils/datasemaphore"
 	"github.com/Fantom-foundation/lachesis-base/utils/workers"
 
-	"github.com/artheranet/arthera-node/inter/ibr"
+	"github.com/artheranet/arthera-node/internal/inter/ibr"
 )
 
 var (

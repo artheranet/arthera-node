@@ -11,9 +11,9 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/params"
 
-	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/internal/eventcheck/epochcheck"
 	"github.com/artheranet/arthera-node/internal/eventcheck/gaspowercheck"
+	"github.com/artheranet/arthera-node/internal/inter"
 	"github.com/artheranet/arthera-node/utils"
 )
 

@@ -20,7 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/trie"
 	"github.com/syndtr/goleveldb/leveldb/opt"
 
-	"github.com/artheranet/arthera-node/inter/iblockproc"
+	"github.com/artheranet/arthera-node/internal/inter/iblockproc"
 	"github.com/artheranet/arthera-node/internal/topicsdb"
 	"github.com/artheranet/arthera-node/logger"
 	"github.com/artheranet/arthera-node/utils/adapters/kvdb2ethdb"

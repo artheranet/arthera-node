@@ -7,7 +7,7 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/emitter/doublesign"
 	"github.com/Fantom-foundation/lachesis-base/hash"
 
-	"github.com/artheranet/arthera-node/inter"
+	"github.com/artheranet/arthera-node/internal/inter"
 	"github.com/artheranet/arthera-node/utils/errlock"
 )
 

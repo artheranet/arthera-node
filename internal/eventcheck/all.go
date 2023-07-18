@@ -1,12 +1,12 @@
 package eventcheck
 
 import (
-	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/internal/eventcheck/basiccheck"
 	"github.com/artheranet/arthera-node/internal/eventcheck/epochcheck"
 	"github.com/artheranet/arthera-node/internal/eventcheck/gaspowercheck"
 	"github.com/artheranet/arthera-node/internal/eventcheck/heavycheck"
 	"github.com/artheranet/arthera-node/internal/eventcheck/parentscheck"
+	"github.com/artheranet/arthera-node/internal/inter"
 )
 
 // Checkers is collection of all the checkers

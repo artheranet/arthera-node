@@ -3,7 +3,7 @@ package valkeystore
 import (
 	"errors"
 
-	"github.com/artheranet/arthera-node/inter/validatorpk"
+	"github.com/artheranet/arthera-node/internal/inter/validatorpk"
 	"github.com/artheranet/arthera-node/internal/valkeystore/encryption"
 )
 

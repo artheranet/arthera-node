@@ -11,8 +11,8 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	notify "github.com/ethereum/go-ethereum/event"
 
-	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/internal/evmcore"
+	"github.com/artheranet/arthera-node/internal/inter"
 	"github.com/artheranet/arthera-node/internal/valkeystore"
 	"github.com/artheranet/arthera-node/internal/vecmt"
 	"github.com/artheranet/arthera-node/params"

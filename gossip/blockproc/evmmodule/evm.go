@@ -12,9 +12,9 @@ import (
 	ethparams "github.com/ethereum/go-ethereum/params"
 
 	"github.com/artheranet/arthera-node/gossip/blockproc"
-	"github.com/artheranet/arthera-node/inter"
-	"github.com/artheranet/arthera-node/inter/iblockproc"
 	"github.com/artheranet/arthera-node/internal/evmcore"
+	"github.com/artheranet/arthera-node/internal/inter"
+	"github.com/artheranet/arthera-node/internal/inter/iblockproc"
 	"github.com/artheranet/arthera-node/params"
 	"github.com/artheranet/arthera-node/utils"
 )

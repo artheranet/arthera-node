@@ -17,8 +17,8 @@ import (
 	lru "github.com/hashicorp/golang-lru"
 
 	"github.com/artheranet/arthera-node/gossip/emitter/originatedtxs"
-	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/internal/evmcore"
+	"github.com/artheranet/arthera-node/internal/inter"
 	"github.com/artheranet/arthera-node/logger"
 	"github.com/artheranet/arthera-node/tracing"
 	"github.com/artheranet/arthera-node/utils/rate"

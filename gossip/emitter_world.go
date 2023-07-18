@@ -8,7 +8,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/artheranet/arthera-node/gossip/emitter"
-	"github.com/artheranet/arthera-node/inter"
+	"github.com/artheranet/arthera-node/internal/inter"
 	"github.com/artheranet/arthera-node/internal/valkeystore"
 	"github.com/artheranet/arthera-node/internal/vecmt"
 	"github.com/artheranet/arthera-node/utils/wgmutex"

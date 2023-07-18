@@ -38,9 +38,6 @@ import (
 	"github.com/artheranet/arthera-node/gossip/protocols/epochpacks/epstream/epstreamleecher"
 	"github.com/artheranet/arthera-node/gossip/protocols/epochpacks/epstream/epstreamseeder"
 	"github.com/artheranet/arthera-node/gossip/protocols/snap/snapstream/snapleecher"
-	"github.com/artheranet/arthera-node/inter"
-	"github.com/artheranet/arthera-node/inter/ibr"
-	"github.com/artheranet/arthera-node/inter/ier"
 	"github.com/artheranet/arthera-node/internal/eventcheck"
 	"github.com/artheranet/arthera-node/internal/eventcheck/bvallcheck"
 	"github.com/artheranet/arthera-node/internal/eventcheck/epochcheck"
@@ -48,6 +45,9 @@ import (
 	"github.com/artheranet/arthera-node/internal/eventcheck/heavycheck"
 	"github.com/artheranet/arthera-node/internal/eventcheck/parentlesscheck"
 	"github.com/artheranet/arthera-node/internal/evmcore"
+	"github.com/artheranet/arthera-node/internal/inter"
+	"github.com/artheranet/arthera-node/internal/inter/ibr"
+	"github.com/artheranet/arthera-node/internal/inter/ier"
 	"github.com/artheranet/arthera-node/logger"
 )
 

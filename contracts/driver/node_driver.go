@@ -3,7 +3,7 @@ package driver
 import (
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
 	"github.com/artheranet/arthera-node/contracts/abis"
-	"github.com/artheranet/arthera-node/genesis/gpos"
+	"github.com/artheranet/arthera-node/genesis"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/params"
 	"github.com/artheranet/arthera-node/utils"
@@ -85,7 +85,7 @@ func SealEpoch(metrics []ValidatorEpochMetric) []byte {
 	return data
 }
 
-func SetGenesisValidator(v gpos.Validator) []byte {
+func SetGenesisValidator(v genesis.Validator) []byte {
 	data, _ := abis.NodeDriver.Pack(
 		"setGenesisValidator",
 		v.Address,

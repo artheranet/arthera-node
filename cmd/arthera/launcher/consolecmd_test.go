@@ -2,7 +2,7 @@ package launcher
 
 import (
 	"crypto/rand"
-	makefakegenesis2 "github.com/artheranet/arthera-node/genesis/makefakegenesis"
+	"github.com/artheranet/arthera-node/genesis/fake"
 	"math/big"
 	"os"
 	"path/filepath"
@@ -142,5 +142,5 @@ func trulyRandInt(lo, hi int) int {
 }
 
 func genesisStart() string {
-	return time.Unix(int64(makefakegenesis2.FakeGenesisTime.Unix()), 0).Format("Mon Jan 02 2006 15:04:05 GMT-0700 (MST)")
+	return time.Unix(fake.FakeGenesisTime.Unix(), 0).Format("Mon Jan 02 2006 15:04:05 GMT-0700 (MST)")
 }

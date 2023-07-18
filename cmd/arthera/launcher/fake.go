@@ -3,13 +3,12 @@ package launcher
 import (
 	"crypto/ecdsa"
 	"fmt"
+	"github.com/artheranet/arthera-node/genesis/fake"
 	"strconv"
 	"strings"
 
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
 	cli "gopkg.in/urfave/cli.v1"
-
-	"github.com/artheranet/arthera-node/genesis/makefakegenesis"
 )
 
 // FakeNetFlag enables special testnet, where validators are automatically created
@@ -23,7 +22,7 @@ func getFakeValidatorKey(ctx *cli.Context) *ecdsa.PrivateKey {
 	if err != nil || id == 0 {
 		return nil
 	}
-	return makefakegenesis.FakeKey(id)
+	return fake.FakeKey(id)
 }
 
 func parseFakeGen(s string) (id idx.ValidatorID, num idx.Validator, err error) {

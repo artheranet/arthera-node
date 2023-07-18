@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"github.com/artheranet/arthera-node/genesis/makefakegenesis"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -21,7 +20,7 @@ import (
 func BenchmarkFlushDBs(b *testing.B) {
 	dir := tmpDir("flush_bench")
 	defer os.RemoveAll(dir)
-	genStore := makefakegenesis.FakeGenesisStore(1, utils.ToArt(1), utils.ToArt(1))
+	genStore := fake.FakeGenesisStore(1, utils.ToArt(1), utils.ToArt(1))
 	g := genStore.Genesis()
 	_, _, store, s2, _, closeDBs := MakeEngine(dir, &g, Configs{
 		Opera:         gossip.DefaultConfig(cachescale.Identity),

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/artheranet/arthera-node/genesis"
-	"github.com/artheranet/arthera-node/genesis/makefakegenesis"
+	"github.com/artheranet/arthera-node/genesis/fake"
 	"github.com/artheranet/arthera-node/params"
 	utils2 "github.com/artheranet/arthera-node/utils"
 	"github.com/artheranet/arthera-node/utils/memory"
@@ -202,7 +202,7 @@ func mayGetGenesisStore(ctx *cli.Context) *genesisstore.Store {
 		if err != nil {
 			log.Crit("Invalid flag", "flag", FakeNetFlag.Name, "err", err)
 		}
-		return makefakegenesis.FakeGenesisStore(num, utils2.ToArt(1_000_000_000), utils2.ToArt(5_000_000))
+		return fake.FakeGenesisStore(num, utils2.ToArt(1_000_000_000), utils2.ToArt(5_000_000))
 	case ctx.GlobalIsSet(TestnetFlag.Name):
 		gen, _ := CreateGenesis("testnet")
 		return gen

@@ -5,7 +5,7 @@ import (
 	"crypto/ecdsa"
 	"errors"
 	"fmt"
-	"github.com/artheranet/arthera-node/genesis/makefakegenesis"
+	"github.com/artheranet/arthera-node/genesis/fake"
 	"github.com/artheranet/arthera-node/params"
 	"math"
 	"math/big"
@@ -27,16 +27,16 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/log"
 
-	"github.com/artheranet/arthera-node/evmcore"
 	"github.com/artheranet/arthera-node/gossip/blockproc"
 	"github.com/artheranet/arthera-node/gossip/emitter"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/inter/iblockproc"
 	"github.com/artheranet/arthera-node/inter/validatorpk"
+	"github.com/artheranet/arthera-node/internal/evmcore"
+	"github.com/artheranet/arthera-node/internal/valkeystore"
+	"github.com/artheranet/arthera-node/internal/vecmt"
 	"github.com/artheranet/arthera-node/utils"
 	"github.com/artheranet/arthera-node/utils/adapters/vecmt2dagidx"
-	"github.com/artheranet/arthera-node/valkeystore"
-	"github.com/artheranet/arthera-node/vecmt"
 )
 
 const (
@@ -135,7 +135,7 @@ func newTestEnv(firstEpoch idx.Epoch, validatorsNum idx.Validator) *testEnv {
 	rules.Epochs.MaxEpochDuration = inter.Timestamp(maxEpochDuration)
 	rules.Blocks.MaxEmptyBlockSkipPeriod = 0
 
-	genStore := makefakegenesis.FakeGenesisStoreWithRulesAndStart(validatorsNum, utils.ToArt(genesisBalance), utils.ToArt(genesisStake), rules, firstEpoch, 2)
+	genStore := fake.FakeGenesisStoreWithRulesAndStart(validatorsNum, utils.ToArt(genesisBalance), utils.ToArt(genesisStake), rules, firstEpoch, 2)
 	genesis := genStore.Genesis()
 
 	store := NewMemStore()
@@ -183,7 +183,7 @@ func newTestEnv(firstEpoch idx.Epoch, validatorsNum idx.Validator) *testEnv {
 		cfg.EmitIntervals = emitter.EmitIntervals{}
 		cfg.MaxParents = idx.Event(validatorsNum/2 + 1)
 		cfg.MaxTxsPerAddress = 10000000
-		_ = valKeystore.Add(pubkey, crypto.FromECDSA(makefakegenesis.FakeKey(vid)), validatorpk.FakePassword)
+		_ = valKeystore.Add(pubkey, crypto.FromECDSA(fake.FakeKey(vid)), validatorpk.FakePassword)
 		_ = valKeystore.Unlock(pubkey, validatorpk.FakePassword)
 		world := env.EmitterWorld(env.signer)
 		world.External = testEmitterWorldExternal{world.External, env}
@@ -337,12 +337,12 @@ func (env *testEnv) Contract(from idx.ValidatorID, amount *big.Int, hex string) 
 }
 
 func (env *testEnv) privateKey(n idx.ValidatorID) *ecdsa.PrivateKey {
-	key := makefakegenesis.FakeKey(n)
+	key := fake.FakeKey(n)
 	return key
 }
 
 func (env *testEnv) Address(n idx.ValidatorID) common.Address {
-	key := makefakegenesis.FakeKey(n)
+	key := fake.FakeKey(n)
 	addr := crypto.PubkeyToAddress(key.PublicKey)
 	return addr
 }

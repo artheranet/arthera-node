@@ -8,9 +8,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
 
-	"github.com/artheranet/arthera-node/eventcheck/basiccheck"
-	"github.com/artheranet/arthera-node/eventcheck/heavycheck"
 	"github.com/artheranet/arthera-node/inter"
+	"github.com/artheranet/arthera-node/internal/eventcheck/basiccheck"
+	"github.com/artheranet/arthera-node/internal/eventcheck/heavycheck"
 	"github.com/artheranet/arthera-node/logger"
 )
 

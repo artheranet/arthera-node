@@ -1,4 +1,4 @@
-package gpos
+package genesis
 
 import (
 	"github.com/artheranet/arthera-node/inter"

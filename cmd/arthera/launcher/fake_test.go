@@ -1,7 +1,7 @@
 package launcher
 
 import (
-	"github.com/artheranet/arthera-node/genesis/makefakegenesis"
+	"github.com/artheranet/arthera-node/genesis/fake"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -112,7 +112,7 @@ func readFakeValidator(fakenet string) *validatorpk.PubKey {
 	}
 
 	return &validatorpk.PubKey{
-		Raw:  crypto.FromECDSAPub(&makefakegenesis.FakeKey(n).PublicKey),
+		Raw:  crypto.FromECDSAPub(&fake.FakeKey(n).PublicKey),
 		Type: validatorpk.Types.Secp256k1,
 	}
 }

@@ -8,9 +8,8 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/kvdb/memorydb"
 	"github.com/artheranet/arthera-node/contracts/driver"
 	"github.com/artheranet/arthera-node/genesis"
+	"github.com/artheranet/arthera-node/genesis/builder"
 	"github.com/artheranet/arthera-node/genesis/genesisstore"
-	"github.com/artheranet/arthera-node/genesis/gpos"
-	"github.com/artheranet/arthera-node/genesis/makegenesis"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/inter/ibr"
 	"github.com/artheranet/arthera-node/inter/ier"
@@ -123,9 +122,9 @@ func createGenesisCmd(ctx *cli.Context) error {
 }
 
 func CreateGenesis(genesisType string) (*genesisstore.Store, hash.Hash) {
-	builder := makegenesis.NewGenesisBuilder(memorydb.NewProducer(""))
+	genesisBuilder := builder.NewGenesisBuilder(memorydb.NewProducer(""))
 
-	validators := make(gpos.Validators, 0, 3)
+	validators := make(genesis.Validators, 0, 3)
 	delegations := make([]driver.Delegation, 0, 3)
 
 	var initialValidators = TestnetValidators
@@ -140,55 +139,55 @@ func CreateGenesis(genesisType string) (*genesisstore.Store, hash.Hash) {
 		validators, delegations = AddValidator(
 			uint8(i+1),
 			v,
-			validators, delegations, builder,
+			validators, delegations, genesisBuilder,
 		)
 	}
 
 	// premine to genesis accounts
 	for _, a := range initialAccounts {
-		builder.AddBalance(
+		genesisBuilder.AddBalance(
 			common.HexToAddress(a.addr),
 			a.balance,
 		)
 	}
 
-	builder.DeployBaseContracts()
+	genesisBuilder.DeployBaseContracts()
 
 	rules := params.TestNetRules()
 	if genesisType == "mainnet" {
 		rules = params.MainNetRules()
 	}
 
-	builder.InitializeEpoch(1, 2, rules, GenesisTime)
+	genesisBuilder.InitializeEpoch(1, 2, rules, GenesisTime)
 
 	owner := validators[0].Address
-	blockProc := makegenesis.DefaultBlockProc()
-	genesisTxs := builder.GetGenesisTxs(0, validators, builder.TotalSupply(), delegations, owner)
-	err := builder.ExecuteGenesisTxs(blockProc, genesisTxs)
+	blockProc := builder.DefaultBlockProc()
+	genesisTxs := genesisBuilder.GetGenesisTxs(0, validators, genesisBuilder.TotalSupply(), delegations, owner)
+	err := genesisBuilder.ExecuteGenesisTxs(blockProc, genesisTxs)
 	if err != nil {
 		panic(err)
 	}
 
-	return builder.Build(genesis.Header{
-		GenesisID:   builder.CurrentHash(),
+	return genesisBuilder.Build(genesis.Header{
+		GenesisID:   genesisBuilder.CurrentHash(),
 		NetworkID:   rules.NetworkID,
 		NetworkName: rules.Name,
-	}), builder.CurrentHash()
+	}), genesisBuilder.CurrentHash()
 }
 
 func AddValidator(
 	id uint8,
 	v GenesisValidator,
-	validators gpos.Validators,
+	validators genesis.Validators,
 	delegations []driver.Delegation,
-	builder *makegenesis.GenesisBuilder,
-) (gpos.Validators, []driver.Delegation) {
+	builder *builder.GenesisBuilder,
+) (genesis.Validators, []driver.Delegation) {
 	validatorId := idx.ValidatorID(id)
 	pk, _ := validatorpk.FromString(v.pubkey)
 	ecdsaPubkey, _ := crypto.UnmarshalPubkey(pk.Raw)
 	addr := crypto.PubkeyToAddress(*ecdsaPubkey)
 
-	validator := gpos.Validator{
+	validator := genesis.Validator{
 		ID:      validatorId,
 		Address: addr,
 		PubKey: validatorpk.PubKey{

@@ -23,14 +23,14 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/artheranet/arthera-node/eventcheck"
-	"github.com/artheranet/arthera-node/eventcheck/epochcheck"
-	"github.com/artheranet/arthera-node/evmcore"
 	"github.com/artheranet/arthera-node/gossip/contract/ballot"
 	"github.com/artheranet/arthera-node/gossip/filters"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/inter/ibr"
 	"github.com/artheranet/arthera-node/inter/ier"
+	"github.com/artheranet/arthera-node/internal/eventcheck"
+	"github.com/artheranet/arthera-node/internal/eventcheck/epochcheck"
+	"github.com/artheranet/arthera-node/internal/evmcore"
 )
 
 type IntegrationTestSuite struct {

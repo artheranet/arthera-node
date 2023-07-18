@@ -1,4 +1,4 @@
-package makegenesis
+package builder
 
 import (
 	"bytes"
@@ -9,7 +9,6 @@ import (
 	"github.com/artheranet/arthera-node/contracts"
 	"github.com/artheranet/arthera-node/contracts/driver"
 	"github.com/artheranet/arthera-node/contracts/netinit"
-	"github.com/artheranet/arthera-node/genesis/gpos"
 	"github.com/artheranet/arthera-node/inter/drivertype"
 	"github.com/artheranet/arthera-node/params"
 	"io"
@@ -324,7 +323,7 @@ func (b *GenesisBuilder) InitializeEpoch(block idx.Block, epoch idx.Epoch, rules
 	})
 }
 
-func (b *GenesisBuilder) GetGenesisTxs(sealedEpoch idx.Epoch, validators gpos.Validators, totalSupply *big.Int, delegations []driver.Delegation, driverOwner common.Address) types.Transactions {
+func (b *GenesisBuilder) GetGenesisTxs(sealedEpoch idx.Epoch, validators genesis.Validators, totalSupply *big.Int, delegations []driver.Delegation, driverOwner common.Address) types.Transactions {
 	buildTx := txBuilder()
 	internalTxs := make(types.Transactions, 0, 15)
 	// initialization

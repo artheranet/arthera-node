@@ -1,12 +1,12 @@
 package launcher
 
 import (
+	"github.com/artheranet/arthera-node/genesis/fake"
 	"github.com/pkg/errors"
 	cli "gopkg.in/urfave/cli.v1"
 
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
 
-	"github.com/artheranet/arthera-node/genesis/makefakegenesis"
 	"github.com/artheranet/arthera-node/gossip/emitter"
 	"github.com/artheranet/arthera-node/inter/validatorpk"
 )
@@ -44,7 +44,7 @@ func setValidator(ctx *cli.Context, cfg *emitter.Config) error {
 		}
 
 		cfg.Validator.ID = id
-		validators := makefakegenesis.GetFakeValidators(num)
+		validators := fake.GetFakeValidators(num)
 		cfg.Validator.PubKey = validators.Map()[cfg.Validator.ID].PubKey
 	}
 

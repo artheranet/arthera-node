@@ -1,8 +1,9 @@
-package makefakegenesis
+package fake
 
 import (
 	"crypto/ecdsa"
 	"github.com/artheranet/arthera-node/contracts/driver"
+	"github.com/artheranet/arthera-node/genesis/builder"
 	"github.com/artheranet/arthera-node/params"
 	"math/big"
 	"time"
@@ -14,8 +15,6 @@ import (
 
 	"github.com/artheranet/arthera-node/genesis"
 	"github.com/artheranet/arthera-node/genesis/genesisstore"
-	"github.com/artheranet/arthera-node/genesis/gpos"
-	"github.com/artheranet/arthera-node/genesis/makegenesis"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/inter/validatorpk"
 	"github.com/artheranet/arthera-node/internal/evmcore"
@@ -35,14 +34,14 @@ func FakeGenesisStore(num idx.Validator, balance, stake *big.Int) *genesisstore.
 }
 
 func FakeGenesisStoreWithRulesAndStart(num idx.Validator, balance, stake *big.Int, rules params.ProtocolRules, epoch idx.Epoch, block idx.Block) *genesisstore.Store {
-	builder := makegenesis.NewGenesisBuilder(memorydb.NewProducer(""))
+	genesisBuilder := builder.NewGenesisBuilder(memorydb.NewProducer(""))
 
 	validators := GetFakeValidators(num)
 
 	// add balances to validators
 	var delegations []driver.Delegation
 	for _, val := range validators {
-		builder.AddBalance(val.Address, balance)
+		genesisBuilder.AddBalance(val.Address, balance)
 		delegations = append(delegations, driver.Delegation{
 			Address:            val.Address,
 			ValidatorID:        val.ID,
@@ -56,36 +55,36 @@ func FakeGenesisStoreWithRulesAndStart(num idx.Validator, balance, stake *big.In
 		})
 	}
 
-	builder.DeployBaseContracts()
-	builder.InitializeEpoch(block, epoch, rules, FakeGenesisTime)
+	genesisBuilder.DeployBaseContracts()
+	genesisBuilder.InitializeEpoch(block, epoch, rules, FakeGenesisTime)
 
 	var owner common.Address
 	if num != 0 {
 		owner = validators[0].Address
 	}
 
-	blockProc := makegenesis.DefaultBlockProc()
-	genesisTxs := builder.GetGenesisTxs(epoch-2, validators, builder.TotalSupply(), delegations, owner)
-	err := builder.ExecuteGenesisTxs(blockProc, genesisTxs)
+	blockProc := builder.DefaultBlockProc()
+	genesisTxs := genesisBuilder.GetGenesisTxs(epoch-2, validators, genesisBuilder.TotalSupply(), delegations, owner)
+	err := genesisBuilder.ExecuteGenesisTxs(blockProc, genesisTxs)
 	if err != nil {
 		panic(err)
 	}
 
-	return builder.Build(genesis.Header{
-		GenesisID:   builder.CurrentHash(),
+	return genesisBuilder.Build(genesis.Header{
+		GenesisID:   genesisBuilder.CurrentHash(),
 		NetworkID:   rules.NetworkID,
 		NetworkName: rules.Name,
 	})
 }
 
-func GetFakeValidators(num idx.Validator) gpos.Validators {
-	validators := make(gpos.Validators, 0, num)
+func GetFakeValidators(num idx.Validator) genesis.Validators {
+	validators := make(genesis.Validators, 0, num)
 
 	for i := idx.ValidatorID(1); i <= idx.ValidatorID(num); i++ {
 		key := FakeKey(i)
 		addr := crypto.PubkeyToAddress(key.PublicKey)
 		pubkeyraw := crypto.FromECDSAPub(&key.PublicKey)
-		validators = append(validators, gpos.Validator{
+		validators = append(validators, genesis.Validator{
 			ID:      i,
 			Address: addr,
 			PubKey: validatorpk.PubKey{

@@ -5,8 +5,8 @@ import (
 
 	base "github.com/Fantom-foundation/lachesis-base/eventcheck"
 
-	"github.com/artheranet/arthera-node/eventcheck/epochcheck"
-	"github.com/artheranet/arthera-node/eventcheck/heavycheck"
+	"github.com/artheranet/arthera-node/internal/eventcheck/epochcheck"
+	"github.com/artheranet/arthera-node/internal/eventcheck/heavycheck"
 )
 
 var (

@@ -4,7 +4,7 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
 	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/artheranet/arthera-node/evmcore"
+	"github.com/artheranet/arthera-node/internal/evmcore"
 )
 
 func (s *Store) GetCachedEvmBlock(n idx.Block) *evmcore.EvmBlock {

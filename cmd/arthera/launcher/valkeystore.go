@@ -13,7 +13,7 @@ import (
 	cli "gopkg.in/urfave/cli.v1"
 
 	"github.com/artheranet/arthera-node/inter/validatorpk"
-	"github.com/artheranet/arthera-node/valkeystore"
+	"github.com/artheranet/arthera-node/internal/valkeystore"
 )
 
 func addFakeValidatorKey(ctx *cli.Context, key *ecdsa.PrivateKey, pubkey validatorpk.PubKey, valKeystore valkeystore.RawKeystoreI) {

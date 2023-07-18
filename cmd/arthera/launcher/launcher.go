@@ -21,18 +21,18 @@ import (
 
 	evmetrics "github.com/ethereum/go-ethereum/metrics"
 
+	"github.com/artheranet/arthera-node/cmd/arthera/launcher/flags"
 	"github.com/artheranet/arthera-node/cmd/arthera/launcher/metrics"
 	"github.com/artheranet/arthera-node/cmd/arthera/launcher/tracing"
-	"github.com/artheranet/arthera-node/debug"
-	"github.com/artheranet/arthera-node/evmcore"
-	"github.com/artheranet/arthera-node/flags"
 	"github.com/artheranet/arthera-node/genesis"
 	"github.com/artheranet/arthera-node/genesis/genesisstore"
 	"github.com/artheranet/arthera-node/gossip"
 	"github.com/artheranet/arthera-node/gossip/emitter"
 	"github.com/artheranet/arthera-node/integration"
+	"github.com/artheranet/arthera-node/internal/evmcore"
+	"github.com/artheranet/arthera-node/internal/valkeystore"
+	"github.com/artheranet/arthera-node/utils/debug"
 	"github.com/artheranet/arthera-node/utils/errlock"
-	"github.com/artheranet/arthera-node/valkeystore"
 	_ "github.com/artheranet/arthera-node/version"
 )
 

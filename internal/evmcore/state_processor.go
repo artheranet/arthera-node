@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"github.com/artheranet/arthera-node/contracts/pyag"
 	"github.com/artheranet/arthera-node/contracts/runner"
-	"github.com/artheranet/arthera-node/txtrace"
+	"github.com/artheranet/arthera-node/tracing/txtrace"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/log"
 	"math/big"

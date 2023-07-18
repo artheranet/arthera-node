@@ -7,8 +7,8 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
 	"github.com/Fantom-foundation/lachesis-base/utils/piecefunc"
 
-	"github.com/artheranet/arthera-node/eventcheck/basiccheck"
 	"github.com/artheranet/arthera-node/inter"
+	"github.com/artheranet/arthera-node/internal/eventcheck/basiccheck"
 )
 
 var emptyLlrBlockVotes = inter.LlrBlockVotes{

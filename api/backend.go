@@ -15,11 +15,11 @@
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
 // Package ethapi implements the general Ethereum API functions.
-package ethapi
+package api
 
 import (
 	"context"
-	"github.com/artheranet/arthera-node/txtrace"
+	"github.com/artheranet/arthera-node/tracing/txtrace"
 	"math/big"
 
 	"github.com/Fantom-foundation/lachesis-base/hash"
@@ -34,9 +34,9 @@ import (
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/rpc"
 
-	"github.com/artheranet/arthera-node/evmcore"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/inter/iblockproc"
+	"github.com/artheranet/arthera-node/internal/evmcore"
 )
 
 // PeerProgress is synchronization status of a peer

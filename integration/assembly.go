@@ -20,8 +20,8 @@ import (
 
 	"github.com/artheranet/arthera-node/genesis"
 	"github.com/artheranet/arthera-node/gossip"
+	"github.com/artheranet/arthera-node/internal/vecmt"
 	"github.com/artheranet/arthera-node/utils/adapters/vecmt2dagidx"
-	"github.com/artheranet/arthera-node/vecmt"
 )
 
 var (

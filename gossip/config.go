@@ -12,7 +12,6 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/utils/cachescale"
 	"github.com/syndtr/goleveldb/leveldb/opt"
 
-	"github.com/artheranet/arthera-node/eventcheck/heavycheck"
 	"github.com/artheranet/arthera-node/gossip/evmstore"
 	"github.com/artheranet/arthera-node/gossip/filters"
 	"github.com/artheranet/arthera-node/gossip/gasprice"
@@ -27,6 +26,7 @@ import (
 	"github.com/artheranet/arthera-node/gossip/protocols/epochpacks/epprocessor"
 	"github.com/artheranet/arthera-node/gossip/protocols/epochpacks/epstream/epstreamleecher"
 	"github.com/artheranet/arthera-node/gossip/protocols/epochpacks/epstream/epstreamseeder"
+	"github.com/artheranet/arthera-node/internal/eventcheck/heavycheck"
 )
 
 const nominalSize uint = 1

@@ -31,9 +31,9 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/rpc"
 
-	"github.com/artheranet/arthera-node/evmcore"
 	"github.com/artheranet/arthera-node/gossip/evmstore"
-	"github.com/artheranet/arthera-node/topicsdb"
+	"github.com/artheranet/arthera-node/internal/evmcore"
+	"github.com/artheranet/arthera-node/internal/topicsdb"
 )
 
 type Backend interface {

@@ -12,13 +12,13 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 
-	"github.com/artheranet/arthera-node/evmcore"
 	"github.com/artheranet/arthera-node/genesis"
 	"github.com/artheranet/arthera-node/genesis/genesisstore"
 	"github.com/artheranet/arthera-node/genesis/gpos"
 	"github.com/artheranet/arthera-node/genesis/makegenesis"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/inter/validatorpk"
+	"github.com/artheranet/arthera-node/internal/evmcore"
 )
 
 var (

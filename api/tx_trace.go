@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
-package ethapi
+package api
 
 import (
 	"context"
@@ -29,8 +29,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/artheranet/arthera-node/evmcore"
-	"github.com/artheranet/arthera-node/txtrace"
+	"github.com/artheranet/arthera-node/internal/evmcore"
+	"github.com/artheranet/arthera-node/tracing/txtrace"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/state"

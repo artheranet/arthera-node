@@ -9,9 +9,9 @@ import (
 
 	"github.com/artheranet/arthera-node/gossip/emitter"
 	"github.com/artheranet/arthera-node/inter"
+	"github.com/artheranet/arthera-node/internal/valkeystore"
+	"github.com/artheranet/arthera-node/internal/vecmt"
 	"github.com/artheranet/arthera-node/utils/wgmutex"
-	"github.com/artheranet/arthera-node/valkeystore"
-	"github.com/artheranet/arthera-node/vecmt"
 )
 
 type emitterWorldProc struct {

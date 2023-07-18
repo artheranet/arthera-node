@@ -3,7 +3,7 @@ package gossip
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/artheranet/arthera-node/txtrace"
+	"github.com/artheranet/arthera-node/tracing/txtrace"
 	"sort"
 	"sync"
 	"sync/atomic"
@@ -20,12 +20,12 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/metrics"
 
-	"github.com/artheranet/arthera-node/evmcore"
 	"github.com/artheranet/arthera-node/gossip/blockproc/verwatcher"
 	"github.com/artheranet/arthera-node/gossip/emitter"
 	"github.com/artheranet/arthera-node/gossip/evmstore"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/inter/iblockproc"
+	"github.com/artheranet/arthera-node/internal/evmcore"
 	"github.com/artheranet/arthera-node/params"
 	"github.com/artheranet/arthera-node/utils"
 )

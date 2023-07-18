@@ -21,8 +21,8 @@ import (
 	"github.com/syndtr/goleveldb/leveldb/opt"
 
 	"github.com/artheranet/arthera-node/inter/iblockproc"
+	"github.com/artheranet/arthera-node/internal/topicsdb"
 	"github.com/artheranet/arthera-node/logger"
-	"github.com/artheranet/arthera-node/topicsdb"
 	"github.com/artheranet/arthera-node/utils/adapters/kvdb2ethdb"
 	"github.com/artheranet/arthera-node/utils/rlpstore"
 )

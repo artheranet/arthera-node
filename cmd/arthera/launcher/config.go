@@ -28,13 +28,13 @@ import (
 	"github.com/naoina/toml"
 	"gopkg.in/urfave/cli.v1"
 
-	"github.com/artheranet/arthera-node/evmcore"
 	"github.com/artheranet/arthera-node/genesis/genesisstore"
 	"github.com/artheranet/arthera-node/gossip"
 	"github.com/artheranet/arthera-node/gossip/emitter"
 	"github.com/artheranet/arthera-node/gossip/gasprice"
 	"github.com/artheranet/arthera-node/integration"
-	"github.com/artheranet/arthera-node/vecmt"
+	"github.com/artheranet/arthera-node/internal/evmcore"
+	"github.com/artheranet/arthera-node/internal/vecmt"
 )
 
 var (

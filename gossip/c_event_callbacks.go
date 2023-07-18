@@ -12,11 +12,11 @@ import (
 	"github.com/Fantom-foundation/lachesis-base/inter/idx"
 	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/artheranet/arthera-node/eventcheck"
-	"github.com/artheranet/arthera-node/eventcheck/epochcheck"
 	"github.com/artheranet/arthera-node/gossip/emitter"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/inter/iblockproc"
+	"github.com/artheranet/arthera-node/internal/eventcheck"
+	"github.com/artheranet/arthera-node/internal/eventcheck/epochcheck"
 	"github.com/artheranet/arthera-node/utils/concurrent"
 )
 

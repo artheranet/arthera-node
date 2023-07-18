@@ -9,7 +9,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	notify "github.com/ethereum/go-ethereum/event"
 
-	"github.com/artheranet/arthera-node/evmcore"
+	"github.com/artheranet/arthera-node/internal/evmcore"
 )
 
 // dummyTxPool is a fake, helper transaction pool for testing purposes

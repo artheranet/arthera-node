@@ -11,10 +11,10 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 
-	"github.com/artheranet/arthera-node/eventcheck/basiccheck"
-	"github.com/artheranet/arthera-node/eventcheck/epochcheck"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/inter/validatorpk"
+	"github.com/artheranet/arthera-node/internal/eventcheck/basiccheck"
+	"github.com/artheranet/arthera-node/internal/eventcheck/epochcheck"
 )
 
 var (

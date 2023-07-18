@@ -4,7 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/artheranet/arthera-node/txtrace"
+	"github.com/artheranet/arthera-node/api"
+	"github.com/artheranet/arthera-node/tracing/txtrace"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"math/big"
 	"strconv"
@@ -23,13 +24,12 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/pkg/errors"
 
-	"github.com/artheranet/arthera-node/ethapi"
-	"github.com/artheranet/arthera-node/evmcore"
 	"github.com/artheranet/arthera-node/gossip/evmstore"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/inter/iblockproc"
+	"github.com/artheranet/arthera-node/internal/evmcore"
+	"github.com/artheranet/arthera-node/internal/topicsdb"
 	"github.com/artheranet/arthera-node/params"
-	"github.com/artheranet/arthera-node/topicsdb"
 	"github.com/artheranet/arthera-node/tracing"
 )
 
@@ -488,12 +488,12 @@ func (b *EthAPIBackend) TxPoolContent() (map[common.Address]types.Transactions, 
 }
 
 // Progress returns current synchronization status of this node
-func (b *EthAPIBackend) Progress() ethapi.PeerProgress {
+func (b *EthAPIBackend) Progress() api.PeerProgress {
 	p2pProgress := b.svc.handler.myProgress()
 	highestP2pProgress := b.svc.handler.highestPeerProgress()
 	lastBlock := b.svc.store.GetBlock(p2pProgress.LastBlockIdx)
 
-	return ethapi.PeerProgress{
+	return api.PeerProgress{
 		CurrentEpoch:     p2pProgress.Epoch,
 		CurrentBlock:     p2pProgress.LastBlockIdx,
 		CurrentBlockHash: p2pProgress.LastBlockAtropos,

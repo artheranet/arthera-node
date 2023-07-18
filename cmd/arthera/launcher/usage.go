@@ -25,8 +25,8 @@ import (
 	"github.com/ethereum/go-ethereum/cmd/utils"
 	cli "gopkg.in/urfave/cli.v1"
 
-	"github.com/artheranet/arthera-node/debug"
-	"github.com/artheranet/arthera-node/flags"
+	"github.com/artheranet/arthera-node/cmd/arthera/launcher/flags"
+	"github.com/artheranet/arthera-node/utils/debug"
 )
 
 // AppHelpFlagGroups is the application flags, grouped by functionality.

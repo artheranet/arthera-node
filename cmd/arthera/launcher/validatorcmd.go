@@ -13,8 +13,8 @@ import (
 	"gopkg.in/urfave/cli.v1"
 
 	"github.com/artheranet/arthera-node/inter/validatorpk"
-	"github.com/artheranet/arthera-node/valkeystore"
-	"github.com/artheranet/arthera-node/valkeystore/encryption"
+	"github.com/artheranet/arthera-node/internal/valkeystore"
+	"github.com/artheranet/arthera-node/internal/valkeystore/encryption"
 )
 
 var (

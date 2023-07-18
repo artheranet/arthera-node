@@ -9,8 +9,8 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/rlp"
 
-	"github.com/artheranet/arthera-node/evmcore"
 	"github.com/artheranet/arthera-node/inter"
+	"github.com/artheranet/arthera-node/internal/evmcore"
 )
 
 func (s *Store) GetGenesisID() *hash.Hash {

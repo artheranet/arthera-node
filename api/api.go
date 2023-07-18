@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
-package ethapi
+package api
 
 import (
 	"context"
@@ -49,8 +49,8 @@ import (
 	"github.com/ethereum/go-ethereum/trie"
 	"github.com/tyler-smith/go-bip39"
 
-	"github.com/artheranet/arthera-node/evmcore"
 	"github.com/artheranet/arthera-node/gossip/gasprice"
+	"github.com/artheranet/arthera-node/internal/evmcore"
 	"github.com/artheranet/arthera-node/params"
 	"github.com/artheranet/arthera-node/utils/signers/gsignercache"
 	"github.com/artheranet/arthera-node/utils/signers/internaltx"

@@ -3,6 +3,7 @@ package gossip
 import (
 	"errors"
 	"fmt"
+	"github.com/artheranet/arthera-node/api"
 	"math/big"
 	"math/rand"
 	"sync"
@@ -28,14 +29,6 @@ import (
 	"github.com/ethereum/go-ethereum/p2p/enr"
 	"github.com/ethereum/go-ethereum/rpc"
 
-	"github.com/artheranet/arthera-node/ethapi"
-	"github.com/artheranet/arthera-node/eventcheck"
-	"github.com/artheranet/arthera-node/eventcheck/basiccheck"
-	"github.com/artheranet/arthera-node/eventcheck/epochcheck"
-	"github.com/artheranet/arthera-node/eventcheck/gaspowercheck"
-	"github.com/artheranet/arthera-node/eventcheck/heavycheck"
-	"github.com/artheranet/arthera-node/eventcheck/parentscheck"
-	"github.com/artheranet/arthera-node/evmcore"
 	"github.com/artheranet/arthera-node/gossip/blockproc"
 	"github.com/artheranet/arthera-node/gossip/blockproc/drivermodule"
 	"github.com/artheranet/arthera-node/gossip/blockproc/eventmodule"
@@ -48,11 +41,18 @@ import (
 	"github.com/artheranet/arthera-node/gossip/proclogger"
 	snapsync "github.com/artheranet/arthera-node/gossip/protocols/snap"
 	"github.com/artheranet/arthera-node/inter"
+	"github.com/artheranet/arthera-node/internal/eventcheck"
+	"github.com/artheranet/arthera-node/internal/eventcheck/basiccheck"
+	"github.com/artheranet/arthera-node/internal/eventcheck/epochcheck"
+	"github.com/artheranet/arthera-node/internal/eventcheck/gaspowercheck"
+	"github.com/artheranet/arthera-node/internal/eventcheck/heavycheck"
+	"github.com/artheranet/arthera-node/internal/eventcheck/parentscheck"
+	"github.com/artheranet/arthera-node/internal/evmcore"
+	"github.com/artheranet/arthera-node/internal/valkeystore"
+	"github.com/artheranet/arthera-node/internal/vecmt"
 	"github.com/artheranet/arthera-node/logger"
 	"github.com/artheranet/arthera-node/utils/signers/gsignercache"
 	"github.com/artheranet/arthera-node/utils/wgmutex"
-	"github.com/artheranet/arthera-node/valkeystore"
-	"github.com/artheranet/arthera-node/vecmt"
 )
 
 type ServiceFeed struct {
@@ -145,7 +145,7 @@ type Service struct {
 	snapDialCandidates  enode.Iterator
 
 	EthAPI        *EthAPIBackend
-	netRPCService *ethapi.PublicNetAPI
+	netRPCService *api.PublicNetAPI
 
 	procLogger *proclogger.Logger
 
@@ -174,7 +174,7 @@ func NewService(stack *node.Node, config Config, store *Store, blockProc BlockPr
 	svc.eventMux = stack.EventMux()
 	svc.EthAPI.SetExtRPCEnabled(stack.Config().ExtRPCEnabled())
 	// Create the net API service
-	svc.netRPCService = ethapi.NewPublicNetAPI(svc.p2pServer, store.GetRules().NetworkID)
+	svc.netRPCService = api.NewPublicNetAPI(svc.p2pServer, store.GetRules().NetworkID)
 	svc.haltCheck = haltCheck
 
 	return svc, nil
@@ -395,7 +395,7 @@ func (s *Service) Protocols() []p2p.Protocol {
 
 // APIs returns api methods the service wants to expose on rpc channels.
 func (s *Service) APIs() []rpc.API {
-	apis := ethapi.GetAPIs(s.EthAPI)
+	apis := api.GetAPIs(s.EthAPI)
 
 	apis = append(apis, []rpc.API{
 		{

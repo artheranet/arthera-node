@@ -4,7 +4,7 @@ import (
 	"sync"
 
 	"github.com/artheranet/arthera-node/inter/validatorpk"
-	"github.com/artheranet/arthera-node/valkeystore/encryption"
+	"github.com/artheranet/arthera-node/internal/valkeystore/encryption"
 )
 
 type SyncedKeystore struct {

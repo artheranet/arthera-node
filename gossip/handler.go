@@ -22,13 +22,6 @@ import (
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/ethereum/go-ethereum/trie"
 
-	"github.com/artheranet/arthera-node/eventcheck"
-	"github.com/artheranet/arthera-node/eventcheck/bvallcheck"
-	"github.com/artheranet/arthera-node/eventcheck/epochcheck"
-	"github.com/artheranet/arthera-node/eventcheck/evallcheck"
-	"github.com/artheranet/arthera-node/eventcheck/heavycheck"
-	"github.com/artheranet/arthera-node/eventcheck/parentlesscheck"
-	"github.com/artheranet/arthera-node/evmcore"
 	"github.com/artheranet/arthera-node/gossip/protocols/blockrecords/brprocessor"
 	"github.com/artheranet/arthera-node/gossip/protocols/blockrecords/brstream"
 	"github.com/artheranet/arthera-node/gossip/protocols/blockrecords/brstream/brstreamleecher"
@@ -48,6 +41,13 @@ import (
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/inter/ibr"
 	"github.com/artheranet/arthera-node/inter/ier"
+	"github.com/artheranet/arthera-node/internal/eventcheck"
+	"github.com/artheranet/arthera-node/internal/eventcheck/bvallcheck"
+	"github.com/artheranet/arthera-node/internal/eventcheck/epochcheck"
+	"github.com/artheranet/arthera-node/internal/eventcheck/evallcheck"
+	"github.com/artheranet/arthera-node/internal/eventcheck/heavycheck"
+	"github.com/artheranet/arthera-node/internal/eventcheck/parentlesscheck"
+	"github.com/artheranet/arthera-node/internal/evmcore"
 	"github.com/artheranet/arthera-node/logger"
 )
 

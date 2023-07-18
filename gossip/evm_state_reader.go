@@ -10,8 +10,8 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	ethparams "github.com/ethereum/go-ethereum/params"
 
-	"github.com/artheranet/arthera-node/evmcore"
 	"github.com/artheranet/arthera-node/gossip/gasprice"
+	"github.com/artheranet/arthera-node/internal/evmcore"
 	"github.com/artheranet/arthera-node/params"
 )
 

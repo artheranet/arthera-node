@@ -2,7 +2,7 @@ package genesisstore
 
 import (
 	"fmt"
-	"github.com/Fantom-foundation/lachesis-base/kvdb"
+	"github.com/artheranet/lachesis/kvdb"
 	"io"
 
 	"github.com/ethereum/go-ethereum/log"

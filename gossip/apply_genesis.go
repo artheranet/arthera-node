@@ -3,8 +3,8 @@ package gossip
 import (
 	"errors"
 
-	"github.com/Fantom-foundation/lachesis-base/hash"
-	"github.com/Fantom-foundation/lachesis-base/kvdb/batched"
+	"github.com/artheranet/lachesis/hash"
+	"github.com/artheranet/lachesis/kvdb/batched"
 
 	"github.com/artheranet/arthera-node/genesis"
 	"github.com/artheranet/arthera-node/internal/inter/iblockproc"

@@ -1,7 +1,7 @@
 package dbconfig
 
 import (
-	"github.com/Fantom-foundation/lachesis-base/kvdb/multidb"
+	"github.com/artheranet/lachesis/kvdb/multidb"
 	"github.com/syndtr/goleveldb/leveldb/opt"
 )
 

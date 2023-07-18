@@ -1,7 +1,7 @@
 package inter
 
 import (
-	"github.com/Fantom-foundation/lachesis-base/hash"
+	"github.com/artheranet/lachesis/hash"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 )

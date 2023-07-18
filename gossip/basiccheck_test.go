@@ -6,9 +6,9 @@ import (
 	"math/big"
 	"testing"
 
-	lbasiccheck "github.com/Fantom-foundation/lachesis-base/eventcheck/basiccheck"
-	"github.com/Fantom-foundation/lachesis-base/hash"
-	"github.com/Fantom-foundation/lachesis-base/inter/idx"
+	lbasiccheck "github.com/artheranet/lachesis/eventcheck/basiccheck"
+	"github.com/artheranet/lachesis/hash"
+	"github.com/artheranet/lachesis/inter/idx"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/stretchr/testify/suite"
 

@@ -1,7 +1,7 @@
 package heavycheck
 
 import (
-	"github.com/Fantom-foundation/lachesis-base/inter/dag"
+	"github.com/artheranet/lachesis/inter/dag"
 
 	"github.com/artheranet/arthera-node/internal/inter"
 )

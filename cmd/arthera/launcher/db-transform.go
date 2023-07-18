@@ -1,21 +1,20 @@
 package launcher
 
 import (
+	"gopkg.in/urfave/cli.v1"
 	"os"
 	"path"
 	"strings"
 	"time"
 
-	"github.com/Fantom-foundation/lachesis-base/common/bigendian"
-	"github.com/Fantom-foundation/lachesis-base/kvdb"
-	"github.com/Fantom-foundation/lachesis-base/kvdb/batched"
-	"github.com/Fantom-foundation/lachesis-base/kvdb/multidb"
-	"github.com/Fantom-foundation/lachesis-base/kvdb/table"
+	"github.com/artheranet/arthera-node/internal/dbconfig"
+	"github.com/artheranet/lachesis/common/bigendian"
+	"github.com/artheranet/lachesis/kvdb"
+	"github.com/artheranet/lachesis/kvdb/batched"
+	"github.com/artheranet/lachesis/kvdb/multidb"
+	"github.com/artheranet/lachesis/kvdb/table"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/log"
-	"gopkg.in/urfave/cli.v1"
-
-	"github.com/artheranet/arthera-node/internal/dbconfig"
 )
 
 func dbTransform(ctx *cli.Context) error {

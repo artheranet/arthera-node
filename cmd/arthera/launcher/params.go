@@ -1,8 +1,8 @@
 package launcher
 
 import (
-	"github.com/Fantom-foundation/lachesis-base/hash"
 	"github.com/artheranet/arthera-node/params"
+	"github.com/artheranet/lachesis/hash"
 	ethparams "github.com/ethereum/go-ethereum/params"
 
 	"github.com/artheranet/arthera-node/genesis"

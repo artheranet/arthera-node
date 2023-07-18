@@ -9,10 +9,10 @@ import (
 	"fmt"
 	"sync/atomic"
 
-	"github.com/Fantom-foundation/lachesis-base/inter/idx"
-	"github.com/Fantom-foundation/lachesis-base/kvdb"
-	"github.com/Fantom-foundation/lachesis-base/kvdb/skiperrors"
-	"github.com/Fantom-foundation/lachesis-base/kvdb/table"
+	"github.com/artheranet/lachesis/inter/idx"
+	"github.com/artheranet/lachesis/kvdb"
+	"github.com/artheranet/lachesis/kvdb/skiperrors"
+	"github.com/artheranet/lachesis/kvdb/table"
 
 	"github.com/artheranet/arthera-node/logger"
 )

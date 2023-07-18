@@ -1,8 +1,8 @@
 package bvstreamseeder
 
 import (
-	"github.com/Fantom-foundation/lachesis-base/gossip/basestream/basestreamseeder"
-	"github.com/Fantom-foundation/lachesis-base/utils/cachescale"
+	"github.com/artheranet/lachesis/gossip/basestream/basestreamseeder"
+	"github.com/artheranet/lachesis/utils/cachescale"
 )
 
 type Config basestreamseeder.Config

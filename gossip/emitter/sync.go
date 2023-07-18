@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Fantom-foundation/lachesis-base/emitter/doublesign"
-	"github.com/Fantom-foundation/lachesis-base/hash"
+	"github.com/artheranet/lachesis/emitter/doublesign"
+	"github.com/artheranet/lachesis/hash"
 
 	"github.com/artheranet/arthera-node/internal/inter"
 	"github.com/artheranet/arthera-node/utils/errlock"

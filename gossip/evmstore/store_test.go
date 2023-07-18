@@ -1,7 +1,7 @@
 package evmstore
 
 import (
-	"github.com/Fantom-foundation/lachesis-base/kvdb/memorydb"
+	"github.com/artheranet/lachesis/kvdb/memorydb"
 )
 
 func cachedStore() *Store {

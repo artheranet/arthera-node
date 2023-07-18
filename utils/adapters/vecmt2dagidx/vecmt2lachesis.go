@@ -1,11 +1,11 @@
 package vecmt2dagidx
 
 import (
-	"github.com/Fantom-foundation/lachesis-base/abft"
-	"github.com/Fantom-foundation/lachesis-base/abft/dagidx"
-	"github.com/Fantom-foundation/lachesis-base/hash"
-	"github.com/Fantom-foundation/lachesis-base/inter/idx"
-	"github.com/Fantom-foundation/lachesis-base/vecfc"
+	"github.com/artheranet/lachesis/abft"
+	"github.com/artheranet/lachesis/abft/dagidx"
+	"github.com/artheranet/lachesis/hash"
+	"github.com/artheranet/lachesis/inter/idx"
+	"github.com/artheranet/lachesis/vecfc"
 
 	"github.com/artheranet/arthera-node/internal/vecmt"
 )

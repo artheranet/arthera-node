@@ -5,9 +5,9 @@ import (
 
 	"github.com/ethereum/go-ethereum/rlp"
 
-	"github.com/Fantom-foundation/lachesis-base/gossip/basestream"
-	"github.com/Fantom-foundation/lachesis-base/gossip/basestream/basestreamseeder"
-	"github.com/Fantom-foundation/lachesis-base/hash"
+	"github.com/artheranet/lachesis/gossip/basestream"
+	"github.com/artheranet/lachesis/gossip/basestream/basestreamseeder"
+	"github.com/artheranet/lachesis/hash"
 
 	"github.com/artheranet/arthera-node/gossip/protocols/dag/dagstream"
 )

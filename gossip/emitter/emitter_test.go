@@ -1,30 +1,30 @@
 package emitter
 
 import (
+	"github.com/artheranet/arthera-node/params"
 	"math/big"
 	"testing"
 	"time"
 
-	"github.com/Fantom-foundation/lachesis-base/hash"
-	"github.com/Fantom-foundation/lachesis-base/inter/idx"
-	"github.com/Fantom-foundation/lachesis-base/inter/pos"
+	"github.com/artheranet/lachesis/hash"
+	"github.com/artheranet/lachesis/inter/idx"
+	"github.com/artheranet/lachesis/inter/pos"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/artheranet/arthera-node/genesis/fake"
 	"github.com/artheranet/arthera-node/gossip/emitter/mock"
-	"github.com/artheranet/arthera-node/integration/makefakegenesis"
-	"github.com/artheranet/arthera-node/inter"
-	"github.com/artheranet/arthera-node/opera"
-	"github.com/artheranet/arthera-node/vecmt"
+	"github.com/artheranet/arthera-node/internal/inter"
+	"github.com/artheranet/arthera-node/internal/vecmt"
 )
 
 //go:generate go run github.com/golang/mock/mockgen -package=mock -destination=mock/world.go github.com/artheranet/arthera-node/gossip/emitter External,TxPool,TxSigner,Signer
 
 func TestEmitter(t *testing.T) {
 	cfg := DefaultConfig()
-	gValidators := makefakegenesis.GetFakeValidators(3)
+	gValidators := fake.GetFakeValidators(3)
 	vv := pos.NewBuilder()
 	for _, v := range gValidators {
 		vv.Set(v.ID, pos.Weight(1))
@@ -61,7 +61,7 @@ func TestEmitter(t *testing.T) {
 
 	t.Run("init", func(t *testing.T) {
 		external.EXPECT().GetRules().
-			Return(opera.FakeNetRules()).
+			Return(params.FakeNetRules()).
 			AnyTimes()
 
 		external.EXPECT().GetEpochValidators().

@@ -3,7 +3,7 @@ package fileshash
 import (
 	"io"
 
-	"github.com/Fantom-foundation/lachesis-base/hash"
+	"github.com/artheranet/lachesis/hash"
 )
 
 type Map struct {

@@ -4,8 +4,8 @@ import (
 	"io"
 	"math/big"
 
-	"github.com/Fantom-foundation/lachesis-base/inter/idx"
-	"github.com/Fantom-foundation/lachesis-base/inter/pos"
+	"github.com/artheranet/lachesis/inter/idx"
+	"github.com/artheranet/lachesis/inter/pos"
 	"github.com/ethereum/go-ethereum/rlp"
 
 	"github.com/artheranet/arthera-node/internal/inter/drivertype"

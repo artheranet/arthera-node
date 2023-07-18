@@ -1,7 +1,7 @@
 package parentlesscheck
 
 import (
-	"github.com/Fantom-foundation/lachesis-base/inter/dag"
+	"github.com/artheranet/lachesis/inter/dag"
 )
 
 type Checker struct {

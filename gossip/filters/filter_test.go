@@ -24,7 +24,7 @@ import (
 	"path"
 	"testing"
 
-	"github.com/Fantom-foundation/lachesis-base/kvdb/leveldb"
+	"github.com/artheranet/lachesis/kvdb/leveldb"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/consensus/ethash"
 	"github.com/ethereum/go-ethereum/core"
@@ -34,7 +34,7 @@ import (
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/syndtr/goleveldb/leveldb/opt"
 
-	"github.com/artheranet/arthera-node/topicsdb"
+	"github.com/artheranet/arthera-node/internal/topicsdb"
 )
 
 func testConfig() Config {

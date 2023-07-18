@@ -3,7 +3,7 @@ package drivertype
 import (
 	"math/big"
 
-	"github.com/Fantom-foundation/lachesis-base/inter/idx"
+	"github.com/artheranet/lachesis/inter/idx"
 
 	"github.com/artheranet/arthera-node/internal/inter/validatorpk"
 )

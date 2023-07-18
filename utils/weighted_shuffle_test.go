@@ -4,9 +4,9 @@ import (
 	"crypto/sha256"
 	"testing"
 
-	"github.com/Fantom-foundation/lachesis-base/common/littleendian"
-	"github.com/Fantom-foundation/lachesis-base/hash"
-	"github.com/Fantom-foundation/lachesis-base/inter/pos"
+	"github.com/artheranet/lachesis/common/littleendian"
+	"github.com/artheranet/lachesis/hash"
+	"github.com/artheranet/lachesis/inter/pos"
 	"github.com/stretchr/testify/assert"
 )
 

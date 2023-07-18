@@ -1,8 +1,8 @@
 package evmstore
 
 import (
-	"github.com/Fantom-foundation/lachesis-base/kvdb"
-	"github.com/Fantom-foundation/lachesis-base/kvdb/batched"
+	"github.com/artheranet/lachesis/kvdb"
+	"github.com/artheranet/lachesis/kvdb/batched"
 
 	"github.com/artheranet/arthera-node/genesis"
 )

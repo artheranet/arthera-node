@@ -3,8 +3,8 @@ package vecmt
 import (
 	"encoding/binary"
 
-	"github.com/Fantom-foundation/lachesis-base/inter/idx"
-	"github.com/Fantom-foundation/lachesis-base/vecfc"
+	"github.com/artheranet/lachesis/inter/idx"
+	"github.com/artheranet/lachesis/vecfc"
 
 	"github.com/artheranet/arthera-node/internal/inter"
 )

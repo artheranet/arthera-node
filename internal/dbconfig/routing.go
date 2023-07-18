@@ -3,10 +3,10 @@ package dbconfig
 import (
 	"fmt"
 
-	"github.com/Fantom-foundation/lachesis-base/kvdb"
-	"github.com/Fantom-foundation/lachesis-base/kvdb/cachedproducer"
-	"github.com/Fantom-foundation/lachesis-base/kvdb/multidb"
-	"github.com/Fantom-foundation/lachesis-base/kvdb/skipkeys"
+	"github.com/artheranet/lachesis/kvdb"
+	"github.com/artheranet/lachesis/kvdb/cachedproducer"
+	"github.com/artheranet/lachesis/kvdb/multidb"
+	"github.com/artheranet/lachesis/kvdb/skipkeys"
 )
 
 type RoutingConfig struct {

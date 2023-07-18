@@ -1,8 +1,8 @@
 package gossip
 
 import (
-	"github.com/Fantom-foundation/lachesis-base/hash"
-	"github.com/Fantom-foundation/lachesis-base/inter/idx"
+	"github.com/artheranet/lachesis/hash"
+	"github.com/artheranet/lachesis/inter/idx"
 	"github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/artheranet/arthera-node/internal/eventcheck/gaspowercheck"

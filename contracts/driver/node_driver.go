@@ -1,12 +1,12 @@
 package driver
 
 import (
-	"github.com/Fantom-foundation/lachesis-base/inter/idx"
 	"github.com/artheranet/arthera-node/contracts/abis"
 	"github.com/artheranet/arthera-node/genesis"
 	"github.com/artheranet/arthera-node/internal/inter"
 	"github.com/artheranet/arthera-node/params"
 	"github.com/artheranet/arthera-node/utils"
+	"github.com/artheranet/lachesis/inter/idx"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/log"

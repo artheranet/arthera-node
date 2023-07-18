@@ -2,10 +2,6 @@ package launcher
 
 import (
 	"fmt"
-	"github.com/Fantom-foundation/lachesis-base/hash"
-	"github.com/Fantom-foundation/lachesis-base/inter/idx"
-	"github.com/Fantom-foundation/lachesis-base/kvdb"
-	"github.com/Fantom-foundation/lachesis-base/kvdb/memorydb"
 	"github.com/artheranet/arthera-node/contracts/driver"
 	"github.com/artheranet/arthera-node/genesis"
 	"github.com/artheranet/arthera-node/genesis/builder"
@@ -17,6 +13,10 @@ import (
 	"github.com/artheranet/arthera-node/params"
 	utils2 "github.com/artheranet/arthera-node/utils"
 	"github.com/artheranet/arthera-node/utils/iodb"
+	"github.com/artheranet/lachesis/hash"
+	"github.com/artheranet/lachesis/inter/idx"
+	"github.com/artheranet/lachesis/kvdb"
+	"github.com/artheranet/lachesis/kvdb/memorydb"
 	"github.com/ethereum/go-ethereum/cmd/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"

@@ -2,19 +2,18 @@ package launcher
 
 import (
 	"fmt"
+	"gopkg.in/urfave/cli.v1"
 	"path"
 
-	"github.com/Fantom-foundation/lachesis-base/kvdb"
-	"github.com/Fantom-foundation/lachesis-base/kvdb/cachedproducer"
-	"github.com/Fantom-foundation/lachesis-base/kvdb/multidb"
+	"github.com/artheranet/arthera-node/gossip"
+	"github.com/artheranet/arthera-node/internal/dbconfig"
+	"github.com/artheranet/lachesis/kvdb"
+	"github.com/artheranet/lachesis/kvdb/cachedproducer"
+	"github.com/artheranet/lachesis/kvdb/multidb"
 	"github.com/ethereum/go-ethereum/cmd/utils"
 	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/syndtr/goleveldb/leveldb/opt"
-	"gopkg.in/urfave/cli.v1"
-
-	"github.com/artheranet/arthera-node/gossip"
-	"github.com/artheranet/arthera-node/internal/dbconfig"
 )
 
 var (

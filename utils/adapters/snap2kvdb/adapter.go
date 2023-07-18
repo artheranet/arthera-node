@@ -1,8 +1,8 @@
 package snap2kvdb
 
 import (
-	"github.com/Fantom-foundation/lachesis-base/kvdb"
-	"github.com/Fantom-foundation/lachesis-base/kvdb/devnulldb"
+	"github.com/artheranet/lachesis/kvdb"
+	"github.com/artheranet/lachesis/kvdb/devnulldb"
 	"github.com/ethereum/go-ethereum/log"
 )
 

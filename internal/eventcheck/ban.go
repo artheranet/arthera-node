@@ -3,7 +3,7 @@ package eventcheck
 import (
 	"errors"
 
-	base "github.com/Fantom-foundation/lachesis-base/eventcheck"
+	base "github.com/artheranet/lachesis/eventcheck"
 
 	"github.com/artheranet/arthera-node/internal/eventcheck/epochcheck"
 	"github.com/artheranet/arthera-node/internal/eventcheck/heavycheck"

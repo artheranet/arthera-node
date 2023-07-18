@@ -9,7 +9,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/stretchr/testify/require"
 
-	"github.com/artheranet/arthera-node/valkeystore/encryption"
+	"github.com/artheranet/arthera-node/internal/valkeystore/encryption"
 )
 
 func TestFileKeystoreAdd(t *testing.T) {

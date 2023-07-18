@@ -22,13 +22,19 @@ import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/eth/tracers"
 	ethparams "github.com/ethereum/go-ethereum/params"
+	"github.com/tyler-smith/go-bip39"
 	"math/big"
 	"runtime"
 	"sync"
 	"time"
 
-	"github.com/Fantom-foundation/lachesis-base/hash"
-	"github.com/Fantom-foundation/lachesis-base/inter/idx"
+	"github.com/artheranet/arthera-node/gossip/gasprice"
+	"github.com/artheranet/arthera-node/internal/evmcore"
+	"github.com/artheranet/arthera-node/params"
+	"github.com/artheranet/arthera-node/utils/signers/gsignercache"
+	"github.com/artheranet/arthera-node/utils/signers/internaltx"
+	"github.com/artheranet/lachesis/hash"
+	"github.com/artheranet/lachesis/inter/idx"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -47,13 +53,6 @@ import (
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/ethereum/go-ethereum/trie"
-	"github.com/tyler-smith/go-bip39"
-
-	"github.com/artheranet/arthera-node/gossip/gasprice"
-	"github.com/artheranet/arthera-node/internal/evmcore"
-	"github.com/artheranet/arthera-node/params"
-	"github.com/artheranet/arthera-node/utils/signers/gsignercache"
-	"github.com/artheranet/arthera-node/utils/signers/internaltx"
 )
 
 const (

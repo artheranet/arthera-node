@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Fantom-foundation/lachesis-base/hash"
-	"github.com/Fantom-foundation/lachesis-base/kvdb"
+	"github.com/artheranet/lachesis/hash"
+	"github.com/artheranet/lachesis/kvdb"
 	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/artheranet/arthera-node/internal/inter"

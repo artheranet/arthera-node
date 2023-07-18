@@ -3,7 +3,7 @@ package brstreamleecher
 import (
 	"time"
 
-	"github.com/Fantom-foundation/lachesis-base/gossip/basestream/basestreamleecher/basepeerleecher"
+	"github.com/artheranet/lachesis/gossip/basestream/basestreamleecher/basepeerleecher"
 )
 
 type Config struct {

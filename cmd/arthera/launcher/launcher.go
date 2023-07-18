@@ -3,23 +3,22 @@ package launcher
 import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/p2p/discover/discfilter"
+	"gopkg.in/urfave/cli.v1"
 	"path"
 	"sort"
 	"strings"
 	"time"
 
-	"github.com/Fantom-foundation/lachesis-base/inter/idx"
+	"github.com/artheranet/lachesis/inter/idx"
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/cmd/utils"
 	"github.com/ethereum/go-ethereum/console/prompt"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/log"
+	evmetrics "github.com/ethereum/go-ethereum/metrics"
 	"github.com/ethereum/go-ethereum/node"
 	"github.com/ethereum/go-ethereum/params"
-	"gopkg.in/urfave/cli.v1"
-
-	evmetrics "github.com/ethereum/go-ethereum/metrics"
 
 	"github.com/artheranet/arthera-node/cmd/arthera/launcher/flags"
 	"github.com/artheranet/arthera-node/cmd/arthera/launcher/metrics"

@@ -1,8 +1,8 @@
 package txtrace
 
 import (
-	"github.com/Fantom-foundation/lachesis-base/kvdb"
 	"github.com/artheranet/arthera-node/logger"
+	"github.com/artheranet/lachesis/kvdb"
 	"github.com/ethereum/go-ethereum/common"
 )
 

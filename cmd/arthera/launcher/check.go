@@ -1,15 +1,14 @@
 package launcher
 
 import (
+	"gopkg.in/urfave/cli.v1"
 	"time"
 
-	"github.com/Fantom-foundation/lachesis-base/inter/idx"
+	"github.com/artheranet/arthera-node/internal/inter"
+	"github.com/artheranet/lachesis/inter/idx"
 	"github.com/ethereum/go-ethereum/cmd/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/log"
-	"gopkg.in/urfave/cli.v1"
-
-	"github.com/artheranet/arthera-node/internal/inter"
 )
 
 func checkEvm(ctx *cli.Context) error {

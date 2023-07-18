@@ -3,7 +3,7 @@ package parentscheck
 import (
 	"errors"
 
-	base "github.com/Fantom-foundation/lachesis-base/eventcheck/parentscheck"
+	base "github.com/artheranet/lachesis/eventcheck/parentscheck"
 
 	"github.com/artheranet/arthera-node/internal/inter"
 )

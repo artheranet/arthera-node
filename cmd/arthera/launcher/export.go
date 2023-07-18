@@ -2,22 +2,21 @@ package launcher
 
 import (
 	"compress/gzip"
+	"gopkg.in/urfave/cli.v1"
 	"io"
 	"os"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/Fantom-foundation/lachesis-base/hash"
-	"github.com/Fantom-foundation/lachesis-base/inter/idx"
+	"github.com/artheranet/arthera-node/gossip"
+	"github.com/artheranet/lachesis/hash"
+	"github.com/artheranet/lachesis/inter/idx"
 	"github.com/ethereum/go-ethereum/cmd/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/status-im/keycard-go/hexutils"
-	"gopkg.in/urfave/cli.v1"
-
-	"github.com/artheranet/arthera-node/gossip"
 )
 
 var (

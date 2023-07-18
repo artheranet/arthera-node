@@ -4,7 +4,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/Fantom-foundation/lachesis-base/inter/idx"
+	"github.com/artheranet/lachesis/inter/idx"
 	ethparams "github.com/ethereum/go-ethereum/params"
 
 	"github.com/artheranet/arthera-node/internal/inter/validatorpk"

@@ -3,9 +3,9 @@ package emitter
 import (
 	"math/rand"
 
-	"github.com/Fantom-foundation/lachesis-base/hash"
-	"github.com/Fantom-foundation/lachesis-base/inter/idx"
-	"github.com/Fantom-foundation/lachesis-base/utils/piecefunc"
+	"github.com/artheranet/lachesis/hash"
+	"github.com/artheranet/lachesis/inter/idx"
+	"github.com/artheranet/lachesis/utils/piecefunc"
 
 	"github.com/artheranet/arthera-node/internal/eventcheck/basiccheck"
 	"github.com/artheranet/arthera-node/internal/inter"

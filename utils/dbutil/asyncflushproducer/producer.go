@@ -4,7 +4,7 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/Fantom-foundation/lachesis-base/kvdb"
+	"github.com/artheranet/lachesis/kvdb"
 	"github.com/ethereum/go-ethereum/metrics"
 )
 

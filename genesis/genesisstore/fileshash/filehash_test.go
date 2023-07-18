@@ -10,7 +10,7 @@ import (
 	"path"
 	"testing"
 
-	"github.com/Fantom-foundation/lachesis-base/hash"
+	"github.com/artheranet/lachesis/hash"
 	"github.com/stretchr/testify/require"
 
 	"github.com/artheranet/arthera-node/utils/ioread"

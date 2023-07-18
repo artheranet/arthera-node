@@ -5,6 +5,8 @@ import (
 	"crypto/ecdsa"
 	"errors"
 	"fmt"
+	"github.com/artheranet/arthera-node/genesis/makefakegenesis"
+	"github.com/artheranet/arthera-node/params"
 	"math"
 	"math/big"
 	"sync"
@@ -28,11 +30,9 @@ import (
 	"github.com/artheranet/arthera-node/evmcore"
 	"github.com/artheranet/arthera-node/gossip/blockproc"
 	"github.com/artheranet/arthera-node/gossip/emitter"
-	"github.com/artheranet/arthera-node/integration/makefakegenesis"
 	"github.com/artheranet/arthera-node/inter"
 	"github.com/artheranet/arthera-node/inter/iblockproc"
 	"github.com/artheranet/arthera-node/inter/validatorpk"
-	"github.com/artheranet/arthera-node/opera"
 	"github.com/artheranet/arthera-node/utils"
 	"github.com/artheranet/arthera-node/utils/adapters/vecmt2dagidx"
 	"github.com/artheranet/arthera-node/valkeystore"
@@ -131,7 +131,7 @@ func (m testConfirmedEventsModule) Start(bs iblockproc.BlockState, es iblockproc
 }
 
 func newTestEnv(firstEpoch idx.Epoch, validatorsNum idx.Validator) *testEnv {
-	rules := opera.FakeNetRules()
+	rules := params.FakeNetRules()
 	rules.Epochs.MaxEpochDuration = inter.Timestamp(maxEpochDuration)
 	rules.Blocks.MaxEmptyBlockSkipPeriod = 0
 
@@ -454,7 +454,7 @@ func (env *testEnv) callContract(
 	// about the transaction and calling mechanisms.
 	txContext := evmcore.NewEVMTxContext(msg)
 	context := evmcore.NewEVMBlockContext(block.Header(), env.GetEvmStateReader(), nil)
-	vmenv := vm.NewEVM(context, txContext, state, env.store.GetEvmChainConfig(), opera.DefaultVMConfig)
+	vmenv := vm.NewEVM(context, txContext, state, env.store.GetEvmChainConfig(), params.DefaultVMConfig)
 	gaspool := new(evmcore.GasPool).AddGas(math.MaxUint64)
 	res, err := evmcore.NewStateTransition(vmenv, msg, gaspool).TransitionDb()
 

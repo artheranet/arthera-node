@@ -13,48 +13,10 @@ make arthera
 ```
 The build output is ```build/arthera-node``` executable.
 
-### Launching a test network
-
-Launching a network with a single validator:
-
-```shell
-$ arthera-node --fakenet 1/1
-```
-
-### Configuration
-
-As an alternative to passing the numerous flags to the `arthera-node` binary, you can also pass a
-configuration file via:
-
-```shell
-$ arthera-node --config /path/to/your_config.toml
-```
-
-To get an idea how the file should look like you can use the `dumpconfig` subcommand to
-export your existing configuration:
-
-```shell
-$ arthera-node --your-favourite-flags dumpconfig
-```
-
-#### Validator
-
-New validator private key may be created with `arthera-node validator new` command.
-
-To launch a validator, you have to use `--validator.id` and `--validator.pubkey` flags to enable events emitter.
-
-```shell
-$ arthera-node --nousb --validator.id YOUR_ID --validator.pubkey 0xYOUR_PUBKEY
-```
-
-`arthera-node` will prompt you for a password to decrypt your validator private key. Optionally, you can
-specify password with a file using `--validator.password` flag.
-
-#### Participation in discovery
-
-Optionally you can specify your public IP to straighten connectivity of the network.
-Ensure your TCP/UDP p2p port (5050 by default) isn't blocked by your firewall.
-
-```shell
-$ arthera-node --nat extip:1.2.3.4
-```
+## Building the Docker image
+docker build . -t arthera/arthera-node:1.0
+docker tag arthera/arthera-node:1.0 arthera/arthera-node:latest
+docker login
+docker image push arthera/arthera-node:1.0
+docker image push arthera/arthera-node:latest
+docker logout

@@ -17,7 +17,7 @@ import (
 	"gopkg.in/urfave/cli.v1"
 
 	"github.com/artheranet/arthera-node/gossip"
-	"github.com/artheranet/arthera-node/integration"
+	"github.com/artheranet/arthera-node/internal/dbconfig"
 	"github.com/artheranet/arthera-node/internal/inter/iblockproc"
 )
 
@@ -167,7 +167,7 @@ func clearDirtyFlags(id []byte, rawProducer kvdb.IterableDBProducer) error {
 			return err
 		}
 
-		err = db.Put(integration.FlushIDKey, append([]byte{flushable.CleanPrefix}, id...))
+		err = db.Put(dbconfig.FlushIDKey, append([]byte{flushable.CleanPrefix}, id...))
 		if err != nil {
 			log.Crit("Failed to write CleanPrefix", "name", name)
 			return err

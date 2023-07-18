@@ -1,4 +1,4 @@
-package integration
+package dbconfig
 
 import (
 	"crypto/ecdsa"

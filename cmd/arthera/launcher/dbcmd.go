@@ -14,7 +14,7 @@ import (
 	"gopkg.in/urfave/cli.v1"
 
 	"github.com/artheranet/arthera-node/gossip"
-	"github.com/artheranet/arthera-node/integration"
+	"github.com/artheranet/arthera-node/internal/dbconfig"
 )
 
 var (
@@ -76,13 +76,13 @@ Experimental - try to heal dirty DB.
 )
 
 func makeUncheckedDBsProducers(cfg *config) map[multidb.TypeName]kvdb.IterableDBProducer {
-	dbsList, _ := integration.SupportedDBs(path.Join(cfg.Node.DataDir, "chaindata"), cfg.DBs.RuntimeCache)
+	dbsList, _ := dbconfig.SupportedDBs(path.Join(cfg.Node.DataDir, "chaindata"), cfg.DBs.RuntimeCache)
 	return dbsList
 }
 
 func makeUncheckedCachedDBsProducers(chaindataDir string) map[multidb.TypeName]kvdb.FullDBProducer {
-	dbTypes, _ := integration.SupportedDBs(chaindataDir, integration.DBsCacheConfig{
-		Table: map[string]integration.DBCacheConfig{
+	dbTypes, _ := dbconfig.SupportedDBs(chaindataDir, dbconfig.DBsCacheConfig{
+		Table: map[string]dbconfig.DBCacheConfig{
 			"": {
 				Cache:   1024 * opt.MiB,
 				Fdlimit: uint64(utils.MakeDatabaseHandles() / 2),
@@ -91,20 +91,20 @@ func makeUncheckedCachedDBsProducers(chaindataDir string) map[multidb.TypeName]k
 	})
 	wrappedDbTypes := make(map[multidb.TypeName]kvdb.FullDBProducer)
 	for typ, producer := range dbTypes {
-		wrappedDbTypes[typ] = cachedproducer.WrapAll(&integration.DummyScopedProducer{IterableDBProducer: producer})
+		wrappedDbTypes[typ] = cachedproducer.WrapAll(&dbconfig.DummyScopedProducer{IterableDBProducer: producer})
 	}
 	return wrappedDbTypes
 }
 
 func makeCheckedDBsProducers(cfg *config) map[multidb.TypeName]kvdb.IterableDBProducer {
-	if err := integration.CheckStateInitialized(path.Join(cfg.Node.DataDir, "chaindata"), cfg.DBs); err != nil {
+	if err := dbconfig.CheckStateInitialized(path.Join(cfg.Node.DataDir, "chaindata"), cfg.DBs); err != nil {
 		utils.Fatalf(err.Error())
 	}
 	return makeUncheckedDBsProducers(cfg)
 }
 
 func makeDirectDBsProducerFrom(dbsList map[multidb.TypeName]kvdb.IterableDBProducer, cfg *config) kvdb.FullDBProducer {
-	multiRawDbs, err := integration.MakeDirectMultiProducer(dbsList, cfg.DBs.Routing)
+	multiRawDbs, err := dbconfig.MakeDirectMultiProducer(dbsList, cfg.DBs.Routing)
 	if err != nil {
 		utils.Fatalf("Failed to initialize multi DB producer: %v", err)
 	}

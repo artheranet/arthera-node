@@ -1,6 +1,7 @@
-package integration
+package dbconfig
 
 import (
+	"github.com/artheranet/arthera-node/genesis/fake"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -12,9 +13,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/artheranet/arthera-node/gossip"
-	"github.com/artheranet/arthera-node/inter"
+	"github.com/artheranet/arthera-node/internal/inter"
+	"github.com/artheranet/arthera-node/internal/vecmt"
 	"github.com/artheranet/arthera-node/utils"
-	"github.com/artheranet/arthera-node/vecmt"
 )
 
 func BenchmarkFlushDBs(b *testing.B) {

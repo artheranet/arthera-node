@@ -15,14 +15,14 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 	"gopkg.in/urfave/cli.v1"
 
-	"github.com/artheranet/arthera-node/integration"
+	"github.com/artheranet/arthera-node/internal/dbconfig"
 )
 
 func dbTransform(ctx *cli.Context) error {
 	cfg := makeAllConfigs(ctx)
 
 	tmpPath := path.Join(cfg.Node.DataDir, "tmp")
-	integration.MakeDBDirs(tmpPath)
+	dbconfig.MakeDBDirs(tmpPath)
 	_ = os.RemoveAll(tmpPath)
 	defer os.RemoveAll(tmpPath)
 
@@ -139,7 +139,7 @@ func (ee *dbMigrationEntries) Pop() *dbMigrationEntry {
 var dbLocatorOf = multidb.DBLocatorOf
 
 func readRoutes(cfg *config, dbTypes map[multidb.TypeName]kvdb.FullDBProducer) (map[string]dbMigrationEntry, error) {
-	router, err := multidb.NewProducer(dbTypes, cfg.DBs.Routing.Table, integration.TablesKey)
+	router, err := multidb.NewProducer(dbTypes, cfg.DBs.Routing.Table, dbconfig.TablesKey)
 	if err != nil {
 		return nil, err
 	}
@@ -152,7 +152,7 @@ func readRoutes(cfg *config, dbTypes map[multidb.TypeName]kvdb.FullDBProducer) (
 				log.Crit("DB opening error", "name", dbName, "err", err)
 			}
 			defer db.Close()
-			tables, err := multidb.ReadTablesList(db, integration.TablesKey)
+			tables, err := multidb.ReadTablesList(db, dbconfig.TablesKey)
 			if err != nil {
 				log.Crit("Failed to read tables list", "name", dbName, "err", err)
 			}
@@ -195,7 +195,7 @@ func writeCleanTableRecords(dbTypes map[multidb.TypeName]kvdb.FullDBProducer, by
 			return err
 		}
 		defer db.Close()
-		err = multidb.WriteTablesList(db, integration.TablesKey, records[dbLocatorOf(e.New)])
+		err = multidb.WriteTablesList(db, dbconfig.TablesKey, records[dbLocatorOf(e.New)])
 		if err != nil {
 			return err
 		}

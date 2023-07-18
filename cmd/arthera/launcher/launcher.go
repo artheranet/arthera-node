@@ -28,7 +28,7 @@ import (
 	"github.com/artheranet/arthera-node/genesis/genesisstore"
 	"github.com/artheranet/arthera-node/gossip"
 	"github.com/artheranet/arthera-node/gossip/emitter"
-	"github.com/artheranet/arthera-node/integration"
+	"github.com/artheranet/arthera-node/internal/dbconfig"
 	"github.com/artheranet/arthera-node/internal/evmcore"
 	"github.com/artheranet/arthera-node/internal/valkeystore"
 	"github.com/artheranet/arthera-node/utils/debug"
@@ -303,7 +303,7 @@ func makeNode(ctx *cli.Context, cfg *config, genesisStore *genesisstore.Store) (
 		g = &gv
 	}
 
-	engine, dagIndex, gdb, cdb, blockProc, closeDBs := integration.MakeEngine(path.Join(cfg.Node.DataDir, "chaindata"), g, cfg.AppConfigs())
+	engine, dagIndex, gdb, cdb, blockProc, closeDBs := dbconfig.MakeEngine(path.Join(cfg.Node.DataDir, "chaindata"), g, cfg.AppConfigs())
 	if genesisStore != nil {
 		_ = genesisStore.Close()
 	}
@@ -331,7 +331,7 @@ func makeNode(ctx *cli.Context, cfg *config, genesisStore *genesisstore.Store) (
 	valPubkey := cfg.Emitter.Validator.PubKey
 	if key := getFakeValidatorKey(ctx); key != nil && cfg.Emitter.Validator.ID != 0 {
 		addFakeValidatorKey(ctx, key, valPubkey, valKeystore)
-		coinbase := integration.SetAccountKey(stack.AccountManager(), key, "fakepassword")
+		coinbase := dbconfig.SetAccountKey(stack.AccountManager(), key, "fakepassword")
 		log.Info("Unlocked fake validator account", "address", coinbase.Address.Hex())
 	}
 

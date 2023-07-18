@@ -32,7 +32,7 @@ import (
 	"github.com/artheranet/arthera-node/gossip"
 	"github.com/artheranet/arthera-node/gossip/emitter"
 	"github.com/artheranet/arthera-node/gossip/gasprice"
-	"github.com/artheranet/arthera-node/integration"
+	"github.com/artheranet/arthera-node/internal/dbconfig"
 	"github.com/artheranet/arthera-node/internal/evmcore"
 	"github.com/artheranet/arthera-node/internal/vecmt"
 )
@@ -161,11 +161,11 @@ type config struct {
 	Lachesis      abft.Config
 	LachesisStore abft.StoreConfig
 	VectorClock   vecmt.IndexConfig
-	DBs           integration.DBsConfig
+	DBs           dbconfig.DBsConfig
 }
 
-func (c *config) AppConfigs() integration.Configs {
-	return integration.Configs{
+func (c *config) AppConfigs() dbconfig.Configs {
+	return dbconfig.Configs{
 		Opera:         c.Opera,
 		OperaStore:    c.ArtheraStore,
 		Lachesis:      c.Lachesis,
@@ -433,7 +433,7 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 		}
 	}
 	// apply default for DB config if it wasn't touched by config file
-	dbDefault := integration.DefaultDBsConfig(cacheRatio.U64, uint64(utils.MakeDatabaseHandles()))
+	dbDefault := dbconfig.DefaultDBsConfig(cacheRatio.U64, uint64(utils.MakeDatabaseHandles()))
 
 	if len(cfg.DBs.Routing.Table) == 0 {
 		cfg.DBs.Routing = dbDefault.Routing

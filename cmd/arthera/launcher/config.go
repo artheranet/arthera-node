@@ -202,9 +202,6 @@ func mayGetGenesisStore(ctx *cli.Context) *genesisstore.Store {
 			log.Crit("Invalid flag", "flag", FakeNetFlag.Name, "err", err)
 		}
 		return fake.FakeGenesisStore(num, utils2.ToArt(1_000_000_000), utils2.ToArt(5_000_000))
-	case ctx.GlobalIsSet(TestnetFlag.Name):
-		gen, _ := CreateGenesis("testnet")
-		return gen
 	case ctx.GlobalIsSet(GenesisFlag.Name):
 		genesisPath := ctx.GlobalString(GenesisFlag.Name)
 
@@ -226,7 +223,9 @@ func mayGetGenesisStore(ctx *cli.Context) *genesisstore.Store {
 				NetworkName: g.NetworkName,
 			}
 			for _, allowed := range AllowedArtheraGenesis {
-				if allowed.Hashes.Equal(genesisHashes) && allowed.Header.Equal(gHeader) {
+				matchHashes := allowed.Hashes.Equal(genesisHashes)
+				matchHeader := allowed.Header.Equal(gHeader)
+				if matchHashes && matchHeader {
 					log.Info("Genesis file is a known preset", "name", allowed.Name)
 					goto notExperimental
 				}
@@ -234,11 +233,20 @@ func mayGetGenesisStore(ctx *cli.Context) *genesisstore.Store {
 			if ctx.GlobalBool(ExperimentalGenesisFlag.Name) {
 				log.Warn("Genesis file doesn't refer to any trusted preset")
 			} else {
-				utils.Fatalf("Genesis file doesn't refer to any trusted preset. Enable experimental genesis with --genesis.allowExperimental")
+				utils.Fatalf(
+					"Genesis file doesn't refer to any trusted preset: \n\tEpochsSection=%s \n\tBlocksSection=%s \n\tEvmSection=%s \n\tHeader=%s \nEnable experimental genesis with --genesis.allowExperimental",
+					genesisHashes[genesisstore.EpochsSection].String(),
+					genesisHashes[genesisstore.BlocksSection].String(),
+					genesisHashes[genesisstore.EvmSection].String(),
+					gHeader.GenesisID.String(),
+				)
 			}
 		notExperimental:
 		}
 		return genesisStore
+	case ctx.GlobalIsSet(TestnetFlag.Name):
+		gen, _ := CreateGenesis("testnet")
+		return gen
 	}
 	return nil
 }

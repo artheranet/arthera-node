@@ -26,7 +26,7 @@ var (
 	}
 
 	testnetHeader = genesis.Header{
-		GenesisID:   hash.HexToHash("0xb93bd2bdd0c13653fd0b636bdc865f14b2fd0f875340fe92ed4580ad774ed60d"),
+		GenesisID:   hash.HexToHash("0x4288e5d835b1c94747ef6a6fb0366ff0dfacd76ea6c418c1028b3fc18b17474d"),
 		NetworkID:   params.TestNetworkID,
 		NetworkName: "test",
 	}
@@ -46,9 +46,9 @@ var (
 			Name:   "Testnet",
 			Header: testnetHeader,
 			Hashes: genesis.Hashes{
-				genesisstore.EpochsSection: hash.HexToHash("0x2a4d5c5cdd0321be62ca25a37d358355773e2549baa4efd189c01d62ffd615ca"),
-				genesisstore.BlocksSection: hash.HexToHash("0x3f490c6a2cc3c1916cae1e706b956e42b1b2e138a18655832a2fb78cdeb874ba"),
-				genesisstore.EvmSection:    hash.HexToHash("0xb01838e5f9f0ab0a9e8940f68a6f71f001b972a7cf23c4aecd17278b518d617f"),
+				genesisstore.EpochsSection: hash.HexToHash("0x68f968d90f7e1be36f0470799df69f5d879bfb623d53a80a072d5f072af946dc"),
+				genesisstore.BlocksSection: hash.HexToHash("0x783e96ca1b7331e889e93864269c5faeffa7dd9f443776ac63ac8605972c16d6"),
+				genesisstore.EvmSection:    hash.HexToHash("0xcb0a423dda114ba5a15d0133d28fb80aac34f70fae9fbc2ae75f85455eda1432"),
 			},
 		},
 	}

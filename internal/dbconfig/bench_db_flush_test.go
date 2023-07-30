@@ -24,8 +24,8 @@ func BenchmarkFlushDBs(b *testing.B) {
 	genStore := fake.FakeGenesisStore(1, utils.ToArt(1), utils.ToArt(1))
 	g := genStore.Genesis()
 	_, _, store, s2, _, closeDBs := MakeEngine(dir, &g, Configs{
-		Opera:         gossip.DefaultConfig(cachescale.Identity),
-		OperaStore:    gossip.DefaultStoreConfig(cachescale.Identity),
+		Arthera:       gossip.DefaultConfig(cachescale.Identity),
+		ArtheraStore:  gossip.DefaultStoreConfig(cachescale.Identity),
 		Lachesis:      abft.DefaultConfig(),
 		LachesisStore: abft.DefaultStoreConfig(cachescale.Identity),
 		VectorClock:   vecmt.DefaultConfig(cachescale.Identity),

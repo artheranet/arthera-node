@@ -42,8 +42,8 @@ func (e *GenesisMismatchError) Error() string {
 }
 
 type Configs struct {
-	Opera         gossip.Config
-	OperaStore    gossip.StoreConfig
+	Arthera       gossip.Config
+	ArtheraStore  gossip.StoreConfig
 	Lachesis      abft.Config
 	LachesisStore abft.StoreConfig
 	VectorClock   vecmt.IndexConfig
@@ -65,7 +65,7 @@ func mustOpenDB(producer kvdb.DBProducer, name string) kvdb.Store {
 }
 
 func getStores(producer kvdb.FlushableDBProducer, cfg Configs) (*gossip.Store, *abft.Store) {
-	gdb := gossip.NewStore(producer, cfg.OperaStore)
+	gdb := gossip.NewStore(producer, cfg.ArtheraStore)
 
 	cMainDb := mustOpenDB(producer, "lachesis")
 	cGetEpochDB := func(epoch idx.Epoch) kvdb.Store {

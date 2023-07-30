@@ -40,8 +40,8 @@ var (
 	errPeerNotRegistered = errors.New("peer not registered")
 
 	// errSnapWithoutOpera is returned if a peer attempts to connect only on the
-	// snap protocol without advertizing the opera main protocol.
-	errSnapWithoutOpera = errors.New("peer connected on snap without compatible arthera support")
+	// snap protocol without advertizing the Arthera main protocol.
+	errSnapWithoutOpera = errors.New("peer connected on snap without compatible Arthera support")
 )
 
 // peerSet represents the collection of active peers currently participating in

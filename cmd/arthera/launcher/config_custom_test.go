@@ -23,7 +23,7 @@ func TestConfigFile(t *testing.T) {
 
 	src := config{
 		Node:          defaultNodeConfig(),
-		Opera:         gossip.DefaultConfig(cacheRatio),
+		Arthera:       gossip.DefaultConfig(cacheRatio),
 		Emitter:       emitter.DefaultConfig(),
 		TxPool:        evmcore.DefaultTxPoolConfig,
 		ArtheraStore:  gossip.DefaultStoreConfig(cacheRatio),

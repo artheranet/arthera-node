@@ -75,8 +75,8 @@ type (
 
 		// This can be set to list of enrtree:// URLs which will be queried for
 		// for nodes to connect to.
-		OperaDiscoveryURLs []string
-		SnapDiscoveryURLs  []string
+		ArtheraDiscoveryURLs []string
+		SnapDiscoveryURLs    []string
 
 		AllowSnapsync bool
 

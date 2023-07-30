@@ -153,7 +153,7 @@ var tomlSettings = toml.Config{
 
 type config struct {
 	Node          node.Config
-	Opera         gossip.Config
+	Arthera       gossip.Config
 	Emitter       emitter.Config
 	TxPool        evmcore.TxPoolConfig
 	ArtheraStore  gossip.StoreConfig
@@ -165,8 +165,8 @@ type config struct {
 
 func (c *config) AppConfigs() dbconfig.Configs {
 	return dbconfig.Configs{
-		Opera:         c.Opera,
-		OperaStore:    c.ArtheraStore,
+		Arthera:       c.Arthera,
+		ArtheraStore:  c.ArtheraStore,
 		Lachesis:      c.Lachesis,
 		LachesisStore: c.LachesisStore,
 		VectorClock:   c.VectorClock,
@@ -400,7 +400,7 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 	cacheRatio := cacheScaler(ctx)
 	cfg := config{
 		Node:          defaultNodeConfig(),
-		Opera:         gossip.DefaultConfig(cacheRatio),
+		Arthera:       gossip.DefaultConfig(cacheRatio),
 		Emitter:       emitter.DefaultConfig(),
 		TxPool:        evmcore.DefaultTxPoolConfig,
 		ArtheraStore:  gossip.DefaultStoreConfig(cacheRatio),
@@ -454,7 +454,7 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 
 	// Apply flags (high priority)
 	var err error
-	cfg.Opera, err = gossipConfigWithFlags(ctx, cfg.Opera)
+	cfg.Arthera, err = gossipConfigWithFlags(ctx, cfg.Arthera)
 	if err != nil {
 		return nil, err
 	}
@@ -473,7 +473,7 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 	}
 	setTxPool(ctx, &cfg.TxPool)
 
-	if err := cfg.Opera.Validate(); err != nil {
+	if err := cfg.Arthera.Validate(); err != nil {
 		return nil, err
 	}
 

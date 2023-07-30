@@ -32,9 +32,9 @@ Balance: 10_000_000
 0x846032c611697818a31cC090D436664b263C6E54 / 623cf3e5f616abe95cbdf1507063eefe98aac6641f4d7054f65d6942def07cbb
 
 4. Update validators, accounts and genesis hashes in:
-cmd/opera/launcher/creategen.go
+cmd/arthera/launcher/creategen.go
 
-5. Run ./build/opera --genesis.type=testnet creategen testnet.genesis
+5. Run ./build/arthera-node --genesis.type=testnet creategen testnet.genesis
 
 6. Change genesis hashes in:
-cmd/opera/launcher/params.go
+cmd/arthera/launcher/params.go

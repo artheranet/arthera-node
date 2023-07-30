@@ -561,7 +561,7 @@ func (p *peer) readStatus(network uint64, handshake *handshakeData, genesis comm
 // String implements fmt.Stringer.
 func (p *peer) String() string {
 	return fmt.Sprintf("Peer %s [%s]", p.id,
-		fmt.Sprintf("opera/%2d", p.version),
+		fmt.Sprintf("arthera/%2d", p.version),
 	)
 }
 
@@ -583,7 +583,8 @@ func (p *snapPeer) info() *snapPeerInfo {
 	}
 }
 
-// eligibleForSnap checks eligibility of a peer for a snap protocol. A peer is eligible for a snap if it advertises `snap` sattelite protocol along with `opera` protocol.
+// eligibleForSnap checks eligibility of a peer for a snap protocol. A peer is eligible for a snap if it advertises
+// `snap` sattelite protocol along with `arthera` protocol.
 func eligibleForSnap(p *p2p.Peer) bool {
 	return p.RunningCap(ProtocolName, []uint{ART10}) && p.RunningCap(snap.ProtocolName, snap.ProtocolVersions)
 }

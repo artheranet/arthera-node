@@ -3,7 +3,6 @@ package dbconfig
 import (
 	"github.com/artheranet/lachesis/kvdb/leveldb"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"strings"
@@ -41,7 +40,7 @@ type DBsCacheConfig struct {
 
 func SupportedDBs(chaindataDir string, cfg DBsCacheConfig) (map[multidb.TypeName]kvdb.IterableDBProducer, map[multidb.TypeName]kvdb.FullDBProducer) {
 	if chaindataDir == "inmemory" || chaindataDir == "" {
-		chaindataDir, _ = ioutil.TempDir("", "opera-tmp")
+		chaindataDir, _ = os.MkdirTemp("", "arthera-tmp")
 	}
 	cacher, err := dbCacheFdlimit(cfg)
 	if err != nil {

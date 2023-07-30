@@ -234,7 +234,7 @@ func newService(config Config, store *Store, blockProc BlockProc, engine lachesi
 	// init dialCandidates
 	dnsclient := dnsdisc.NewClient(dnsdisc.Config{})
 	var err error
-	svc.operaDialCandidates, err = dnsclient.NewIterator(config.OperaDiscoveryURLs...)
+	svc.operaDialCandidates, err = dnsclient.NewIterator(config.ArtheraDiscoveryURLs...)
 	if err != nil {
 		return nil, err
 	}

@@ -23,6 +23,7 @@ import (
 	"github.com/artheranet/arthera-node/contracts/runner"
 	"github.com/artheranet/arthera-node/contracts/subscriber"
 	"github.com/artheranet/arthera-node/internal/inter"
+	params2 "github.com/artheranet/arthera-node/params"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
@@ -213,7 +214,7 @@ func ApplyMessageWithoutGasPrice(evm *vm.EVM, msg Message, gp *GasPool) (*Execut
 // to returns the recipient of the message.
 func (st *StateTransition) to() common.Address {
 	if st.msg == nil || st.msg.To() == nil /* contract creation */ {
-		return contracts.ZeroAddress
+		return params2.ZeroAddress
 	}
 	return *st.msg.To()
 }
@@ -462,7 +463,7 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 			owner, err := pyag.GetOwnerOfContract(&st.evmRunner, st.to())
 			if err != nil {
 				log.Error("GetOwnerOfContract() failed", "err", err)
-			} else if owner != contracts.ZeroAddress {
+			} else if owner != params2.ZeroAddress {
 				deployerGas := st.gasUsed() / 10
 				refund := new(big.Int).Mul(new(big.Int).SetUint64(deployerGas), st.gasPrice)
 				st.state.AddBalance(owner, refund)
@@ -490,7 +491,7 @@ func (st *StateTransition) refundGas(refundQuotient uint64, senderSubscription *
 	if st.gasPrice.BitLen() > 0 {
 		// we have st.gas units to send back proportionally, exchanged at the original rate.
 
-		if st.to() != contracts.ZeroAddress {
+		if st.to() != params2.ZeroAddress {
 			if st.hasActiveSubscription(receiverSubscription) {
 				receiverGasRefund := st.gas * st.receiverSpentGas / st.initialGas
 				if receiverGasRefund > 0 {

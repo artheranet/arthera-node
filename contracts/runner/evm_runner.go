@@ -1,7 +1,7 @@
 package runner
 
 import (
-	"github.com/artheranet/arthera-node/contracts"
+	"github.com/artheranet/arthera-node/params"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"math/big"
@@ -32,7 +32,7 @@ type EVMRunner interface {
 type SharedEVMRunner struct{ *vm.EVM }
 
 func (runner *SharedEVMRunner) Execute(recipient common.Address, input []byte, gas uint64, value *big.Int) (ret []byte, err error) {
-	ret, _, err = runner.Call(vm.AccountRef(contracts.ZeroAddress), recipient, input, gas, value)
+	ret, _, err = runner.Call(vm.AccountRef(params.ZeroAddress), recipient, input, gas, value)
 	return ret, err
 }
 
@@ -42,6 +42,6 @@ func (runner *SharedEVMRunner) ExecuteFrom(sender, recipient common.Address, inp
 }
 
 func (runner *SharedEVMRunner) Query(recipient common.Address, input []byte, gas uint64) (ret []byte, err error) {
-	ret, _, err = runner.StaticCall(vm.AccountRef(contracts.ZeroAddress), recipient, input, gas)
+	ret, _, err = runner.StaticCall(vm.AccountRef(params.ZeroAddress), recipient, input, gas)
 	return ret, err
 }

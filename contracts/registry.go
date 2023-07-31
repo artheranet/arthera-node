@@ -17,7 +17,6 @@ var (
 )
 
 var (
-	ZeroAddress                            = common.Address{}
 	NetworkInitializerSmartContractAddress = common.BytesToAddress([]byte{0xAA, 0x00})
 	EvmWriterSmartContractAddress          = common.BytesToAddress([]byte{0xAA, 0x01})
 	NodeDriverSmartContractAddress         = common.BytesToAddress([]byte{0xAA, 0x02})

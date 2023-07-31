@@ -1,8 +1,11 @@
 package params
 
+import "github.com/ethereum/go-ethereum/common"
+
 var (
-	thousand = uint64(1000)
-	million  = thousand * thousand
+	ZeroAddress = common.Address{}
+	thousand    = uint64(1000)
+	million     = thousand * thousand
 
 	MaxGasForHasActiveSubscription = 500 * thousand
 	MaxGasForDebitSubscription     = 500 * thousand

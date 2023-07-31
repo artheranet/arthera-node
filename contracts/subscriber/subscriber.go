@@ -32,7 +32,7 @@ type Subscription struct {
 
 func HasActiveSubscription(evmRunner runner.EVMRunner, subscriber common.Address) (bool, error) {
 	var result bool
-	if subscriber == contracts.ZeroAddress {
+	if subscriber == params.ZeroAddress {
 		return false, nil
 	}
 	evmRunner.StopGasMetering()
@@ -46,7 +46,7 @@ func HasActiveSubscription(evmRunner runner.EVMRunner, subscriber common.Address
 
 func DebitSubscription(evmRunner runner.EVMRunner, subscriber common.Address, units *big.Int) (*big.Int, error) {
 	var result *big.Int
-	if subscriber == contracts.ZeroAddress {
+	if subscriber == params.ZeroAddress {
 		return units, nil
 	}
 	evmRunner.StopGasMetering()
@@ -60,7 +60,7 @@ func DebitSubscription(evmRunner runner.EVMRunner, subscriber common.Address, un
 }
 
 func CreditSubscription(evmRunner runner.EVMRunner, subscriber common.Address, units *big.Int) error {
-	if subscriber == contracts.ZeroAddress {
+	if subscriber == params.ZeroAddress {
 		return nil
 	}
 	evmRunner.StopGasMetering()
@@ -75,7 +75,7 @@ func CreditSubscription(evmRunner runner.EVMRunner, subscriber common.Address, u
 
 func GetSubscriptionData(evmRunner runner.EVMRunner, subscriber common.Address) (*Subscription, error) {
 	var result Subscription
-	if subscriber == contracts.ZeroAddress {
+	if subscriber == params.ZeroAddress {
 		return nil, nil
 	}
 	evmRunner.StopGasMetering()
@@ -89,7 +89,7 @@ func GetSubscriptionData(evmRunner runner.EVMRunner, subscriber common.Address) 
 
 func GetCapWindow(evmRunner runner.EVMRunner, subscriber common.Address) (inter.Timestamp, error) {
 	var result *big.Int
-	if subscriber == contracts.ZeroAddress {
+	if subscriber == params.ZeroAddress {
 		return inter.FromUnix(0), nil
 	}
 	evmRunner.StopGasMetering()
@@ -104,7 +104,7 @@ func GetCapWindow(evmRunner runner.EVMRunner, subscriber common.Address) (inter.
 
 func GetCapRemaining(evmRunner runner.EVMRunner, subscriber common.Address) (*big.Int, error) {
 	var result *big.Int
-	if subscriber == contracts.ZeroAddress {
+	if subscriber == params.ZeroAddress {
 		return big.NewInt(0), nil
 	}
 	evmRunner.StopGasMetering()
@@ -119,7 +119,7 @@ func GetCapRemaining(evmRunner runner.EVMRunner, subscriber common.Address) (*bi
 
 func IsWhitelisted(evmRunner runner.EVMRunner, subscriber common.Address, account common.Address) (bool, error) {
 	var result bool
-	if subscriber == contracts.ZeroAddress || account == contracts.ZeroAddress {
+	if subscriber == params.ZeroAddress || account == params.ZeroAddress {
 		return false, nil
 	}
 	evmRunner.StopGasMetering()

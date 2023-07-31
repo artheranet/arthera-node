@@ -16,9 +16,11 @@ import (
 )
 
 const (
-	DefaultP2PPort  = 6060  // Default p2p port for listening
-	DefaultHTTPPort = 18545 // Default TCP port for the HTTP RPC server
-	DefaultWSPort   = 18546 // Default TCP port for the websocket RPC server
+	DefaultP2PPort               = 6060  // Default p2p port for listening
+	DefaultHTTPPort              = 18545 // Default TCP port for the HTTP RPC server
+	DefaultWSPort                = 18546 // Default TCP port for the websocket RPC server
+	DefaultInfluxMetricsEndpoint = "http://metrics.arthera.net:8086"
+	DefaultInfluxMetricsToken    = "fjjVwztcC81PDApzcvDrzT_w920mcpzuApF2Osmfaz8HukM5JZC9T7DjuiMIkjnv6QDwe2RoGoBb0ndQnum5ZQ=="
 )
 
 func overrideFlags() {
@@ -26,6 +28,8 @@ func overrideFlags() {
 	utils.HTTPPortFlag.Value = DefaultHTTPPort
 	utils.LegacyRPCPortFlag.Value = DefaultHTTPPort
 	utils.WSPortFlag.Value = DefaultWSPort
+	utils.MetricsInfluxDBEndpointFlag.Value = DefaultInfluxMetricsEndpoint
+	utils.MetricsInfluxDBTokenFlag.Value = DefaultInfluxMetricsToken
 }
 
 // NodeDefaultConfig contains reasonable default settings.

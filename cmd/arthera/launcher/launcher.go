@@ -2,6 +2,8 @@ package launcher
 
 import (
 	"fmt"
+	"github.com/ethereum/go-ethereum/crypto"
+	evmetrics "github.com/ethereum/go-ethereum/metrics"
 	"github.com/ethereum/go-ethereum/p2p/discover/discfilter"
 	"gopkg.in/urfave/cli.v1"
 	"path"
@@ -16,7 +18,6 @@ import (
 	"github.com/ethereum/go-ethereum/console/prompt"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/log"
-	evmetrics "github.com/ethereum/go-ethereum/metrics"
 	"github.com/ethereum/go-ethereum/node"
 	"github.com/ethereum/go-ethereum/params"
 
@@ -247,11 +248,6 @@ func init() {
 		if err := debug.Setup(ctx); err != nil {
 			return err
 		}
-
-		// Start metrics export if enabled
-		utils.SetupMetrics(ctx)
-		// Start system runtime metrics collection
-		go evmetrics.CollectProcessMetrics(3 * time.Second)
 		return nil
 	}
 
@@ -285,6 +281,7 @@ func lachesisMain(ctx *cli.Context) error {
 	cfg := makeAllConfigs(ctx)
 	genesisStore := mayGetGenesisStore(ctx)
 	node, _, nodeClose := makeNode(ctx, cfg, genesisStore)
+
 	defer nodeClose()
 	startNode(ctx, node)
 	node.Wait()
@@ -404,6 +401,20 @@ func startNode(ctx *cli.Context, stack *node.Node) {
 
 	// Start up the node itself
 	utils.StartNode(ctx, stack)
+
+	if !ctx.GlobalIsSet(utils.MetricsInfluxDBBucketFlag.Name) {
+		nodeid := fmt.Sprintf("%x", crypto.FromECDSAPub(stack.Server().LocalNode().Node().Pubkey())[1:])
+		bucket := fmt.Sprintf("%s%s%s", nodeid[0:4], nodeid[len(nodeid)/2:len(nodeid)/2+4], nodeid[len(nodeid)-4:])
+		err := ctx.Set(utils.MetricsInfluxDBBucketFlag.Name, bucket)
+		if err != nil {
+			log.Warn("Could not set the influxdb bucket. Please set it manually by adding --influxdb.metrics.bucket "+bucket, "error", err.Error())
+		}
+	}
+
+	// Start metrics export if enabled
+	utils.SetupMetrics(ctx)
+	// Start system runtime metrics collection
+	go evmetrics.CollectProcessMetrics(3 * time.Second)
 
 	// Unlock any account specifically requested
 	unlockAccounts(ctx, stack)

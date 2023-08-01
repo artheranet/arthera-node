@@ -18,6 +18,7 @@ package evmcore
 
 import (
 	"container/heap"
+	"github.com/ethereum/go-ethereum/log"
 	"math"
 	"math/big"
 	"sort"
@@ -251,7 +252,7 @@ type txList struct {
 	strict bool         // Whether nonces are strictly continuous or not
 	txs    *txSortedMap // Heap indexed sorted hash map of the transactions
 
-	costcap *big.Int // Price of the highest costing transaction (reset only if exceeds balance)
+	costcap *big.Int // Value of the highest costing transaction (reset only if exceeds balance)
 	gascap  uint64   // Gas limit of the highest spending transaction (reset only if exceeds block limit)
 }
 
@@ -302,7 +303,7 @@ func (l *txList) Add(tx *types.Transaction, priceBump uint64) (bool, *types.Tran
 	}
 	// Otherwise overwrite the old transaction with the current one
 	l.txs.Put(tx)
-	if cost := tx.Cost(); l.costcap.Cmp(cost) < 0 {
+	if cost := tx.Value(); l.costcap.Cmp(cost) < 0 {
 		l.costcap = cost
 	}
 	if gas := tx.Gas(); l.gascap < gas {
@@ -337,7 +338,8 @@ func (l *txList) Filter(costLimit *big.Int, gasLimit uint64) (types.Transactions
 
 	// Filter out all the transactions above the account's funds
 	removed := l.txs.Filter(func(tx *types.Transaction) bool {
-		return tx.Gas() > gasLimit || tx.Cost().Cmp(costLimit) > 0
+		log.Info("Transaction Filter", "gas", tx.Gas(), "gasLimit", gasLimit, "cost", tx.Value(), "costLimit", costLimit)
+		return tx.Gas() > gasLimit || tx.Value().Cmp(costLimit) > 0
 	})
 
 	if len(removed) == 0 {

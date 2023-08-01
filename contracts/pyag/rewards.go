@@ -4,6 +4,7 @@ import (
 	"github.com/artheranet/arthera-node/contracts"
 	"github.com/artheranet/arthera-node/contracts/abis"
 	"github.com/artheranet/arthera-node/contracts/runner"
+	"github.com/artheranet/arthera-node/internal/evmcore/vmcontext"
 	"github.com/artheranet/arthera-node/params"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/state"
@@ -40,7 +41,7 @@ func SetOwnerOfContractFast(targetContract common.Address, deployer common.Addre
 	)
 }
 
-func AddReward(evmRunner runner.EVMRunner, contract common.Address, reward *big.Int) error {
+func AddReward(evmRunner vmcontext.EVMRunner, contract common.Address, reward *big.Int) error {
 	if contract == params.ZeroAddress {
 		return nil
 	}
@@ -54,7 +55,7 @@ func AddReward(evmRunner runner.EVMRunner, contract common.Address, reward *big.
 	return nil
 }
 
-func GetOwnerOfContract(evmRunner runner.EVMRunner, contract common.Address) (common.Address, error) {
+func GetOwnerOfContract(evmRunner vmcontext.EVMRunner, contract common.Address) (common.Address, error) {
 	var result common.Address
 	if contract == params.ZeroAddress {
 		return params.ZeroAddress, nil
@@ -68,7 +69,7 @@ func GetOwnerOfContract(evmRunner runner.EVMRunner, contract common.Address) (co
 	return result, nil
 }
 
-func SetOwnerOfContract(evmRunner runner.EVMRunner, contract common.Address, owner common.Address) error {
+func SetOwnerOfContract(evmRunner vmcontext.EVMRunner, contract common.Address, owner common.Address) error {
 	if contract == params.ZeroAddress {
 		return nil
 	}

@@ -3,6 +3,7 @@ package runner
 import (
 	"bytes"
 	"errors"
+	"github.com/artheranet/arthera-node/internal/evmcore/vmcontext"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -68,17 +69,17 @@ func NewBoundMethod(contractAddress common.Address, abi *abi.ABI, methodName str
 
 // Query executes the method with the given EVMRunner as a read only action, the returned
 // value is unpacked into result.
-func (bm *BoundMethod) Query(vmRunner EVMRunner, result interface{}, args ...interface{}) error {
+func (bm *BoundMethod) Query(vmRunner vmcontext.EVMRunner, result interface{}, args ...interface{}) error {
 	return bm.run(vmRunner, result, true, nil, args...)
 }
 
 // Execute executes the method with the given EVMRunner and unpacks the return value into result.
 // If the method does not return a value then result should be nil.
-func (bm *BoundMethod) Execute(vmRunner EVMRunner, result interface{}, value *big.Int, args ...interface{}) error {
+func (bm *BoundMethod) Execute(vmRunner vmcontext.EVMRunner, result interface{}, value *big.Int, args ...interface{}) error {
 	return bm.run(vmRunner, result, false, value, args...)
 }
 
-func (bm *BoundMethod) run(vmRunner EVMRunner, result interface{}, readOnly bool, value *big.Int, args ...interface{}) error {
+func (bm *BoundMethod) run(vmRunner vmcontext.EVMRunner, result interface{}, readOnly bool, value *big.Int, args ...interface{}) error {
 	contractAddress := bm.address
 
 	logger := log.New("to", contractAddress, "method", bm.method)

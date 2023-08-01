@@ -1,4 +1,4 @@
-package runner
+package vmcontext
 
 import (
 	"github.com/artheranet/arthera-node/params"

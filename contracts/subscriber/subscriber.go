@@ -4,6 +4,7 @@ import (
 	"github.com/artheranet/arthera-node/contracts"
 	"github.com/artheranet/arthera-node/contracts/abis"
 	"github.com/artheranet/arthera-node/contracts/runner"
+	"github.com/artheranet/arthera-node/internal/evmcore/vmcontext"
 	"github.com/artheranet/arthera-node/internal/inter"
 	"github.com/artheranet/arthera-node/params"
 	"github.com/ethereum/go-ethereum/common"
@@ -30,7 +31,7 @@ type Subscription struct {
 	PeriodUsage  *big.Int
 }
 
-func HasActiveSubscription(evmRunner runner.EVMRunner, subscriber common.Address) (bool, error) {
+func HasActiveSubscription(evmRunner vmcontext.EVMRunner, subscriber common.Address) (bool, error) {
 	var result bool
 	if subscriber == params.ZeroAddress {
 		return false, nil
@@ -44,7 +45,7 @@ func HasActiveSubscription(evmRunner runner.EVMRunner, subscriber common.Address
 	return result, nil
 }
 
-func DebitSubscription(evmRunner runner.EVMRunner, subscriber common.Address, units *big.Int) (*big.Int, error) {
+func DebitSubscription(evmRunner vmcontext.EVMRunner, subscriber common.Address, units *big.Int) (*big.Int, error) {
 	var result *big.Int
 	if subscriber == params.ZeroAddress {
 		return units, nil
@@ -59,7 +60,7 @@ func DebitSubscription(evmRunner runner.EVMRunner, subscriber common.Address, un
 	return result, nil
 }
 
-func CreditSubscription(evmRunner runner.EVMRunner, subscriber common.Address, units *big.Int) error {
+func CreditSubscription(evmRunner vmcontext.EVMRunner, subscriber common.Address, units *big.Int) error {
 	if subscriber == params.ZeroAddress {
 		return nil
 	}
@@ -73,7 +74,7 @@ func CreditSubscription(evmRunner runner.EVMRunner, subscriber common.Address, u
 	return nil
 }
 
-func GetSubscriptionData(evmRunner runner.EVMRunner, subscriber common.Address) (*Subscription, error) {
+func GetSubscriptionData(evmRunner vmcontext.EVMRunner, subscriber common.Address) (*Subscription, error) {
 	var result Subscription
 	if subscriber == params.ZeroAddress {
 		return nil, nil
@@ -87,7 +88,7 @@ func GetSubscriptionData(evmRunner runner.EVMRunner, subscriber common.Address) 
 	return &result, nil
 }
 
-func GetCapWindow(evmRunner runner.EVMRunner, subscriber common.Address) (inter.Timestamp, error) {
+func GetCapWindow(evmRunner vmcontext.EVMRunner, subscriber common.Address) (inter.Timestamp, error) {
 	var result *big.Int
 	if subscriber == params.ZeroAddress {
 		return inter.FromUnix(0), nil
@@ -102,7 +103,7 @@ func GetCapWindow(evmRunner runner.EVMRunner, subscriber common.Address) (inter.
 	return inter.FromUnix(result.Int64()), nil
 }
 
-func GetCapRemaining(evmRunner runner.EVMRunner, subscriber common.Address) (*big.Int, error) {
+func GetCapRemaining(evmRunner vmcontext.EVMRunner, subscriber common.Address) (*big.Int, error) {
 	var result *big.Int
 	if subscriber == params.ZeroAddress {
 		return big.NewInt(0), nil
@@ -117,7 +118,7 @@ func GetCapRemaining(evmRunner runner.EVMRunner, subscriber common.Address) (*bi
 	return result, nil
 }
 
-func IsWhitelisted(evmRunner runner.EVMRunner, subscriber common.Address, account common.Address) (bool, error) {
+func IsWhitelisted(evmRunner vmcontext.EVMRunner, subscriber common.Address, account common.Address) (bool, error) {
 	var result bool
 	if subscriber == params.ZeroAddress || account == params.ZeroAddress {
 		return false, nil

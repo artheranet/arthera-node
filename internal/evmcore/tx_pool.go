@@ -18,6 +18,7 @@ package evmcore
 
 import (
 	"errors"
+	"github.com/artheranet/arthera-node/internal/evmcore/vmcontext"
 	"math"
 	"math/big"
 	"math/rand"
@@ -143,6 +144,7 @@ type StateReader interface {
 	MaxGasLimit() uint64
 	SubscribeNewBlock(ch chan<- ChainHeadNotify) notify.Subscription
 	Config() *params.ChainConfig
+	GetHeader(common.Hash, uint64) *EvmHeader
 }
 
 // TxPoolConfig are the configuration parameters of the transaction pool.
@@ -240,9 +242,10 @@ type TxPool struct {
 	eip2718  bool // Fork indicator whether we are using EIP-2718 type transactions.
 	eip1559  bool // Fork indicator whether we are using EIP-1559 type transactions.
 
-	currentState  *state.StateDB // Current state in the blockchain head
-	pendingNonces *txNoncer      // Pending state tracking virtual nonces
-	currentMaxGas uint64         // Current gas limit for transaction caps
+	currentState    *state.StateDB // Current state in the blockchain head
+	currentVMRunner vmcontext.EVMRunner
+	pendingNonces   *txNoncer // Pending state tracking virtual nonces
+	currentMaxGas   uint64    // Current gas limit for transaction caps
 
 	locals  *accountSet // Set of local transaction to exempt from eviction rules
 	journal *txJournal  // Journal of local transaction to back up to disk
@@ -652,11 +655,12 @@ func (pool *TxPool) validateTx(tx *types.Transaction, local bool) error {
 	if pool.currentState.GetNonce(from) > tx.Nonce() {
 		return ErrNonceTooLow
 	}
+
 	// Transactor should have enough funds to cover the costs
-	// cost == V + GP * GL
-	if pool.currentState.GetBalance(from).Cmp(tx.Cost()) < 0 {
+	if !ValidateSubscriberBalance(from, tx, pool.currentState, pool.currentVMRunner) {
 		return ErrInsufficientFunds
 	}
+
 	// Ensure the transaction has more gas than the basic tx fee.
 	intrGas, err := IntrinsicGas(tx.Data(), tx.AccessList(), tx.To() == nil)
 	if err != nil {
@@ -1313,6 +1317,7 @@ func (pool *TxPool) reset(oldHead, newHead *EvmHeader) {
 		return
 	}
 	pool.currentState = statedb
+	pool.currentVMRunner = NewEVMRunner(pool.chain, pool.chainconfig, newHead, statedb)
 	pool.pendingNonces = newTxNoncer(statedb)
 	pool.currentMaxGas = pool.chain.MaxGasLimit()
 

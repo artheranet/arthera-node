@@ -1,17 +1,35 @@
+GOPROXY?="https://proxy.golang.org,direct"
+GIT_COMMIT=$(shell git rev-list -1 HEAD | xargs git rev-parse --short)
+GIT_DATE=$(shell git log -1 --date=short --pretty=format:%ct)
+VERSION=1.0.0-rc.2-$(GIT_COMMIT)-$(GIT_DATE)
+DOCKER_IMAGE=arthera/arthera-node:$(VERSION)
+
 .PHONY: all
 all: arthera
 
-GOPROXY ?= "https://proxy.golang.org,direct"
 .PHONY: arthera
 arthera:
-	GIT_COMMIT=`git rev-list -1 HEAD 2>/dev/null || echo ""` && \
-	GIT_DATE=`git log -1 --date=short --pretty=format:%ct 2>/dev/null || echo ""` && \
-	GOPROXY=$(GOPROXY) \
+	@echo "Building version: $(VERSION)"
 	go build \
-	    -ldflags "-s -w -X github.com/artheranet/arthera-node/cmd/arthera/launcher.gitCommit=$${GIT_COMMIT} -X github.com/artheranet/arthera-node/cmd/arthera/launcher.gitDate=$${GIT_DATE}" \
+	    -ldflags "-s -w -X github.com/artheranet/arthera-node/cmd/arthera/launcher.gitCommit=$(GIT_COMMIT) -X github.com/artheranet/arthera-node/cmd/arthera/launcher.gitDate=$(GIT_DATE)" \
 	    -o build/arthera-node \
 	    ./cmd/arthera
 
 .PHONY: clean
 clean:
 	rm -fr ./build/*
+
+docker: docker_build docker_tag docker_push
+
+docker_build:
+	docker build . -t $(DOCKER_IMAGE)
+
+docker_tag:
+	docker tag $(DOCKER_IMAGE) arthera/arthera-node:latest
+
+docker_push:
+	docker login && \
+	docker image push $(DOCKER_IMAGE) && \
+	docker image push arthera/arthera-node:latest && \
+	docker logout
+

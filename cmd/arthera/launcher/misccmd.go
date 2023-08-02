@@ -24,14 +24,6 @@ var (
 The output of this command is supposed to be machine-readable.
 `,
 	}
-
-	licenseCommand = cli.Command{
-		Action:    utils.MigrateFlags(license),
-		Name:      "license",
-		Usage:     "Display license information",
-		ArgsUsage: " ",
-		Category:  "MISCELLANEOUS COMMANDS",
-	}
 )
 
 func version(ctx *cli.Context) error {

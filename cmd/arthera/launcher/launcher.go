@@ -2,6 +2,7 @@ package launcher
 
 import (
 	"fmt"
+	version2 "github.com/artheranet/arthera-node/version"
 	"github.com/ethereum/go-ethereum/crypto"
 	evmetrics "github.com/ethereum/go-ethereum/metrics"
 	"github.com/ethereum/go-ethereum/p2p/discover/discfilter"
@@ -10,16 +11,6 @@ import (
 	"sort"
 	"strings"
 	"time"
-
-	"github.com/artheranet/lachesis/inter/idx"
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/ethereum/go-ethereum/cmd/utils"
-	"github.com/ethereum/go-ethereum/console/prompt"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/node"
-	"github.com/ethereum/go-ethereum/params"
 
 	"github.com/artheranet/arthera-node/cmd/arthera/launcher/flags"
 	"github.com/artheranet/arthera-node/cmd/arthera/launcher/metrics"
@@ -34,6 +25,14 @@ import (
 	"github.com/artheranet/arthera-node/utils/debug"
 	"github.com/artheranet/arthera-node/utils/errlock"
 	_ "github.com/artheranet/arthera-node/version"
+	"github.com/artheranet/lachesis/inter/idx"
+	"github.com/ethereum/go-ethereum/accounts"
+	"github.com/ethereum/go-ethereum/accounts/keystore"
+	"github.com/ethereum/go-ethereum/cmd/utils"
+	"github.com/ethereum/go-ethereum/console/prompt"
+	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/log"
+	"github.com/ethereum/go-ethereum/node"
 )
 
 const (
@@ -206,7 +205,7 @@ func init() {
 	// App.
 
 	app.Action = lachesisMain
-	app.Version = params.VersionWithCommit(gitCommit, gitDate)
+	app.Version = version2.VersionWithCommit(gitCommit, gitDate)
 	app.HideVersion = true // we have a command to print the version
 	app.Commands = []cli.Command{
 		// See accountcmd.go:
@@ -223,7 +222,6 @@ func init() {
 		checkConfigCommand,
 		// See misccmd.go:
 		versionCommand,
-		licenseCommand,
 		// See chaincmd.go
 		importCommand,
 		exportCommand,
@@ -267,18 +265,14 @@ func Launch(args []string) error {
 // It creates a default node based on the command line arguments and runs it in
 // blocking mode, waiting for it to be shut down.
 func lachesisMain(ctx *cli.Context) error {
+	fmt.Println("Arthera node version: " + app.Version)
+
 	if args := ctx.Args(); len(args) > 0 {
 		return fmt.Errorf("invalid command: %q", args[0])
 	}
 
-	// TODO: tracing flags
-	//tracingStop, err := tracing.Start(ctx)
-	//if err != nil {
-	//	return err
-	//}
-	//defer tracingStop()
-
 	cfg := makeAllConfigs(ctx)
+
 	genesisStore := mayGetGenesisStore(ctx)
 	node, _, nodeClose := makeNode(ctx, cfg, genesisStore)
 

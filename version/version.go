@@ -11,7 +11,18 @@ func init() {
 	params.VersionMajor = 1     // Major version component of the current release
 	params.VersionMinor = 0     // Minor version component of the current release
 	params.VersionPatch = 0     // Patch version component of the current release
-	params.VersionMeta = "rc.1" // Version metadata to append to the version string
+	params.VersionMeta = "rc.2" // Version metadata to append to the version string
+}
+
+func VersionWithCommit(gitCommit, gitDate string) string {
+	vsn := params.VersionWithMeta()
+	if len(gitCommit) >= 0 {
+		vsn += "-" + gitCommit
+	}
+	if (params.VersionMeta != "stable") && (gitDate != "") {
+		vsn += "-" + gitDate
+	}
+	return vsn
 }
 
 func BigToString(b *big.Int) string {

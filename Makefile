@@ -19,7 +19,7 @@ arthera:
 clean:
 	rm -fr ./build/*
 
-docker: docker_build docker_tag docker_push
+docker: docker_build docker_tag
 
 docker_build:
 	docker build . -t $(DOCKER_IMAGE)
@@ -27,8 +27,11 @@ docker_build:
 docker_tag:
 	docker tag $(DOCKER_IMAGE) arthera/arthera-node:latest
 
-docker_push:
+release:
 	docker login && \
+	git commit -am "Release $(VERSION)" && \
+	git tag -a $(VERSION) -m "Release $(VERSION)" && \
+	git push --tags && \
 	docker image push $(DOCKER_IMAGE) && \
 	docker image push arthera/arthera-node:latest && \
 	docker logout

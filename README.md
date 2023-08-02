@@ -13,9 +13,14 @@ make arthera
 The build output is ```build/arthera-node``` executable.
 
 ## Building the Docker image
+First, commit your changes to the repository, then run:
+
 ```shell
 make docker
 ```
+
+## Creating a new release
+First, commit your changes to the repository, then run:
 
 ## Versioning
 The versioning the Semver-compatible, with the following format:

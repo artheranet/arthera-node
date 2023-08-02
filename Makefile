@@ -28,7 +28,7 @@ docker_tag:
 	docker tag $(DOCKER_IMAGE) arthera/arthera-node:latest
 
 prereqs:
-	git commit -am "Release $(VERSION)" && \
+	git diff-index --quiet HEAD || git commit -am "Release $(VERSION)" && \
 	git tag -a $(VERSION) -m "Release $(VERSION)" && \
 	git push --tags
 

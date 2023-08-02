@@ -40,4 +40,3 @@ The Arthera Beacon chain is licensed under the [GPLv3](https://www.gnu.org/licen
 
 
 
-

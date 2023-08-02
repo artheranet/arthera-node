@@ -29,10 +29,10 @@ docker_tag:
 
 release:
 	docker login && \
-	git commit -am "Release $(VERSION)" && \
-	git tag -a $(VERSION) -m "Release $(VERSION)" && \
-	git push --tags && \
-	docker image push $(DOCKER_IMAGE) && \
-	docker image push arthera/arthera-node:latest && \
-	docker logout
+	git commit -am "Release $(VERSION)"
+#	git tag -a $(VERSION) -m "Release $(VERSION)" && \
+#	git push --tags && \
+#	docker image push $(DOCKER_IMAGE) && \
+#	docker image push arthera/arthera-node:latest && \
+#	docker logout
 

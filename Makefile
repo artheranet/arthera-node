@@ -37,7 +37,7 @@ tag_release:
 	git tag -a $(VERSION) -m "Release $(VERSION)"
 
 push_changes:
-	#git push --tags
+	git push --tags
 
 release: check_changes tag_release push_changes docker
 	docker login && \

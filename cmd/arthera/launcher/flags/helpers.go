@@ -17,10 +17,10 @@
 package flags
 
 import (
+	version2 "github.com/artheranet/arthera-node/version"
 	"os"
 	"path/filepath"
 
-	"github.com/ethereum/go-ethereum/params"
 	cli "gopkg.in/urfave/cli.v1"
 )
 
@@ -110,12 +110,12 @@ func FlagCategory(flag cli.Flag, flagGroups []FlagGroup) string {
 }
 
 // NewApp creates an app with sane defaults.
-func NewApp(gitCommit, gitDate, usage string) *cli.App {
+func NewApp(usage string) *cli.App {
 	app := cli.NewApp()
 	app.Name = filepath.Base(os.Args[0])
 	app.Author = ""
 	app.Email = ""
-	app.Version = params.VersionWithCommit(gitCommit, gitDate)
+	app.Version = version2.VersionWithCommit()
 	app.Usage = usage
 	return app
 }

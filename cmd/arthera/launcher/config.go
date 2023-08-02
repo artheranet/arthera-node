@@ -9,8 +9,8 @@ import (
 	"github.com/artheranet/arthera-node/params"
 	utils2 "github.com/artheranet/arthera-node/utils"
 	"github.com/artheranet/arthera-node/utils/memory"
+	version2 "github.com/artheranet/arthera-node/version"
 	"github.com/ethereum/go-ethereum/core/vm"
-	ethparams "github.com/ethereum/go-ethereum/params"
 	"github.com/syndtr/goleveldb/leveldb/opt"
 	"gopkg.in/urfave/cli.v1"
 	"os"
@@ -495,7 +495,7 @@ func makeAllConfigs(ctx *cli.Context) *config {
 func defaultNodeConfig() node.Config {
 	cfg := NodeDefaultConfig
 	cfg.Name = clientIdentifier
-	cfg.Version = ethparams.VersionWithCommit(gitCommit, gitDate)
+	cfg.Version = version2.VersionWithCommit()
 	cfg.HTTPModules = append(cfg.HTTPModules, "eth", "art", "dag", "abft", "web3")
 	cfg.WSModules = append(cfg.WSModules, "eth", "art", "dag", "abft", "web3")
 	cfg.IPCPath = "arthera.ipc"

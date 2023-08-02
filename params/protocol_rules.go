@@ -19,6 +19,7 @@ const (
 	MainNetworkID   uint64 = 10242
 	TestNetworkID   uint64 = 10243
 	FakeNetworkID   uint64 = 10244
+	DevNetworkID    uint64 = 10245
 	DefaultEventGas uint64 = 28000
 	berlinBit              = 1 << 0
 	londonBit              = 1 << 1
@@ -174,6 +175,25 @@ func TestNetRules() ProtocolRules {
 	return ProtocolRules{
 		Name:      "test",
 		NetworkID: TestNetworkID,
+		Dag:       DefaultDagRules(),
+		Epochs:    DefaultEpochsRules(),
+		Economy:   DefaultEconomyRules(),
+		Blocks: BlocksRules{
+			MaxBlockGas:             20_500_000,
+			MaxEmptyBlockSkipPeriod: inter.Timestamp(1 * time.Minute),
+		},
+		Upgrades: Upgrades{
+			Berlin: true,
+			London: true,
+			Llr:    true,
+		},
+	}
+}
+
+func DevNetRules() ProtocolRules {
+	return ProtocolRules{
+		Name:      "dev",
+		NetworkID: DevNetworkID,
 		Dag:       DefaultDagRules(),
 		Epochs:    DefaultEpochsRules(),
 		Economy:   DefaultEconomyRules(),

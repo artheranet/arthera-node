@@ -7,6 +7,12 @@ import (
 	"github.com/ethereum/go-ethereum/params"
 )
 
+var (
+	// Git SHA1 commit hash of the release (set via linker flags).
+	GitCommit = ""
+	GitDate   = ""
+)
+
 func init() {
 	params.VersionMajor = 1     // Major version component of the current release
 	params.VersionMinor = 0     // Minor version component of the current release
@@ -14,13 +20,13 @@ func init() {
 	params.VersionMeta = "rc.2" // Version metadata to append to the version string
 }
 
-func VersionWithCommit(gitCommit, gitDate string) string {
+func VersionWithCommit() string {
 	vsn := params.VersionWithMeta()
-	if len(gitCommit) >= 0 {
-		vsn += "-" + gitCommit
+	if len(GitCommit) >= 0 {
+		vsn += "-" + GitDate
 	}
-	if (params.VersionMeta != "stable") && (gitDate != "") {
-		vsn += "-" + gitDate
+	if (params.VersionMeta != "stable") && (GitDate != "") {
+		vsn += "-" + GitDate
 	}
 	return vsn
 }

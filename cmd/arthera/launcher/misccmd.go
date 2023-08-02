@@ -2,13 +2,11 @@ package launcher
 
 import (
 	"fmt"
+	version2 "github.com/artheranet/arthera-node/version"
+	"github.com/ethereum/go-ethereum/cmd/utils"
+	"gopkg.in/urfave/cli.v1"
 	"os"
 	"runtime"
-	"strings"
-
-	"github.com/ethereum/go-ethereum/cmd/utils"
-	"github.com/ethereum/go-ethereum/params"
-	"gopkg.in/urfave/cli.v1"
 
 	"github.com/artheranet/arthera-node/gossip"
 )
@@ -26,26 +24,14 @@ The output of this command is supposed to be machine-readable.
 	}
 )
 
-func version(ctx *cli.Context) error {
-	fmt.Println(strings.Title(clientIdentifier))
-	fmt.Println("Version:", params.VersionWithMeta())
-	if gitCommit != "" {
-		fmt.Println("Git Commit:", gitCommit)
-	}
-	if gitDate != "" {
-		fmt.Println("Git Commit Date:", gitDate)
-	}
+func version(_ *cli.Context) error {
+	fmt.Println("▄▀█ █▀█ ▀█▀ █░█ █▀▀ █▀█ ▄▀█\n█▀█ █▀▄ ░█░ █▀█ ██▄ █▀▄ █▀█")
+	fmt.Println("Version:", version2.VersionWithCommit())
 	fmt.Println("Architecture:", runtime.GOARCH)
 	fmt.Println("Protocol Versions:", []uint{gossip.ProtocolVersion})
 	fmt.Println("Go Version:", runtime.Version())
 	fmt.Println("Operating System:", runtime.GOOS)
 	fmt.Printf("GOPATH=%s\n", os.Getenv("GOPATH"))
 	fmt.Printf("GOROOT=%s\n", runtime.GOROOT())
-	return nil
-}
-
-func license(_ *cli.Context) error {
-	// TODO: license text
-	fmt.Println(``)
 	return nil
 }

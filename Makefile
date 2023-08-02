@@ -11,7 +11,7 @@ all: arthera
 arthera:
 	@echo "Building version: $(VERSION)"
 	go build \
-	    -ldflags "-s -w -X github.com/artheranet/arthera-node/cmd/arthera/launcher.gitCommit=$(GIT_COMMIT) -X github.com/artheranet/arthera-node/cmd/arthera/launcher.gitDate=$(GIT_DATE)" \
+	    -ldflags "-s -w -X github.com/artheranet/arthera-node/version.GitCommit=$(GIT_COMMIT) -X github.com/artheranet/arthera-node/version.GitDate=$(GIT_DATE)" \
 	    -o build/arthera-node \
 	    ./cmd/arthera
 

@@ -1,14 +1,13 @@
 package emitter
 
 import (
+	ethparams "github.com/ethereum/go-ethereum/params"
 	"math/rand"
 	"time"
 
-	"github.com/artheranet/lachesis/inter/idx"
-	ethparams "github.com/ethereum/go-ethereum/params"
-
 	"github.com/artheranet/arthera-node/internal/inter/validatorpk"
 	"github.com/artheranet/arthera-node/params"
+	"github.com/artheranet/lachesis/inter/idx"
 )
 
 // EmitIntervals is the configuration of emit intervals.
@@ -106,6 +105,13 @@ func FakeConfig(num idx.Validator) Config {
 }
 
 func TestnetConfig() Config {
+	cfg := DefaultConfig()
+	cfg.EmitIntervals.Max = 10 * time.Minute
+	cfg.EmitIntervals.DoublesignProtection = 30 * time.Second
+	return cfg
+}
+
+func DevnetConfig() Config {
 	cfg := DefaultConfig()
 	cfg.EmitIntervals.Max = 10 * time.Minute
 	cfg.EmitIntervals.DoublesignProtection = 30 * time.Second

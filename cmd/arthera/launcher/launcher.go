@@ -41,11 +41,8 @@ const (
 )
 
 var (
-	// Git SHA1 commit hash of the release (set via linker flags).
-	gitCommit = ""
-	gitDate   = ""
 	// The app that holds all commands and flags.
-	app = flags.NewApp(gitCommit, gitDate, "arthera-node command line interface")
+	app = flags.NewApp("arthera-node command line interface")
 
 	nodeFlags        []cli.Flag
 	testFlags        []cli.Flag
@@ -204,10 +201,12 @@ func init() {
 
 	// App.
 
-	app.Action = lachesisMain
-	app.Version = version2.VersionWithCommit(gitCommit, gitDate)
+	app.Action = artheraMain
+	app.Version = version2.VersionWithCommit()
 	app.HideVersion = true // we have a command to print the version
 	app.Commands = []cli.Command{
+		// see p2pcmd.go:
+		p2pCommand,
 		// See accountcmd.go:
 		accountCommand,
 		walletCommand,
@@ -261,11 +260,12 @@ func Launch(args []string) error {
 	return app.Run(args)
 }
 
-// arthera is the main entry point into the system if no special subcommand is ran.
+// artheraMain is the main entry point into the system if no special subcommand is ran.
 // It creates a default node based on the command line arguments and runs it in
 // blocking mode, waiting for it to be shut down.
-func lachesisMain(ctx *cli.Context) error {
+func artheraMain(ctx *cli.Context) error {
 	fmt.Println("Arthera node version: " + app.Version)
+	fmt.Println("▄▀█ █▀█ ▀█▀ █░█ █▀▀ █▀█ ▄▀█\n█▀█ █▀▄ ░█░ █▀█ ██▄ █▀▄ █▀█")
 
 	if args := ctx.Args(); len(args) > 0 {
 		return fmt.Errorf("invalid command: %q", args[0])

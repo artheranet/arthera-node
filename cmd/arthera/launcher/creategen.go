@@ -11,7 +11,6 @@ import (
 	"github.com/artheranet/arthera-node/internal/inter/ier"
 	"github.com/artheranet/arthera-node/internal/inter/validatorpk"
 	"github.com/artheranet/arthera-node/params"
-	utils2 "github.com/artheranet/arthera-node/utils"
 	"github.com/artheranet/arthera-node/utils/iodb"
 	"github.com/artheranet/lachesis/hash"
 	"github.com/artheranet/lachesis/inter/idx"
@@ -26,12 +25,13 @@ import (
 	"io"
 	"math/big"
 	"os"
+	"time"
 )
 
 var genesisTypeFlag = cli.StringFlag{
 	Name:  "genesis.type",
-	Usage: "Type of genesis to generate: mainnet, testnet",
-	Value: "testnet",
+	Usage: "Type of genesis to generate: mainnet, testnet, devnet",
+	Value: "devnet",
 }
 
 var (
@@ -44,59 +44,8 @@ var (
 	}
 )
 
-type GenesisValidator struct {
-	addr    string
-	pubkey  string
-	stake   *big.Int
-	balance *big.Int
-}
-
-type GenesisAccount struct {
-	addr    string
-	balance *big.Int
-}
-
 var (
-	TestnetValidators = []GenesisValidator{
-		{
-			addr:    "0x7a97E50436a074ADDB9A51D50Fbd35ADAFE88442",
-			pubkey:  "0xc0041d7405a8bc7dabf1e397e6689ff09482466aea9d3a716bf1dd4fd971c22d035d8d939c88764136a3213106282887f9005b5addf23af781302a0119400706996e",
-			stake:   utils2.ToArt(1_000_000), // min stake StakerConstants.sol -> minSelfStake
-			balance: utils2.ToArt(0),
-		},
-		{
-			addr:    "0xfE8301b91A8Eb4734ed954f8E2FB84c2F72Cef8a",
-			pubkey:  "0xc004a61ec5eb3cf8d6b399ff56682b95277337b601fb31e1a254dd451101b8aafb0218d428fc814faee132aabcc17b3dd39fa35dfce2d5ce29d6bd05615bbd571016",
-			stake:   utils2.ToArt(1_000_000), // min stake StakerConstants.sol -> minSelfStake
-			balance: utils2.ToArt(0),
-		},
-		{
-			addr:    "0xF51e935061731a129765ff63b3Af0Adb5e4486aC",
-			pubkey:  "0xc004c39c38dc49cc4c9b64ea9d817545e713635f808d692f2f500ad801e002c50987e15cf4d9419731adf4cd83edf2207a806685cb2b75c3027d2dcdd78ec126f430",
-			stake:   utils2.ToArt(1_000_000),
-			balance: utils2.ToArt(0), // min stake StakerConstants.sol -> minSelfStake
-		},
-	}
-
-	TestnetAccounts = []GenesisAccount{
-		{
-			addr:    "0x40bd65cfc4D95844704F4b2a2c46a60f6d6CE766",
-			balance: utils2.ToArt(10_000_000),
-		},
-		{
-			addr:    "0x35E58946b74fDbD9032aed876FC58629A6e65E79",
-			balance: utils2.ToArt(10_000_000),
-		},
-		{
-			addr:    "0x846032c611697818a31cC090D436664b263C6E54",
-			balance: utils2.ToArt(10_000_000),
-		},
-	}
-
-	MainnetValidators = []GenesisValidator{}
-	MainnetAccounts   = []GenesisAccount{}
-
-	GenesisTime = inter.FromUnix(1677067996)
+	GenesisTime = inter.FromUnix(time.Now().Unix())
 )
 
 func createGenesisCmd(ctx *cli.Context) error {
@@ -104,7 +53,7 @@ func createGenesisCmd(ctx *cli.Context) error {
 		utils.Fatalf("This command requires an argument.")
 	}
 
-	genesisType := "testnet"
+	genesisType := "devnet"
 	if ctx.GlobalIsSet(genesisTypeFlag.Name) {
 		genesisType = ctx.GlobalString(genesisTypeFlag.Name)
 	}
@@ -127,11 +76,14 @@ func CreateGenesis(genesisType string) (*genesisstore.Store, hash.Hash) {
 	validators := make(genesis.Validators, 0, 3)
 	delegations := make([]driver.Delegation, 0, 3)
 
-	var initialValidators = TestnetValidators
-	var initialAccounts = TestnetAccounts
+	var initialValidators = params.DevnetValidators
+	var initialAccounts = params.DevnetAccounts
 	if genesisType == "mainnet" {
-		initialValidators = MainnetValidators
-		initialAccounts = MainnetAccounts
+		initialValidators = params.MainnetValidators
+		initialAccounts = params.MainnetAccounts
+	} else if genesisType == "testnet" {
+		initialValidators = params.TestnetValidators
+		initialAccounts = params.TestnetAccounts
 	}
 
 	// add initial validators, premine and lock their stake to get maximum rewards
@@ -146,16 +98,18 @@ func CreateGenesis(genesisType string) (*genesisstore.Store, hash.Hash) {
 	// premine to genesis accounts
 	for _, a := range initialAccounts {
 		genesisBuilder.AddBalance(
-			common.HexToAddress(a.addr),
-			a.balance,
+			common.HexToAddress(a.Addr),
+			a.Balance,
 		)
 	}
 
 	genesisBuilder.DeployBaseContracts()
 
-	rules := params.TestNetRules()
+	rules := params.DevNetRules()
 	if genesisType == "mainnet" {
 		rules = params.MainNetRules()
+	} else if genesisType == "testnet" {
+		rules = params.TestNetRules()
 	}
 
 	genesisBuilder.InitializeEpoch(1, 2, rules, GenesisTime)
@@ -177,13 +131,13 @@ func CreateGenesis(genesisType string) (*genesisstore.Store, hash.Hash) {
 
 func AddValidator(
 	id uint8,
-	v GenesisValidator,
+	v params.GenesisValidator,
 	validators genesis.Validators,
 	delegations []driver.Delegation,
 	builder *builder.GenesisBuilder,
 ) (genesis.Validators, []driver.Delegation) {
 	validatorId := idx.ValidatorID(id)
-	pk, _ := validatorpk.FromString(v.pubkey)
+	pk, _ := validatorpk.FromString(v.Pubkey)
 	ecdsaPubkey, _ := crypto.UnmarshalPubkey(pk.Raw)
 	addr := crypto.PubkeyToAddress(*ecdsaPubkey)
 
@@ -200,13 +154,13 @@ func AddValidator(
 		DeactivatedEpoch: 0,
 		Status:           0,
 	}
-	builder.AddBalance(validator.Address, v.balance)
+	builder.AddBalance(validator.Address, v.Balance)
 	validators = append(validators, validator)
 
 	delegations = append(delegations, driver.Delegation{
 		Address:            validator.Address,
 		ValidatorID:        validator.ID,
-		Stake:              v.stake,
+		Stake:              v.Stake,
 		LockedStake:        new(big.Int),
 		LockupFromEpoch:    0,
 		LockupEndTime:      0,

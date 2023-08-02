@@ -25,6 +25,6 @@ RUN apk add --no-cache ca-certificates
 
 COPY --from=builder /arthera/arthera-node/build/arthera-node /usr/local/bin/
 
-EXPOSE 18545 18546
+EXPOSE 6060 18545 18546
 
-ENTRYPOINT ["arthera-node", "--datadir", "/data"]
+ENTRYPOINT ["arthera-node", "--datadir=/data", "--devnet", "--tracenode", "--genesis=/data/devnet.g", "--genesis.allowUnknown", "--verbosity=4", "--cache=3600", "--http", "--http.addr=0.0.0.0", "--http.corsdomain=*", "--http.api=eth,web3,net,txpool,art,abft,debug", "--ws", "--ws.addr=0.0.0.0", "--ws.origins=*", "--ws.api=eth,web3,net,txpool,art,abft,debug", "--metrics.influxdbv2", "--validator.password=/data/password"]

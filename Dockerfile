@@ -27,4 +27,4 @@ COPY --from=builder /arthera/arthera-node/build/arthera-node /usr/local/bin/
 
 EXPOSE 6060 18545 18546
 
-ENTRYPOINT ["arthera-node", "--datadir", "/data", "--verbosity", "3", "--cache", "4000"]
+ENTRYPOINT ["arthera-node", "--datadir", "/data"]

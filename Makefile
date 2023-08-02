@@ -27,18 +27,20 @@ docker_build:
 docker_tag:
 	docker tag $(DOCKER_IMAGE) arthera/arthera-node:latest
 
-commit_changes:
-	git diff-index --quiet HEAD || git commit -am "Release $(VERSION)"
+check_changes:
+	@if ! git diff-index --quiet HEAD --; then \
+		echo "You have uncommitted changes. Please commit or stash them before making a release."; \
+		exit 1; \
+	fi
 
 tag_release:
-	git tag -s $(VERSION) -m "Release $(VERSION)"
+	git tag -a $(VERSION) -m "Release $(VERSION)"
 
 push_changes:
 	git push --tags
 
-release: commit_changes tag_release push_changes docker
+release: check_changes tag_release push_changes docker
 	docker login && \
 	docker image push $(DOCKER_IMAGE) && \
 	docker image push arthera/arthera-node:latest && \
 	docker logout
-

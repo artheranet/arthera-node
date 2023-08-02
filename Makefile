@@ -27,12 +27,16 @@ docker_build:
 docker_tag:
 	docker tag $(DOCKER_IMAGE) arthera/arthera-node:latest
 
-prereqs:
-	git diff-index --quiet HEAD || git commit -am "Release $(VERSION)" && \
-	git tag -a $(VERSION) -m "Release $(VERSION)" && \
+commit_changes:
+	git diff-index --quiet HEAD || git commit -am "Release $(VERSION)"
+
+tag_release:
+	git tag -a $(VERSION) -m "Release $(VERSION)"
+
+push_changes:
 	git push --tags
 
-release: prereqs docker
+release: commit_changes tag_release push_changes docker
 	docker login && \
 	docker image push $(DOCKER_IMAGE) && \
 	docker image push arthera/arthera-node:latest && \

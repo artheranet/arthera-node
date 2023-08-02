@@ -238,7 +238,7 @@ func mayGetGenesisStore(ctx *cli.Context) *genesisstore.Store {
 				log.Warn("Genesis file doesn't refer to any trusted preset")
 			} else {
 				utils.Fatalf(
-					"Genesis file doesn't refer to any trusted preset: \n\tEpochsSection=%s \n\tBlocksSection=%s \n\tEvmSection=%s \n\tHeader=%s \nEnable experimental genesis with --genesis.allowExperimental",
+					"Genesis file doesn't refer to any trusted preset: \n\tEpochsSection=%s \n\tBlocksSection=%s \n\tEvmSection=%s \n\tHeader=%s \nEnable unknown genesis with --genesis.allowUnknown",
 					genesisHashes[genesisstore.EpochsSection].String(),
 					genesisHashes[genesisstore.BlocksSection].String(),
 					genesisHashes[genesisstore.EvmSection].String(),

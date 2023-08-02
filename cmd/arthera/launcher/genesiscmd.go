@@ -180,6 +180,8 @@ func exportGenesis(ctx *cli.Context) error {
 		utils.Fatalf("This command requires an argument.")
 	}
 
+	fn := ctx.Args().First()
+
 	from := idx.Epoch(1)
 	if len(ctx.Args()) > 1 {
 		n, err := strconv.ParseUint(ctx.Args().Get(1), 10, 32)
@@ -201,6 +203,10 @@ func exportGenesis(ctx *cli.Context) error {
 		return errors.New("--export.evm.mode must be one of {full, ext-mpt, mpt, none}")
 	}
 
+	return ExportGenesis(ctx, fn, from, to, mode)
+}
+
+func ExportGenesis(ctx *cli.Context, fn string, from idx.Epoch, to idx.Epoch, mode string) error {
 	cfg := makeAllConfigs(ctx)
 	tmpPath := path.Join(cfg.Node.DataDir, "tmp")
 	_ = os.RemoveAll(tmpPath)
@@ -212,8 +218,6 @@ func exportGenesis(ctx *cli.Context) error {
 		log.Warn("Attempting genesis export not in a beginning of an epoch. Genesis file output may contain excessive data.")
 	}
 	defer gdb.Close()
-
-	fn := ctx.Args().First()
 
 	// Open the file handle
 	var plain io.WriteSeeker
@@ -342,6 +346,7 @@ func exportGenesis(ctx *cli.Context) error {
 		log.Info("Exported EVM data", "hash", evmHash.String())
 	}
 
+	fmt.Printf("- Genesis ID: %v \n", header.GenesisID.String())
 	fmt.Printf("- Epochs hash: %v \n", epochsHash.String())
 	fmt.Printf("- Blocks hash: %v \n", blocksHash.String())
 	fmt.Printf("- EVM hash: %v \n", evmHash.String())

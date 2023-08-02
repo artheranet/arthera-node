@@ -29,10 +29,10 @@ var (
 	TestnetGenesisBlocksSection = "0x783e96ca1b7331e889e93864269c5faeffa7dd9f443776ac63ac8605972c16d6"
 	TestnetGenesisEvmSection    = "0xcb0a423dda114ba5a15d0133d28fb80aac34f70fae9fbc2ae75f85455eda1432"
 
-	DevnetGenesisID            = "0xc9428f34d791a4bfd4f6e4bab37ee49d862581bc97912a9c9ba948150d935099"
-	DevnetGenesisEpochsSection = "0x6b2ac2b259c1e4a3ebe3f823ba7421826d57bbdb01cada0d16707fbfa491820e"
-	DevnetGenesisBlocksSection = "0x1bffd0852ce1b9dc3d5c0add9e31d946f1005fc62075482d50dd752a91844220"
-	DevnetGenesisEvmSection    = "0xb72a249e4cab600ae208b2047382956c64a88b76e44391783dadb1e97699c186"
+	DevnetGenesisID            = "0xe37b5f4893fa4d446c1d2e716f76bd6257590814a4ec22a49786d381e206de39"
+	DevnetGenesisEpochsSection = "0x419f919b566250e9f4b37edb8d12e9df6a42d57ebf2683587a2b34398f9dd59c"
+	DevnetGenesisBlocksSection = "0x39f9cb2c2bc9ad3e753490f0eacf7a3a3badba95377d35a5f26549f45a8c55b8"
+	DevnetGenesisEvmSection    = "0xd0103758494c8d0468b81fe0961902329931a0f763f04f6993fc824decf3b0e3"
 )
 
 var (

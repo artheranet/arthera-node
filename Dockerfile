@@ -1,5 +1,11 @@
 FROM golang:1.19.11-alpine as builder
 
+ARG GIT_COMMIT
+ARG GIT_DATE
+
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV GIT_DATE=${GIT_DATE}
+
 RUN apk add --no-cache make gcc musl-dev linux-headers git
 
 WORKDIR /arthera

@@ -1,6 +1,6 @@
 GOPROXY?="https://proxy.golang.org,direct"
-GIT_COMMIT=$(shell git rev-list -1 HEAD | xargs git rev-parse --short)
-GIT_DATE=$(shell git log -1 --date=short --pretty=format:%ct)
+GIT_COMMIT?=$(shell git rev-list -1 HEAD | xargs git rev-parse --short)
+GIT_DATE?=$(shell git log -1 --date=short --pretty=format:%ct)
 VERSION=1.0.0-rc.2-$(GIT_COMMIT)-$(GIT_DATE)
 DOCKER_IMAGE=arthera/arthera-node:$(VERSION)
 
@@ -22,7 +22,7 @@ clean:
 docker: docker_build docker_tag
 
 docker_build:
-	docker build . -t $(DOCKER_IMAGE)
+	docker build --build-arg "GIT_COMMIT=$(GIT_COMMIT)" --build-arg "GIT_DATE=$(GIT_DATE)" . -t $(DOCKER_IMAGE)
 
 docker_tag:
 	docker tag $(DOCKER_IMAGE) arthera/arthera-node:latest
@@ -37,7 +37,7 @@ tag_release:
 	git tag -a $(VERSION) -m "Release $(VERSION)"
 
 push_changes:
-	git push --tags
+	#git push --tags
 
 release: check_changes tag_release push_changes docker
 	docker login && \

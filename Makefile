@@ -31,7 +31,7 @@ commit_changes:
 	git diff-index --quiet HEAD || git commit -am "Release $(VERSION)"
 
 tag_release:
-	git tag -a $(VERSION) -m "Release $(VERSION)"
+	git tag -s $(VERSION) -m "Release $(VERSION)"
 
 push_changes:
 	git push --tags

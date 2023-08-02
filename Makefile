@@ -34,12 +34,9 @@ check_changes:
 	fi
 
 tag_release:
-	git tag -a $(VERSION) -m "Release $(VERSION)"
+	git release $(VERSION) -m "Release $(VERSION)"
 
-push_changes:
-	git push --tags
-
-release: check_changes tag_release push_changes docker
+release: check_changes tag_release docker
 	docker login && \
 	docker image push $(DOCKER_IMAGE) && \
 	docker image push arthera/arthera-node:latest && \

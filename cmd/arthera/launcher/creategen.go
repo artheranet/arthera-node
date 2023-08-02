@@ -39,8 +39,9 @@ var (
 		Action:    utils.MigrateFlags(createGenesisCmd),
 		Name:      "creategen",
 		Usage:     "Create genesis",
-		ArgsUsage: "",
+		ArgsUsage: "<file>",
 		Category:  "MISCELLANEOUS COMMANDS",
+		Flags:     []cli.Flag{genesisTypeFlag},
 	}
 )
 
@@ -49,8 +50,8 @@ var (
 )
 
 func createGenesisCmd(ctx *cli.Context) error {
-	if len(ctx.Args()) < 1 {
-		utils.Fatalf("This command requires an argument.")
+	if ctx.NArg() != 1 {
+		utils.Fatalf("error: need destination file as argument.")
 	}
 
 	genesisType := "devnet"
@@ -58,7 +59,11 @@ func createGenesisCmd(ctx *cli.Context) error {
 		genesisType = ctx.GlobalString(genesisTypeFlag.Name)
 	}
 
-	fileName := ctx.Args().First()
+	if genesisType != "mainnet" && genesisType != "testnet" && genesisType != "devnet" {
+		utils.Fatalf("Unknown genesis type %s. Supported values are: devnet, testnet, mainnet", genesisType)
+	}
+
+	fileName := ctx.Args().Get(0)
 
 	fmt.Println("Creating " + genesisType + " genesis")
 	genesisStore, currentHash := CreateGenesis(genesisType)

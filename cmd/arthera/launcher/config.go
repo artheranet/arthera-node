@@ -79,8 +79,8 @@ var (
 		Usage: "'path to genesis file' - sets the network genesis configuration.",
 	}
 	ExperimentalGenesisFlag = cli.BoolFlag{
-		Name:  "genesis.allowExperimental",
-		Usage: "Allow to use experimental genesis file.",
+		Name:  "genesis.allowUnknown",
+		Usage: "Allow to use unknown genesis file.",
 	}
 
 	RPCGlobalGasCapFlag = cli.Uint64Flag{
@@ -122,6 +122,10 @@ var (
 	TestnetFlag = cli.BoolFlag{
 		Name:  "testnet",
 		Usage: "Run a testnet node",
+	}
+	DevnetFlag = cli.BoolFlag{
+		Name:  "devnet",
+		Usage: "Run a devnet node",
 	}
 )
 
@@ -244,9 +248,6 @@ func mayGetGenesisStore(ctx *cli.Context) *genesisstore.Store {
 		notExperimental:
 		}
 		return genesisStore
-	case ctx.GlobalIsSet(TestnetFlag.Name):
-		gen, _ := CreateGenesis("testnet")
-		return gen
 	}
 	return nil
 }
@@ -425,6 +426,10 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 		setBootnodes(ctx, []string{}, &cfg.Node)
 	} else if ctx.GlobalIsSet(TestnetFlag.Name) {
 		cfg.Emitter = emitter.TestnetConfig()
+		cfg.Node.P2P.BootstrapNodes = asDefault
+		cfg.Node.P2P.BootstrapNodesV5 = asDefault
+	} else if ctx.GlobalIsSet(DevnetFlag.Name) {
+		cfg.Emitter = emitter.DevnetConfig()
 		cfg.Node.P2P.BootstrapNodes = asDefault
 		cfg.Node.P2P.BootstrapNodesV5 = asDefault
 	} else {

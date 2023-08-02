@@ -25,6 +25,4 @@ RUN apk add --no-cache ca-certificates
 
 COPY --from=builder /arthera/arthera-node/build/arthera-node /usr/local/bin/
 
-EXPOSE 6060 18545 18546
-
 ENTRYPOINT ["arthera-node", "--datadir", "/data"]

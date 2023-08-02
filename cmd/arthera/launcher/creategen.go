@@ -92,9 +92,8 @@ func CreateGenesis(genesisType string) (*genesisstore.Store, hash.Hash) {
 	}
 
 	// add initial validators, premine and lock their stake to get maximum rewards
-	for i, v := range initialValidators {
+	for _, v := range initialValidators {
 		validators, delegations = AddValidator(
-			uint8(i+1),
 			v,
 			validators, delegations, genesisBuilder,
 		)
@@ -135,13 +134,12 @@ func CreateGenesis(genesisType string) (*genesisstore.Store, hash.Hash) {
 }
 
 func AddValidator(
-	id uint8,
 	v params.GenesisValidator,
 	validators genesis.Validators,
 	delegations []driver.Delegation,
 	builder *builder.GenesisBuilder,
 ) (genesis.Validators, []driver.Delegation) {
-	validatorId := idx.ValidatorID(id)
+	validatorId := idx.ValidatorID(v.ID)
 	pk, _ := validatorpk.FromString(v.Pubkey)
 	ecdsaPubkey, _ := crypto.UnmarshalPubkey(pk.Raw)
 	addr := crypto.PubkeyToAddress(*ecdsaPubkey)

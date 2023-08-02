@@ -2,6 +2,7 @@ package launcher
 
 import (
 	"fmt"
+	"github.com/artheranet/arthera-node/params"
 	version2 "github.com/artheranet/arthera-node/version"
 	"github.com/ethereum/go-ethereum/crypto"
 	evmetrics "github.com/ethereum/go-ethereum/metrics"
@@ -309,7 +310,7 @@ func makeNode(ctx *cli.Context, cfg *config, genesisStore *genesisstore.Store) (
 		networkName = genesisStore.Header().NetworkName
 	}
 	if needDefaultBootnodes(cfg.Node.P2P.BootstrapNodes) {
-		bootnodes := Bootnodes[networkName]
+		bootnodes := params.Bootnodes[networkName]
 		if bootnodes == nil {
 			bootnodes = []string{}
 		}

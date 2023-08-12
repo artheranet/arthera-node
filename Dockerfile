@@ -27,4 +27,4 @@ COPY --from=builder /arthera/arthera-node/build/arthera-node /usr/local/bin/
 
 EXPOSE 6060 18545 18546
 
-ENTRYPOINT ["arthera-node", "--datadir=/data", "--devnet", "--tracenode", "--genesis=/data/devnet.g", "--genesis.allowUnknown", "--verbosity=4", "--cache=3600", "--http", "--http.addr=0.0.0.0", "--http.corsdomain=*", "--http.api=eth,web3,net,txpool,art,abft,debug", "--ws", "--ws.addr=0.0.0.0", "--ws.origins=*", "--ws.api=eth,web3,net,txpool,art,abft,debug", "--metrics.influxdbv2", "--validator.password=/data/password"]
+ENTRYPOINT ["arthera-node", "--datadir=/data", "--devnet", "--genesis=/data/devnet.g", "--genesis.allowUnknown", "--verbosity=3", "--cache=3600", "--http", "--http.addr=0.0.0.0", "--http.corsdomain=*", "--http.api=eth,web3,net,txpool,art,abft", "--ws", "--ws.addr=0.0.0.0", "--ws.origins=*", "--ws.api=eth,web3,net,txpool,art,abft", "--metrics.influxdbv2", "--validator.password=/data/password"]

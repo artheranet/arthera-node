@@ -26,6 +26,7 @@ docker_build:
 
 docker_tag:
 	docker tag $(DOCKER_IMAGE) arthera/arthera-node:latest
+	docker tag $(DOCKER_IMAGE) arthera/arthera-node:devnet
 
 check_changes:
 	@if ! git diff-index --quiet HEAD --; then \
@@ -43,4 +44,5 @@ release: check_changes tag_release push_changes docker
 	docker login && \
 	docker image push $(DOCKER_IMAGE) && \
 	docker image push arthera/arthera-node:latest && \
+	docker image push arthera/arthera-node:devnet && \
 	docker logout

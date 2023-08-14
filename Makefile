@@ -28,8 +28,9 @@ push_changes:
 	git push --tags
 
 tag_release:
-	@if ! git tag -l $(VERSION) --; then \
-		  git tag -a $(VERSION) -m "Release $(VERSION)"; \
+	@if ! git tag -l $(VERSION); then \
+		echo "Creating git tag $(VERSION)"; \
+		git tag -a $(VERSION) -m "Release $(VERSION)"; \
 	fi
 
 ## <RPC node>

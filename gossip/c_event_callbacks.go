@@ -209,7 +209,7 @@ func (s *Service) processEvent(e *inter.EventPayload) error {
 		if *e.PrevEpochHash() != es.Hash() {
 			s.store.DelEvent(e.ID())
 			log.Warn(errWrongEpochHash.Error())
-			//return errWrongEpochHash
+			return errWrongEpochHash
 		}
 	}
 

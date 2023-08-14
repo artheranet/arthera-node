@@ -65,14 +65,14 @@ func SealEpoch(metrics []ValidatorEpochMetric) []byte {
 	offlineBlocks := make([]*big.Int, len(metrics))
 	uptimes := make([]*big.Int, len(metrics))
 	originatedTxFees := make([]*big.Int, len(metrics))
-	log.Debug("------------ Sealing Epoch -----------")
+	log.Info("------------ Sealing Epoch -----------")
 	for i, m := range metrics {
 		offlineTimes[i] = utils.U64toBig(uint64(m.Missed.Period.Unix()))
 		offlineBlocks[i] = utils.U64toBig(uint64(m.Missed.BlocksNum))
 		uptimes[i] = utils.U64toBig(uint64(m.Uptime.Unix()))
 		originatedTxFees[i] = m.OriginatedTxFee
 
-		log.Debug("---> Epoch Validator",
+		log.Info("---> Epoch Validator",
 			"index", i,
 			"offlineTimes", uint64(m.Missed.Period.Unix()),
 			"offlineBlocks", uint64(m.Missed.BlocksNum),

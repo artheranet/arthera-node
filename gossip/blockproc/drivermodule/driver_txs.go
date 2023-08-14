@@ -84,6 +84,7 @@ func (p *DriverTxPreTransactor) PopInternalTxs(block iblockproc.BlockCtx, bs ibl
 
 	// write cheaters
 	for _, validatorID := range bs.EpochCheaters[bs.CheatersWritten:] {
+		log.Info("Deactivating cheater", "validatorId", validatorID)
 		calldata := driver.DeactivateValidator(validatorID, drivertype.DoublesignBit)
 		internalTxs = append(internalTxs, buildTx(calldata, contracts.NodeDriverSmartContractAddress))
 	}

@@ -282,6 +282,10 @@ func (l *txList) Add(tx *types.Transaction, priceBump uint64) (bool, *types.Tran
 	old := l.txs.Get(tx.Nonce())
 	if old != nil {
 		if old.GasFeeCapCmp(tx) >= 0 || old.GasTipCapCmp(tx) >= 0 {
+			log.Debug("Underpriced replacement transaction",
+				"oldGasFeeCap", old.GasFeeCap().String(), "newGasFeeCap", tx.GasFeeCap().String(),
+				"oldGasTipCap", old.GasTipCap().String(), "newGasTipCap", tx.GasTipCap().String(),
+			)
 			return false, nil
 		}
 		// thresholdFeeCap = oldFC  * (100 + priceBump) / 100
@@ -298,6 +302,10 @@ func (l *txList) Add(tx *types.Transaction, priceBump uint64) (bool, *types.Tran
 		// old ones as well as checking the percentage threshold to ensure that
 		// this is accurate for low (Wei-level) gas price replacements
 		if tx.GasFeeCapIntCmp(thresholdFeeCap) < 0 || tx.GasTipCapIntCmp(thresholdTip) < 0 {
+			log.Debug("Underpriced replacement transaction",
+				"newGasFeeCap", old.GasFeeCap().String(), "thresholdFeeCap", thresholdFeeCap.String(),
+				"newGasTipCap", old.GasTipCap().String(), "thresholdTip", thresholdTip.String(),
+			)
 			return false, nil
 		}
 	}

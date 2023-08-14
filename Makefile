@@ -58,7 +58,7 @@ rpc_trace_release: check_changes tag_release push_changes rpc_trace_docker
 rpc_trace_docker: rpc_trace_docker_build rpc_trace_docker_tag
 
 rpc_trace_docker_build:
-	docker build -f Dockerfile.rpc.trace --network host --build-arg "GIT_COMMIT=$(GIT_COMMIT)" --build-arg "GIT_DATE=$(GIT_DATE)" . -t arthera/arthera-rpc-trace:$(VERSION)
+	docker build -f Dockerfile.rpc.tracenode --network host --build-arg "GIT_COMMIT=$(GIT_COMMIT)" --build-arg "GIT_DATE=$(GIT_DATE)" . -t arthera/arthera-rpc-trace:$(VERSION)
 
 rpc_trace_docker_tag:
 	docker tag arthera/arthera-rpc-trace:$(VERSION) arthera/arthera-rpc-trace:latest

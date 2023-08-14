@@ -28,7 +28,7 @@ push_changes:
 	git push --tags
 
 tag_release:
-	git tag -a $(VERSION) -m "Release $(VERSION)"
+	git tag -f -a $(VERSION) -m "Release $(VERSION)"
 
 ## <RPC node>
 rpc_release: check_changes tag_release push_changes rpc_docker

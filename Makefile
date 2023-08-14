@@ -51,7 +51,7 @@ rpc_docker_tag:
 ## </RPC node>
 
 ## <RPC trace node>
-rpc_trace_release: tag_release push_changes rpc_trace_docker
+rpc_trace_release: check_changes tag_release push_changes rpc_trace_docker
 	docker login && \
 	docker image push arthera/arthera-rpc-trace:$(VERSION) && \
 	docker image push arthera/arthera-rpc-trace:latest && \

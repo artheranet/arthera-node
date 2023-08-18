@@ -1,7 +1,7 @@
 package abis
 
 const NodeDriverStr = `[
-	{
+    {
       "anonymous": false,
       "inputs": [
         {
@@ -465,10 +465,10 @@ const NodeDriverStr = `[
       "stateMutability": "nonpayable",
       "type": "function"
     }
-]`
+  ]`
 
 const EVMWriterStr = `[
-	{
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -563,10 +563,10 @@ const EVMWriterStr = `[
       "stateMutability": "nonpayable",
       "type": "function"
     }
-]`
+  ]`
 
 const NetworkInitializerStr = `[
-	{
+    {
       "inputs": [],
       "name": "EVM_WRITER",
       "outputs": [
@@ -607,7 +607,7 @@ const NetworkInitializerStr = `[
     },
     {
       "inputs": [],
-      "name": "PYAG_REBATES",
+      "name": "PYAG_REWARDS",
       "outputs": [
         {
           "internalType": "address",
@@ -680,14 +680,9 @@ const NetworkInitializerStr = `[
       "stateMutability": "nonpayable",
       "type": "function"
     }
-]`
+  ]`
 
 const SubscribersStr = `[
-    {
-      "inputs": [],
-      "stateMutability": "nonpayable",
-      "type": "constructor"
-    },
     {
       "anonymous": false,
       "inputs": [
@@ -1154,6 +1149,29 @@ const SubscribersStr = `[
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contract",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "planId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "newWhitelister",
+          "type": "address"
+        }
+      ],
+      "name": "addWhitelister",
+      "outputs": [],
+      "stateMutability": "payable",
       "type": "function"
     },
     {
@@ -1703,19 +1721,6 @@ const SubscribersStr = `[
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "isOwner",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
           "internalType": "address",
@@ -2197,11 +2202,54 @@ const SubscribersStr = `[
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "whitelistedAccounts",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "whitelisters",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     }
   ]`
 
 const PayAsYouGoGasRewardsStr = `[
-	{
+    {
       "anonymous": false,
       "inputs": [
         {
@@ -2411,4 +2459,4 @@ const PayAsYouGoGasRewardsStr = `[
       "stateMutability": "nonpayable",
       "type": "function"
     }
-]`
+  ]`

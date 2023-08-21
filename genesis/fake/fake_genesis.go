@@ -2,9 +2,12 @@ package fake
 
 import (
 	"crypto/ecdsa"
+	"encoding/hex"
 	"github.com/artheranet/arthera-node/contracts/driver"
 	"github.com/artheranet/arthera-node/genesis/builder"
 	"github.com/artheranet/arthera-node/params"
+	"github.com/artheranet/arthera-node/utils"
+	"github.com/ethereum/go-ethereum/log"
 	"math/big"
 	"time"
 
@@ -34,8 +37,11 @@ func FakeGenesisStore(num idx.Validator, balance, stake *big.Int) *genesisstore.
 }
 
 func FakeGenesisStoreWithRulesAndStart(num idx.Validator, balance, stake *big.Int, rules params.ProtocolRules, epoch idx.Epoch, block idx.Block) *genesisstore.Store {
-	genesisBuilder := builder.NewGenesisBuilder(memorydb.NewProducer(""))
+	if num > 10 {
+		log.Error("Too many validators, maximum is 10", "num", num)
+	}
 
+	genesisBuilder := builder.NewGenesisBuilder(memorydb.NewProducer(""))
 	validators := GetFakeValidators(num)
 
 	// add balances to validators
@@ -54,6 +60,20 @@ func FakeGenesisStoreWithRulesAndStart(num idx.Validator, balance, stake *big.In
 			Rewards:            new(big.Int),
 		})
 	}
+
+	log.Info("------------ Fakenet Info -----------")
+	log.Info("---> Validators:")
+	for _, val := range validators {
+		log.Info("Validator", "ID", val.ID, "Address", val.Address.String(), "Public Key",
+			val.PubKey.String(), "Private key", hex.EncodeToString(val.PrivKey.D.Bytes()), "Balance", utils.WeiToArt(balance), "Stake", utils.WeiToArt(stake))
+	}
+	for i := 100; i < 110; i++ {
+		key := evmcore.FakeKey(i)
+		addr := crypto.PubkeyToAddress(key.PublicKey)
+		genesisBuilder.AddBalance(addr, balance)
+		log.Info("Account", "Address", addr.String(), "Private key", hex.EncodeToString(key.D.Bytes()), "Balance", balance)
+	}
+	log.Info("------------ Fakenet Info -----------")
 
 	genesisBuilder.DeployBaseContracts()
 	genesisBuilder.InitializeEpoch(block, epoch, rules, FakeGenesisTime)
@@ -91,6 +111,7 @@ func GetFakeValidators(num idx.Validator) genesis.Validators {
 				Raw:  pubkeyraw,
 				Type: validatorpk.Types.Secp256k1,
 			},
+			PrivKey:          key,
 			CreationTime:     FakeGenesisTime,
 			CreationEpoch:    0,
 			DeactivatedTime:  0,

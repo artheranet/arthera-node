@@ -888,9 +888,9 @@ const SubscribersStr = `[
         },
         {
           "indexed": false,
-          "internalType": "enum SubscriptionPlan.CapFrequency",
+          "internalType": "uint256",
           "name": "capFrequency",
-          "type": "uint8"
+          "type": "uint256"
         },
         {
           "indexed": false,
@@ -962,9 +962,9 @@ const SubscribersStr = `[
         },
         {
           "indexed": false,
-          "internalType": "enum SubscriptionPlan.CapFrequency",
+          "internalType": "uint256",
           "name": "capFrequency",
-          "type": "uint8"
+          "type": "uint256"
         },
         {
           "indexed": false,
@@ -1103,6 +1103,96 @@ const SubscribersStr = `[
       "type": "event"
     },
     {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "WhitelisterAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "WhitelisterRemoved",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "CAP_DAILY",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "CAP_HOURLY",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "CAP_MINUTELY",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "CAP_NONE",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint256",
@@ -1159,19 +1249,14 @@ const SubscribersStr = `[
           "type": "address"
         },
         {
-          "internalType": "uint256",
-          "name": "planId",
-          "type": "uint256"
-        },
-        {
           "internalType": "address",
-          "name": "newWhitelister",
+          "name": "whitelister",
           "type": "address"
         }
       ],
       "name": "addWhitelister",
       "outputs": [],
-      "stateMutability": "payable",
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -1213,6 +1298,11 @@ const SubscribersStr = `[
     },
     {
       "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contract",
+          "type": "address"
+        },
         {
           "internalType": "address",
           "name": "account",
@@ -1265,9 +1355,9 @@ const SubscribersStr = `[
           "type": "uint256"
         },
         {
-          "internalType": "enum SubscriptionPlan.CapFrequency",
+          "internalType": "uint256",
           "name": "capFrequency",
-          "type": "uint8"
+          "type": "uint256"
         },
         {
           "internalType": "uint256",
@@ -1407,6 +1497,25 @@ const SubscribersStr = `[
       "inputs": [
         {
           "internalType": "address",
+          "name": "_contract",
+          "type": "address"
+        }
+      ],
+      "name": "getContractSubscriptionId",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
           "name": "subscriber",
           "type": "address"
         }
@@ -1463,9 +1572,9 @@ const SubscribersStr = `[
           "type": "uint256"
         },
         {
-          "internalType": "enum SubscriptionPlan.CapFrequency",
+          "internalType": "uint256",
           "name": "capFrequency",
-          "type": "uint8"
+          "type": "uint256"
         },
         {
           "internalType": "uint256",
@@ -1523,9 +1632,9 @@ const SubscribersStr = `[
               "type": "uint256"
             },
             {
-              "internalType": "enum SubscriptionPlan.CapFrequency",
+              "internalType": "uint256",
               "name": "capFrequency",
-              "type": "uint8"
+              "type": "uint256"
             },
             {
               "internalType": "uint256",
@@ -1866,6 +1975,24 @@ const SubscribersStr = `[
       "type": "function"
     },
     {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contract",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "whitelister",
+          "type": "address"
+        }
+      ],
+      "name": "removeWhitelister",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "inputs": [],
       "name": "renewSubscription",
       "outputs": [],
@@ -2175,9 +2302,9 @@ const SubscribersStr = `[
           "type": "uint256"
         },
         {
-          "internalType": "enum SubscriptionPlan.CapFrequency",
+          "internalType": "uint256",
           "name": "capFrequency",
-          "type": "uint8"
+          "type": "uint256"
         },
         {
           "internalType": "uint256",
@@ -2192,6 +2319,11 @@ const SubscribersStr = `[
     },
     {
       "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contract",
+          "type": "address"
+        },
         {
           "internalType": "address",
           "name": "account",
@@ -2229,6 +2361,11 @@ const SubscribersStr = `[
     },
     {
       "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
         {
           "internalType": "address",
           "name": "",

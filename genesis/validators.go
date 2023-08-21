@@ -1,6 +1,7 @@
 package genesis
 
 import (
+	"crypto/ecdsa"
 	"github.com/artheranet/arthera-node/internal/inter"
 	"github.com/ethereum/go-ethereum/common"
 
@@ -14,6 +15,7 @@ type (
 		ID               idx.ValidatorID
 		Address          common.Address
 		PubKey           validatorpk.PubKey
+		PrivKey          *ecdsa.PrivateKey
 		CreationTime     inter.Timestamp
 		CreationEpoch    idx.Epoch
 		DeactivatedTime  inter.Timestamp

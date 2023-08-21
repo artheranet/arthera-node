@@ -71,7 +71,7 @@ func FakeGenesisStoreWithRulesAndStart(num idx.Validator, balance, stake *big.In
 		key := evmcore.FakeKey(i)
 		addr := crypto.PubkeyToAddress(key.PublicKey)
 		genesisBuilder.AddBalance(addr, balance)
-		log.Info("Account", "Address", addr.String(), "Private key", hex.EncodeToString(key.D.Bytes()), "Balance", balance)
+		log.Info("Account", "Address", addr.String(), "Private key", hex.EncodeToString(key.D.Bytes()), "Balance", utils.WeiToArt(balance))
 	}
 	log.Info("------------ Fakenet Info -----------")
 

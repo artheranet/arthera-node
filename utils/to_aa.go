@@ -8,5 +8,5 @@ func ToArt(art uint64) *big.Int {
 }
 
 func WeiToArt(wei *big.Int) uint64 {
-	return wei.Div(wei, big.NewInt(1e18)).Uint64()
+	return new(big.Int).SetUint64(wei.Uint64()).Div(wei, big.NewInt(1e18)).Uint64()
 }

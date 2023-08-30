@@ -212,7 +212,7 @@ func DefaultConfig(scale cachescale.Func) Config {
 		RPCBlockExt: true,
 
 		RPCGasCap:   50000000,
-		RPCTxFeeCap: 100, // 100 ART
+		RPCTxFeeCap: 100, // 100 AA
 	}
 	sessionCfg := cfg.Protocol.DagStreamLeecher.Session
 	cfg.Protocol.DagProcessor.EventsBufferLimit.Num = idx.Event(sessionCfg.ParallelChunksDownload)*

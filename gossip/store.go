@@ -18,10 +18,10 @@ import (
 	"github.com/artheranet/arthera-node/gossip/evmstore"
 	"github.com/artheranet/arthera-node/logger"
 	"github.com/artheranet/arthera-node/utils/adapters/snap2kvdb"
+	"github.com/artheranet/arthera-node/utils/dbutil/switchable"
 	"github.com/artheranet/arthera-node/utils/eventid"
 	"github.com/artheranet/arthera-node/utils/randat"
 	"github.com/artheranet/arthera-node/utils/rlpstore"
-	"github.com/artheranet/arthera-node/utils/switchable"
 )
 
 // Store is a node persistent storage working over physical key-value database.

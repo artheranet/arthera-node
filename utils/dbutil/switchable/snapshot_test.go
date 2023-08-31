@@ -1,6 +1,7 @@
 package switchable
 
 import (
+	"github.com/artheranet/arthera-node/utils/dbutil/dbcounter"
 	"math/rand"
 	"sync"
 	"sync/atomic"
@@ -62,7 +63,7 @@ func TestSnapshot_SwitchTo(t *testing.T) {
 	const duration = time.Millisecond * 400
 
 	// fill DB with data
-	memdb := memorydb.New()
+	memdb := dbcounter.WrapStore(memorydb.New(), "", false)
 	for i := uint32(0); i < prefixes; i++ {
 		for j := uint32(0); j < keys; j++ {
 			key := append(bigendian.Uint32ToBytes(i), bigendian.Uint32ToBytes(j)...)
@@ -145,4 +146,6 @@ func TestSnapshot_SwitchTo(t *testing.T) {
 	time.Sleep(duration)
 	atomic.StoreUint32(&stop, 1)
 	wg.Wait()
+	switchable.Release()
+	require.NoError(memdb.Close())
 }

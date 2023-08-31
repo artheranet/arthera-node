@@ -8,7 +8,7 @@ import (
 var (
 	EvmExportMode = cli.StringFlag{
 		Name:  "export.evm.mode",
-		Usage: `EVM export mode ("full" or "ext-mpt" or "mpt" or "none")`,
+		Usage: `EVM export mode ("full" or "ext-mpt" or "mpt")`,
 		Value: "mpt",
 	}
 	EvmExportExclude = cli.StringFlag{

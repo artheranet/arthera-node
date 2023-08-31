@@ -28,6 +28,7 @@ import (
 	"github.com/tyler-smith/go-bip39"
 	"math/big"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 
@@ -2174,7 +2175,20 @@ func (api *PublicDebugAPI) traceTx(ctx context.Context, message evmcore.Message,
 		}, nil
 
 	case *tracers.Tracer:
-		return tracer.GetResult()
+		result, err := tracer.GetResult()
+		if err != nil && result == nil {
+			// Only for tracer called callTracer
+			if config.Tracer != nil && strings.Compare(*config.Tracer, "callTracer") == 0 {
+				if strings.Contains(err.Error(), "cannot read property 'toString' of undefined") {
+					log.Debug("error when debug with callTracer", "err", err.Error())
+					callTracer, _ := tracers.New(*config.Tracer, txctx)
+					callTracer.CaptureStart(vmenv, message.From(), *message.To(), false, message.Data(), message.Gas(), message.Value())
+					callTracer.CaptureEnd([]byte{}, message.Gas(), time.Duration(0), fmt.Errorf("execution reverted"))
+					result, err = callTracer.GetResult()
+				}
+			}
+		}
+		return result, err
 
 	default:
 		panic(fmt.Sprintf("bad tracer type %T", tracer))

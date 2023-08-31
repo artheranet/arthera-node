@@ -1,6 +1,7 @@
 package dbconfig
 
 import (
+	"github.com/artheranet/arthera-node/utils/dbutil/dbcounter"
 	"github.com/artheranet/lachesis/kvdb/leveldb"
 	"io"
 	"os"
@@ -47,10 +48,10 @@ func SupportedDBs(chaindataDir string, cfg DBsCacheConfig) (map[multidb.TypeName
 		utils.Fatalf("Failed to create DB cacher: %v", err)
 	}
 
-	leveldbFsh := leveldb.NewProducer(path.Join(chaindataDir, "leveldb-fsh"), cacher)
-	pebbleFsh := pebble.NewProducer(path.Join(chaindataDir, "pebble-fsh"), cacher)
-	pebbleFlg := pebble.NewProducer(path.Join(chaindataDir, "pebble-flg"), cacher)
-	pebbleDrc := pebble.NewProducer(path.Join(chaindataDir, "pebble-drc"), cacher)
+	leveldbFsh := dbcounter.Wrap(leveldb.NewProducer(path.Join(chaindataDir, "leveldb-fsh"), cacher), true)
+	pebbleFsh := dbcounter.Wrap(pebble.NewProducer(path.Join(chaindataDir, "pebble-fsh"), cacher), true)
+	pebbleFlg := dbcounter.Wrap(pebble.NewProducer(path.Join(chaindataDir, "pebble-flg"), cacher), true)
+	pebbleDrc := dbcounter.Wrap(pebble.NewProducer(path.Join(chaindataDir, "pebble-drc"), cacher), true)
 
 	if metrics.Enabled {
 		leveldbFsh = WrapDatabaseWithMetrics(leveldbFsh)

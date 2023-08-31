@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/artheranet/arthera-node/utils/dbutil/compactdb"
 	"github.com/artheranet/lachesis/kvdb/multidb"
+	"github.com/syndtr/goleveldb/leveldb/opt"
 	"path"
 
 	"github.com/artheranet/lachesis/abft"
@@ -152,7 +153,7 @@ func compactDB(typ multidb.TypeName, name string, producer kvdb.DBProducer) erro
 	if err != nil {
 		return err
 	}
-	return compactdb.Compact(db, humanName)
+	return compactdb.Compact(db, humanName, 16*opt.GiB)
 }
 
 func makeEngine(chaindataDir string, g *genesis.Genesis, genesisProc bool, cfg Configs) (*abft.Lachesis, *vecmt.Index, *gossip.Store, *abft.Store, gossip.BlockProc, func() error, error) {

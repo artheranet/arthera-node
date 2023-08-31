@@ -1,6 +1,8 @@
 package threads
 
 import (
+	"fmt"
+	"github.com/artheranet/arthera-node/logger"
 	"github.com/artheranet/lachesis/kvdb"
 	"time"
 )
@@ -9,27 +11,44 @@ const (
 	newIteratorTimeout = 3 * time.Second
 )
 
-type limitedProducer struct {
-	kvdb.FullDBProducer
+type (
+	limitedDbProducer struct {
+		kvdb.DBProducer
+	}
+
+	limitedFullDbProducer struct {
+		kvdb.FullDBProducer
+	}
+
+	limitedStore struct {
+		kvdb.Store
+	}
+
+	limitedIterator struct {
+		kvdb.Iterator
+		release func()
+	}
+)
+
+func LimitedDBProducer(dbs kvdb.DBProducer) kvdb.DBProducer {
+	return &limitedDbProducer{dbs}
 }
 
-type limitedStore struct {
-	kvdb.Store
+func LimitedFullDBProducer(dbs kvdb.FullDBProducer) kvdb.FullDBProducer {
+	return &limitedFullDbProducer{dbs}
 }
 
-type limitedIterator struct {
-	kvdb.Iterator
-	release func()
+func (p *limitedDbProducer) OpenDB(name string) (kvdb.Store, error) {
+	s, err := p.DBProducer.OpenDB(name)
+	return &limitedStore{s}, err
 }
 
-func Limited(dbs kvdb.FullDBProducer) kvdb.FullDBProducer {
-	return &limitedProducer{dbs}
-}
-
-func (p *limitedProducer) OpenDB(name string) (kvdb.Store, error) {
+func (p *limitedFullDbProducer) OpenDB(name string) (kvdb.Store, error) {
 	s, err := p.FullDBProducer.OpenDB(name)
 	return &limitedStore{s}, err
 }
+
+var notifier = logger.New("threads-pool")
 
 func (s *limitedStore) NewIterator(prefix []byte, start []byte) kvdb.Iterator {
 	timeout := time.After(newIteratorTimeout)
@@ -42,7 +61,7 @@ func (s *limitedStore) NewIterator(prefix []byte, start []byte) kvdb.Iterator {
 		case <-time.After(time.Millisecond):
 			continue
 		case <-timeout:
-			return &expiredIterator{}
+			notifier.Log.Warn("No free threads to open db iterator", "timeout", fmt.Sprintf("%ds", newIteratorTimeout/time.Second))
 		}
 	}
 

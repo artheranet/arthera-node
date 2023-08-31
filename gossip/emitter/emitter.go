@@ -2,12 +2,12 @@ package emitter
 
 import (
 	"fmt"
-	"math/rand"
-	"os"
-	"strings"
-	"sync"
-	"time"
-
+	"github.com/artheranet/arthera-node/gossip/emitter/originatedtxs"
+	"github.com/artheranet/arthera-node/internal/evmcore"
+	"github.com/artheranet/arthera-node/internal/inter"
+	"github.com/artheranet/arthera-node/logger"
+	"github.com/artheranet/arthera-node/tracing"
+	"github.com/artheranet/arthera-node/utils/rate"
 	"github.com/artheranet/lachesis/emitter/ancestor"
 	"github.com/artheranet/lachesis/hash"
 	"github.com/artheranet/lachesis/inter/idx"
@@ -15,13 +15,11 @@ import (
 	"github.com/artheranet/lachesis/utils/piecefunc"
 	"github.com/ethereum/go-ethereum/core/types"
 	lru "github.com/hashicorp/golang-lru"
-
-	"github.com/artheranet/arthera-node/gossip/emitter/originatedtxs"
-	"github.com/artheranet/arthera-node/internal/evmcore"
-	"github.com/artheranet/arthera-node/internal/inter"
-	"github.com/artheranet/arthera-node/logger"
-	"github.com/artheranet/arthera-node/tracing"
-	"github.com/artheranet/arthera-node/utils/rate"
+	"math/rand"
+	"os"
+	"strings"
+	"sync"
+	"time"
 )
 
 const (
@@ -60,6 +58,7 @@ type Emitter struct {
 	prevRecheckedChallenges time.Time
 
 	quorumIndexer  *ancestor.QuorumIndexer
+	fcIndexer      *ancestor.FCIndexer
 	payloadIndexer *ancestor.PayloadIndexer
 
 	intervals EmitIntervals
@@ -81,6 +80,9 @@ type Emitter struct {
 	emittedEvFile    *os.File
 	busyRate         *rate.Gauge
 
+	switchToFCIndexer bool
+	validatorVersions map[idx.ValidatorID]uint64
+
 	logger.Periodic
 }
 
@@ -96,12 +98,13 @@ func NewEmitter(
 
 	txTime, _ := lru.New(TxTimeBufferSize)
 	return &Emitter{
-		config:        config,
-		world:         world,
-		originatedTxs: originatedtxs.New(SenderCountBufferSize),
-		txTime:        txTime,
-		intervals:     config.EmitIntervals,
-		Periodic:      logger.Periodic{Instance: logger.New()},
+		config:            config,
+		world:             world,
+		originatedTxs:     originatedtxs.New(SenderCountBufferSize),
+		txTime:            txTime,
+		intervals:         config.EmitIntervals,
+		Periodic:          logger.Periodic{Instance: logger.New()},
+		validatorVersions: make(map[idx.ValidatorID]uint64),
 	}
 }
 
@@ -372,8 +375,21 @@ func (em *Emitter) createEvent(sortedTxs *types.TransactionsByPriceAndNonce) (*i
 	var metric ancestor.Metric
 	err := em.world.Build(mutEvent, func() {
 		// calculate event metric when it is indexed by the vector clock
-		metric = eventMetric(em.quorumIndexer.GetMetricOf(mutEvent.ID()), mutEvent.Seq())
-		metric = overheadAdjustedEventMetricF(em.validators.Len(), uint64(em.busyRate.Rate1()*piecefunc.DecimalUnit), metric)
+		if em.fcIndexer != nil {
+			pastMe := em.fcIndexer.ValidatorsPastMe()
+			metric = (ancestor.Metric(pastMe) * piecefunc.DecimalUnit) / ancestor.Metric(em.validators.TotalWeight())
+			if pastMe < em.validators.Quorum() {
+				metric /= 15
+			}
+			if metric < 0.03*piecefunc.DecimalUnit {
+				metric = 0.03 * piecefunc.DecimalUnit
+			}
+			metric = overheadAdjustedEventMetricF(em.validators.Len(), uint64(em.busyRate.Rate1()*piecefunc.DecimalUnit), metric)
+			metric = kickStartMetric(metric/2, mutEvent.Seq()) // adjust emission interval for FC
+		} else if em.quorumIndexer != nil {
+			metric = eventMetric(em.quorumIndexer.GetMetricOf(hash.Events{mutEvent.ID()}), mutEvent.Seq())
+			metric = overheadAdjustedEventMetricF(em.validators.Len(), uint64(em.busyRate.Rate1()*piecefunc.DecimalUnit), metric)
+		}
 	})
 	if err != nil {
 		if err == ErrNotEnoughGasPower {

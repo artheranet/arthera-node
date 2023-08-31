@@ -100,6 +100,9 @@ type (
 		// send-transction variants. The unit is ether.
 		RPCTxFeeCap float64 `toml:",omitempty"`
 
+		// RPCTimeout is a global time limit for RPC methods execution.
+		RPCTimeout time.Duration
+
 		// allows only for EIP155 transactions.
 		AllowUnprotectedTxs bool
 
@@ -218,6 +221,7 @@ func DefaultConfig(scale cachescale.Func) Config {
 
 		RPCGasCap:   50000000,
 		RPCTxFeeCap: 100, // 100 AA
+		RPCTimeout:  60 * time.Second,
 	}
 	sessionCfg := cfg.Protocol.DagStreamLeecher.Session
 	cfg.Protocol.DagProcessor.EventsBufferLimit.Num = idx.Event(sessionCfg.ParallelChunksDownload)*

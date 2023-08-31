@@ -2,6 +2,7 @@ package dbconfig
 
 import (
 	"fmt"
+	"github.com/artheranet/arthera-node/internal/dbconfig/threads"
 
 	"github.com/artheranet/lachesis/kvdb"
 	"github.com/artheranet/lachesis/kvdb/cachedproducer"
@@ -26,7 +27,7 @@ func MakeMultiProducer(rawProducers map[multidb.TypeName]kvdb.IterableDBProducer
 	}
 
 	p, err := makeMultiProducer(cachedProducers, cfg)
-	return p, err
+	return threads.Limited(p), err
 }
 
 func MakeDirectMultiProducer(rawProducers map[multidb.TypeName]kvdb.IterableDBProducer, cfg RoutingConfig) (kvdb.FullDBProducer, error) {

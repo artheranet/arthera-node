@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/artheranet/arthera-node/api"
+	"github.com/artheranet/arthera-node/utils/txtime"
 	"math/big"
 	"math/rand"
 	"sync"
@@ -345,6 +346,7 @@ func (s *Service) EmitterWorld(signer valkeystore.SignerI) emitter.World {
 
 // RegisterEmitter must be called before service is started
 func (s *Service) RegisterEmitter(em *emitter.Emitter) {
+	txtime.Enabled = true // enable tracking of tx times
 	s.emitters = append(s.emitters, em)
 }
 

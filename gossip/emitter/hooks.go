@@ -44,7 +44,7 @@ func (em *Emitter) OnNewEpoch(newValidators *pos.Validators, newEpoch idx.Epoch)
 	em.expectedEmitIntervals = make(map[idx.ValidatorID]time.Duration)
 	em.stakeRatio = make(map[idx.ValidatorID]uint64)
 
-	// get current adjustments from emitterdriver contract
+	// get current adjustments from EmitterDriver contract
 	statedb := em.world.StateDB()
 	var (
 		extMinInterval        time.Duration
@@ -52,9 +52,9 @@ func (em *Emitter) OnNewEpoch(newValidators *pos.Validators, newEpoch idx.Epoch)
 		switchToFCIndexer     bool
 	)
 	if statedb != nil {
-		switchToFCIndexer = statedb.GetState(contracts.EmitterDriverSmartContractAddress, utils.U64to256(0)) != (common.Hash{0})
-		extMinInterval = time.Duration(statedb.GetState(contracts.EmitterDriverSmartContractAddress, utils.U64to256(1)).Big().Uint64())
-		extConfirmingInterval = time.Duration(statedb.GetState(contracts.EmitterDriverSmartContractAddress, utils.U64to256(2)).Big().Uint64())
+		switchToFCIndexer = statedb.GetState(contracts.EmitterDriverSmartContractAddress, utils.U64to256(51)) != (common.Hash{0})
+		extMinInterval = time.Duration(statedb.GetState(contracts.EmitterDriverSmartContractAddress, utils.U64to256(52)).Big().Uint64())
+		extConfirmingInterval = time.Duration(statedb.GetState(contracts.EmitterDriverSmartContractAddress, utils.U64to256(53)).Big().Uint64())
 	}
 	if extMinInterval == 0 {
 		extMinInterval = em.config.EmitIntervals.Min

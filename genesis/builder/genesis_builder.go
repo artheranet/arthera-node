@@ -279,6 +279,8 @@ func (b *GenesisBuilder) DeployBaseContracts() {
 	b.SetCode(contracts.NodeDriverSmartContractAddress, contracts.NodeDriverBytecode)
 	// pre deploy NodeDriverAuth
 	b.SetCode(contracts.NodeDriverAuthSmartContractAddress, contracts.NodeDriverAuthBytecode)
+	// pre deploy EmitterDriver
+	b.SetCode(contracts.EmitterDriverSmartContractAddress, contracts.EmitterDriverBytecode)
 	// pre deploy Staking
 	b.SetCode(contracts.StakingSmartContractAddress, contracts.StakingBytecode)
 	b.SetCode(contracts.ValidatorInfoSmartContractAddress, contracts.ValidatorInfoBytecode)

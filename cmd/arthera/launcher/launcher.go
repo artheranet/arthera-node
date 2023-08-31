@@ -2,6 +2,7 @@ package launcher
 
 import (
 	"fmt"
+	"github.com/artheranet/arthera-node/gossip/emitter"
 	"github.com/artheranet/arthera-node/params"
 	version2 "github.com/artheranet/arthera-node/version"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -19,7 +20,6 @@ import (
 	"github.com/artheranet/arthera-node/genesis"
 	"github.com/artheranet/arthera-node/genesis/genesisstore"
 	"github.com/artheranet/arthera-node/gossip"
-	"github.com/artheranet/arthera-node/gossip/emitter"
 	"github.com/artheranet/arthera-node/internal/dbconfig"
 	"github.com/artheranet/arthera-node/internal/evmcore"
 	"github.com/artheranet/arthera-node/internal/valkeystore"
@@ -365,12 +365,13 @@ func makeNode(ctx *cli.Context, cfg *config, genesisStore *genesisstore.Store) (
 	if err != nil {
 		utils.Fatalf("Failed to create the service: %v", err)
 	}
-	if cfg.Emitter.Validator.ID != 0 {
-		svc.RegisterEmitter(emitter.NewEmitter(cfg.Emitter, svc.EmitterWorld(signer)))
-	}
 	err = engine.Bootstrap(svc.GetConsensusCallbacks())
 	if err != nil {
 		utils.Fatalf("Failed to bootstrap the engine: %v", err)
+	}
+	svc.ReprocessEpochEvents()
+	if cfg.Emitter.Validator.ID != 0 {
+		svc.RegisterEmitter(emitter.NewEmitter(cfg.Emitter, svc.EmitterWorld(signer)))
 	}
 
 	stack.RegisterAPIs(svc.APIs())

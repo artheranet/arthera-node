@@ -1,12 +1,14 @@
 package emitter
 
 import (
+	"errors"
 	"fmt"
 	"github.com/artheranet/arthera-node/gossip/emitter/originatedtxs"
 	"github.com/artheranet/arthera-node/internal/evmcore"
 	"github.com/artheranet/arthera-node/internal/inter"
 	"github.com/artheranet/arthera-node/logger"
 	"github.com/artheranet/arthera-node/tracing"
+	"github.com/artheranet/arthera-node/utils/errlock"
 	"github.com/artheranet/arthera-node/utils/rate"
 	"github.com/artheranet/lachesis/emitter/ancestor"
 	"github.com/artheranet/lachesis/hash"
@@ -317,6 +319,12 @@ func (em *Emitter) createEvent(sortedTxs *types.TransactionsByPriceAndNonce) (*i
 	selfParent, parents, ok := em.chooseParents(em.epoch, em.config.Validator.ID)
 	if !ok {
 		return nil, nil
+	}
+	prevEmitted := em.readLastEmittedEventID()
+	if prevEmitted != nil && prevEmitted.Epoch() >= em.epoch {
+		if selfParent == nil || *selfParent != *prevEmitted {
+			errlock.Permanent(errors.New("Local database is corrupted, which may lead to a doublesign"))
+		}
 	}
 
 	// Set parent-dependent fields

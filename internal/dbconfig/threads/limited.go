@@ -5,6 +5,10 @@ import (
 	"time"
 )
 
+const (
+	newIteratorTimeout = 3 * time.Second
+)
+
 type limitedProducer struct {
 	kvdb.FullDBProducer
 }
@@ -28,11 +32,18 @@ func (p *limitedProducer) OpenDB(name string) (kvdb.Store, error) {
 }
 
 func (s *limitedStore) NewIterator(prefix []byte, start []byte) kvdb.Iterator {
+	timeout := time.After(newIteratorTimeout)
+
 	got, release := globalPool.Lock(1)
 	for ; got < 1; got, release = globalPool.Lock(1) {
 		// wait for free pool item
 		release()
-		<-time.After(time.Millisecond)
+		select {
+		case <-time.After(time.Millisecond):
+			continue
+		case <-timeout:
+			return &expiredIterator{}
+		}
 	}
 
 	return &limitedIterator{

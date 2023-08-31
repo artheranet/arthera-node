@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/artheranet/arthera-node/genesis/fake"
 	"github.com/artheranet/arthera-node/params"
+	"github.com/ethereum/go-ethereum"
 	"math"
 	"math/big"
 	"sync"
@@ -309,7 +310,7 @@ func (env *testEnv) Transfer(from, to idx.ValidatorID, amount *big.Int) *types.T
 	env.incNonce(sender)
 	key := env.privateKey(from)
 	receiver := env.Address(to)
-	gp := env.store.GetRules().Economy.MinGasPrice
+	gp := new(big.Int).SetUint64(1e12)
 	tx := types.NewTransaction(nonce, receiver, amount, gasLimit, gp, nil)
 	tx, err := types.SignTx(tx, env.EthAPI.signer, key)
 	if err != nil {

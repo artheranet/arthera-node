@@ -2,6 +2,9 @@ package launcher
 
 import (
 	"compress/gzip"
+	"github.com/artheranet/lachesis/kvdb/batched"
+	"github.com/artheranet/lachesis/kvdb/pebble"
+	"github.com/syndtr/goleveldb/leveldb/opt"
 	"gopkg.in/urfave/cli.v1"
 	"io"
 	"os"
@@ -112,4 +115,39 @@ func exportTo(w io.Writer, gdb *gossip.Store, from, to idx.Epoch) (err error) {
 	log.Info("Exported events", "last", last.String(), "exported", counter, "elapsed", common.PrettyDuration(time.Since(start)))
 
 	return
+}
+
+func exportEvmKeys(ctx *cli.Context) error {
+	if len(ctx.Args()) < 1 {
+		utils.Fatalf("This command requires an argument.")
+	}
+
+	cfg := makeAllConfigs(ctx)
+
+	rawDbs := makeDirectDBsProducer(cfg)
+	gdb := makeGossipStore(rawDbs, cfg)
+	defer gdb.Close()
+
+	fn := ctx.Args().First()
+
+	keysDB_, err := pebble.New(fn, 1024*opt.MiB, utils.MakeDatabaseHandles()/2, nil, nil)
+	if err != nil {
+		return err
+	}
+	keysDB := batched.Wrap(keysDB_)
+	defer keysDB.Close()
+
+	it := gdb.EvmStore().EvmDb.NewIterator(nil, nil)
+	// iterate only over MPT data
+	it = mptAndPreimageIterator{it}
+	defer it.Release()
+
+	log.Info("Exporting EVM keys", "dir", fn)
+	for it.Next() {
+		if err := keysDB.Put(it.Key(), []byte{0}); err != nil {
+			return err
+		}
+	}
+	log.Info("Exported EVM keys", "dir", fn)
+	return nil
 }

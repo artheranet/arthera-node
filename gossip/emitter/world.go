@@ -2,20 +2,17 @@ package emitter
 
 import (
 	"errors"
+	"github.com/artheranet/arthera-node/params"
 	"sync"
 
+	"github.com/artheranet/arthera-node/internal/inter"
+	"github.com/artheranet/arthera-node/internal/valkeystore"
+	"github.com/artheranet/arthera-node/internal/vecmt"
 	"github.com/artheranet/lachesis/hash"
 	"github.com/artheranet/lachesis/inter/idx"
 	"github.com/artheranet/lachesis/inter/pos"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	notify "github.com/ethereum/go-ethereum/event"
-
-	"github.com/artheranet/arthera-node/internal/evmcore"
-	"github.com/artheranet/arthera-node/internal/inter"
-	"github.com/artheranet/arthera-node/internal/valkeystore"
-	"github.com/artheranet/arthera-node/internal/vecmt"
-	"github.com/artheranet/arthera-node/params"
 )
 
 var (
@@ -83,10 +80,6 @@ type TxPool interface {
 	// Pending should return pending transactions.
 	// The slice should be modifiable by the caller.
 	Pending(enforceTips bool) (map[common.Address]types.Transactions, error)
-
-	// SubscribeNewTxsNotify should return an event subscription of
-	// NewTxsNotify and send events to the given channel.
-	SubscribeNewTxsNotify(chan<- evmcore.NewTxsNotify) notify.Subscription
 
 	// Count returns the total number of transactions
 	Count() int

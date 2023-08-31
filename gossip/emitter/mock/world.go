@@ -8,7 +8,6 @@ import (
 	big "math/big"
 	reflect "reflect"
 
-	evmcore "github.com/artheranet/arthera-node/internal/evmcore"
 	inter "github.com/artheranet/arthera-node/internal/inter"
 	validatorpk "github.com/artheranet/arthera-node/internal/inter/validatorpk"
 	vecmt "github.com/artheranet/arthera-node/internal/vecmt"
@@ -18,7 +17,6 @@ import (
 	pos "github.com/artheranet/lachesis/inter/pos"
 	common "github.com/ethereum/go-ethereum/common"
 	types "github.com/ethereum/go-ethereum/core/types"
-	event "github.com/ethereum/go-ethereum/event"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -454,20 +452,6 @@ func (m *MockTxPool) Pending(arg0 bool) (map[common.Address]types.Transactions, 
 func (mr *MockTxPoolMockRecorder) Pending(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Pending", reflect.TypeOf((*MockTxPool)(nil).Pending), arg0)
-}
-
-// SubscribeNewTxsNotify mocks base method.
-func (m *MockTxPool) SubscribeNewTxsNotify(arg0 chan<- evmcore.NewTxsNotify) event.Subscription {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SubscribeNewTxsNotify", arg0)
-	ret0, _ := ret[0].(event.Subscription)
-	return ret0
-}
-
-// SubscribeNewTxsNotify indicates an expected call of SubscribeNewTxsNotify.
-func (mr *MockTxPoolMockRecorder) SubscribeNewTxsNotify(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SubscribeNewTxsNotify", reflect.TypeOf((*MockTxPool)(nil).SubscribeNewTxsNotify), arg0)
 }
 
 // MockTxSigner is a mock of TxSigner interface.

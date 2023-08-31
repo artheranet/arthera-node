@@ -1,10 +1,12 @@
 package gossip
 
 import (
+	"github.com/artheranet/arthera-node/internal/evmcore"
 	"github.com/artheranet/lachesis/hash"
 	"github.com/artheranet/lachesis/inter/idx"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	notify "github.com/ethereum/go-ethereum/event"
 
 	"github.com/artheranet/arthera-node/gossip/emitter"
 	"github.com/artheranet/arthera-node/internal/inter"
@@ -101,6 +103,7 @@ var errorToString = map[int]string{
 
 type TxPool interface {
 	emitter.TxPool
+	SubscribeNewTxsNotify(chan<- evmcore.NewTxsNotify) notify.Subscription
 	// AddRemotes should add the given transactions to the pool.
 	AddRemotes([]*types.Transaction) []error
 	AddLocals(txs []*types.Transaction) []error

@@ -1,14 +1,11 @@
 package emitter
 
 import (
-	"errors"
 	"fmt"
 	"github.com/artheranet/arthera-node/gossip/emitter/originatedtxs"
-	"github.com/artheranet/arthera-node/internal/evmcore"
 	"github.com/artheranet/arthera-node/internal/inter"
 	"github.com/artheranet/arthera-node/logger"
 	"github.com/artheranet/arthera-node/tracing"
-	"github.com/artheranet/arthera-node/utils/errlock"
 	"github.com/artheranet/arthera-node/utils/rate"
 	"github.com/artheranet/lachesis/emitter/ancestor"
 	"github.com/artheranet/lachesis/hash"
@@ -16,7 +13,6 @@ import (
 	"github.com/artheranet/lachesis/inter/pos"
 	"github.com/artheranet/lachesis/utils/piecefunc"
 	"github.com/ethereum/go-ethereum/core/types"
-	lru "github.com/hashicorp/golang-lru"
 	"math/rand"
 	"os"
 	"strings"
@@ -30,8 +26,6 @@ const (
 )
 
 type Emitter struct {
-	txTime *lru.Cache // tx hash -> tx time
-
 	config Config
 
 	world World
@@ -98,12 +92,10 @@ func NewEmitter(
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	config.EmitIntervals = config.EmitIntervals.RandomizeEmitTime(r)
 
-	txTime, _ := lru.New(TxTimeBufferSize)
 	return &Emitter{
 		config:            config,
 		world:             world,
 		originatedTxs:     originatedtxs.New(SenderCountBufferSize),
-		txTime:            txTime,
 		intervals:         config.EmitIntervals,
 		Periodic:          logger.Periodic{Instance: logger.New()},
 		validatorVersions: make(map[idx.ValidatorID]uint64),
@@ -142,9 +134,6 @@ func (em *Emitter) Start() {
 	em.init()
 	em.done = make(chan struct{})
 
-	newTxsCh := make(chan evmcore.NewTxsNotify)
-	em.world.TxPool.SubscribeNewTxsNotify(newTxsCh)
-
 	done := em.done
 	if em.config.EmitIntervals.Min == 0 {
 		return
@@ -157,8 +146,6 @@ func (em *Emitter) Start() {
 		defer timer.Stop()
 		for {
 			select {
-			case txNotify := <-newTxsCh:
-				em.memorizeTxTimes(txNotify.Txs)
 			case <-timer.C:
 				em.tick()
 				timer.Reset(tick)
@@ -319,12 +306,6 @@ func (em *Emitter) createEvent(sortedTxs *types.TransactionsByPriceAndNonce) (*i
 	selfParent, parents, ok := em.chooseParents(em.epoch, em.config.Validator.ID)
 	if !ok {
 		return nil, nil
-	}
-	prevEmitted := em.readLastEmittedEventID()
-	if prevEmitted != nil && prevEmitted.Epoch() >= em.epoch {
-		if selfParent == nil || *selfParent != *prevEmitted {
-			errlock.Permanent(errors.New("Local database is corrupted, which may lead to a doublesign"))
-		}
 	}
 
 	// Set parent-dependent fields

@@ -21,7 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/artheranet/arthera-node/utils/adapters/ethdb2kvdb"
-	"github.com/artheranet/arthera-node/utils/compactdb"
+	"github.com/artheranet/arthera-node/utils/dbutil/compactdb"
 	"github.com/ethereum/go-ethereum/eth/tracers"
 	ethparams "github.com/ethereum/go-ethereum/params"
 	"github.com/tyler-smith/go-bip39"

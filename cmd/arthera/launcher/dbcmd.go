@@ -2,7 +2,7 @@ package launcher
 
 import (
 	"fmt"
-	"github.com/artheranet/arthera-node/utils/compactdb"
+	"github.com/artheranet/arthera-node/utils/dbutil/compactdb"
 	"gopkg.in/urfave/cli.v1"
 	"path"
 

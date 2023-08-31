@@ -4,6 +4,8 @@ import (
 	"compress/gzip"
 	"errors"
 	"fmt"
+	"github.com/artheranet/lachesis/kvdb/pebble"
+	"github.com/syndtr/goleveldb/leveldb/opt"
 	"gopkg.in/urfave/cli.v1"
 	"io"
 	"math"
@@ -58,6 +60,20 @@ type mptAndPreimageIterator struct {
 func (it mptAndPreimageIterator) Next() bool {
 	for it.Iterator.Next() {
 		if evmstore.IsMptKey(it.Key()) || evmstore.IsPreimageKey(it.Key()) {
+			return true
+		}
+	}
+	return false
+}
+
+type excludingIterator struct {
+	kvdb.Iterator
+	exclude kvdb.Reader
+}
+
+func (it excludingIterator) Next() bool {
+	for it.Iterator.Next() {
+		if ok, _ := it.exclude.Has(it.Key()); !ok {
 			return true
 		}
 	}
@@ -207,6 +223,14 @@ func exportGenesis(ctx *cli.Context) error {
 }
 
 func ExportGenesis(ctx *cli.Context, fn string, from idx.Epoch, to idx.Epoch, mode string) error {
+	var excludeEvmDB kvdb.Store
+	if excludeEvmDBPath := ctx.String(EvmExportExclude.Name); len(excludeEvmDBPath) > 0 {
+		db, err := pebble.New(excludeEvmDBPath, 1024*opt.MiB, utils.MakeDatabaseHandles()/2, nil, nil)
+		if err != nil {
+			return err
+		}
+		excludeEvmDB = db
+	}
 	cfg := makeAllConfigs(ctx)
 	tmpPath := path.Join(cfg.Node.DataDir, "tmp")
 	_ = os.RemoveAll(tmpPath)
@@ -333,6 +357,9 @@ func ExportGenesis(ctx *cli.Context, fn string, from idx.Epoch, to idx.Epoch, mo
 		} else if mode == "ext-mpt" {
 			// iterate only over MPT data and preimages
 			it = mptAndPreimageIterator{it}
+		}
+		if excludeEvmDB != nil {
+			it = excludingIterator{it, excludeEvmDB}
 		}
 		defer it.Release()
 		err = iodb.Write(writer, it)

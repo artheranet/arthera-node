@@ -3,6 +3,7 @@ package emitter
 import (
 	"errors"
 	"github.com/artheranet/arthera-node/params"
+	"github.com/ethereum/go-ethereum/core/state"
 	"sync"
 
 	"github.com/artheranet/arthera-node/internal/inter"
@@ -34,6 +35,8 @@ type (
 		IsBusy() bool
 		IsSynced() bool
 		PeersNum() int
+
+		StateDB() *state.StateDB
 	}
 
 	// aliases for mock generator

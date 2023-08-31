@@ -2,6 +2,7 @@ package launcher
 
 import (
 	"compress/gzip"
+	"github.com/artheranet/arthera-node/utils/dbutil/autocompact"
 	"github.com/artheranet/lachesis/kvdb/batched"
 	"github.com/artheranet/lachesis/kvdb/pebble"
 	"github.com/syndtr/goleveldb/leveldb/opt"
@@ -134,7 +135,7 @@ func exportEvmKeys(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	keysDB := batched.Wrap(keysDB_)
+	keysDB := batched.Wrap(autocompact.Wrap2M(keysDB_, opt.GiB, 16*opt.GiB, true, "evm-keys"))
 	defer keysDB.Close()
 
 	it := gdb.EvmStore().EvmDb.NewIterator(nil, nil)

@@ -3,6 +3,7 @@ package gossip
 import (
 	"github.com/artheranet/lachesis/hash"
 	"github.com/artheranet/lachesis/inter/idx"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/artheranet/arthera-node/internal/eventcheck/gaspowercheck"
@@ -32,8 +33,12 @@ func (b *GPOBackend) GetPendingRules() params.ProtocolRules {
 	return es.Rules
 }
 
-func (b *GPOBackend) PendingTxs() types.Transactions {
-	return b.txpool.PendingSlice()
+func (b *GPOBackend) PendingTxs() map[common.Address]types.Transactions {
+	txs, err := b.txpool.Pending(false)
+	if err != nil {
+		return map[common.Address]types.Transactions{}
+	}
+	return txs
 }
 
 // TotalGasPowerLeft returns a total amount of obtained gas power by the validators, according to the latest events from each validator

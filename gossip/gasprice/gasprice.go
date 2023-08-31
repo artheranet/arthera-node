@@ -18,6 +18,7 @@ package gasprice
 
 import (
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
 	"math/big"
 	"sync"
 	"time"
@@ -56,7 +57,7 @@ type Reader interface {
 	TotalGasPowerLeft() uint64
 	GetRules() params.ProtocolRules
 	GetPendingRules() params.ProtocolRules
-	PendingTxs() types.Transactions
+	PendingTxs() map[common.Address]types.Transactions
 }
 
 type tipCache struct {

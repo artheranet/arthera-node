@@ -4,6 +4,8 @@ import (
 	"crypto/ecdsa"
 	"errors"
 	"fmt"
+	"github.com/artheranet/arthera-node/utils/compactdb"
+	"github.com/artheranet/lachesis/kvdb/multidb"
 	"path"
 
 	"github.com/artheranet/lachesis/abft"
@@ -143,6 +145,16 @@ func CheckStateInitialized(chaindataDir string, cfg DBsConfig) error {
 	return dbs.Close()
 }
 
+func compactDB(typ multidb.TypeName, name string, producer kvdb.DBProducer) error {
+	humanName := path.Join(string(typ), name)
+	db, err := producer.OpenDB(name)
+	defer db.Close()
+	if err != nil {
+		return err
+	}
+	return compactdb.Compact(db, humanName)
+}
+
 func makeEngine(chaindataDir string, g *genesis.Genesis, genesisProc bool, cfg Configs) (*abft.Lachesis, *vecmt.Index, *gossip.Store, *abft.Store, gossip.BlockProc, func() error, error) {
 	// Genesis processing
 	if genesisProc {
@@ -163,6 +175,17 @@ func makeEngine(chaindataDir string, g *genesis.Genesis, genesisProc bool, cfg C
 		}
 		_ = dbs.Close()
 		setGenesisComplete(chaindataDir)
+	}
+	// Compact DBs after first launch
+	if genesisProc {
+		genesisProducers, _ := SupportedDBs(chaindataDir, cfg.DBs.GenesisCache)
+		for typ, p := range genesisProducers {
+			for _, name := range p.Names() {
+				if err := compactDB(typ, name, p); err != nil {
+					return nil, nil, nil, nil, gossip.BlockProc{}, nil, err
+				}
+			}
+		}
 	}
 	// Check DBs are synced
 	{

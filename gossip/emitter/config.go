@@ -74,7 +74,7 @@ func DefaultConfig() Config {
 		NoTxsThreshold:      params.DefaultEventGas * 30,
 		EmergencyThreshold:  params.DefaultEventGas * 5,
 
-		TxsCacheInvalidation: 200 * time.Millisecond,
+		TxsCacheInvalidation: 400 * time.Millisecond,
 	}
 }
 

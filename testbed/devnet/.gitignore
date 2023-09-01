@@ -7,3 +7,5 @@ node2/arthera-node
 node3/keystore/validator/password
 node3/chaindata
 node3/arthera-node
+node-api/chaindata
+node-api/arthera-node

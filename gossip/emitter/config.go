@@ -114,6 +114,6 @@ func TestnetConfig() Config {
 func DevnetConfig() Config {
 	cfg := DefaultConfig()
 	cfg.EmitIntervals.Max = 1 * time.Minute
-	cfg.EmitIntervals.DoublesignProtection = cfg.EmitIntervals.Max / 2
+	cfg.EmitIntervals.DoublesignProtection = 0
 	return cfg
 }

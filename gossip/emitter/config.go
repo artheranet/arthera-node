@@ -59,9 +59,9 @@ func DefaultConfig() Config {
 		VersionToPublish: ethparams.VersionWithMeta(),
 
 		EmitIntervals: EmitIntervals{
-			Min:                        190 * time.Millisecond,
+			Min:                        240 * time.Millisecond,
 			Max:                        10 * time.Minute,
-			Confirming:                 210 * time.Millisecond,
+			Confirming:                 260 * time.Millisecond,
 			DoublesignProtection:       27 * time.Minute, // should be greater than MaxEmitInterval
 			ParallelInstanceProtection: 1 * time.Minute,
 		},
@@ -106,14 +106,12 @@ func FakeConfig(num idx.Validator) Config {
 
 func TestnetConfig() Config {
 	cfg := DefaultConfig()
-	cfg.EmitIntervals.Max = 1 * time.Minute
 	cfg.EmitIntervals.DoublesignProtection = cfg.EmitIntervals.Max / 2
 	return cfg
 }
 
 func DevnetConfig() Config {
 	cfg := DefaultConfig()
-	cfg.EmitIntervals.Max = 1 * time.Minute
-	cfg.EmitIntervals.DoublesignProtection = 0
+	cfg.EmitIntervals.DoublesignProtection = 30 * time.Second
 	return cfg
 }

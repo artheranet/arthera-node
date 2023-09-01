@@ -59,9 +59,9 @@ func DefaultConfig() Config {
 		VersionToPublish: ethparams.VersionWithMeta(),
 
 		EmitIntervals: EmitIntervals{
-			Min:                        170 * time.Millisecond,
+			Min:                        190 * time.Millisecond,
 			Max:                        10 * time.Minute,
-			Confirming:                 190 * time.Millisecond,
+			Confirming:                 210 * time.Millisecond,
 			DoublesignProtection:       27 * time.Minute, // should be greater than MaxEmitInterval
 			ParallelInstanceProtection: 1 * time.Minute,
 		},

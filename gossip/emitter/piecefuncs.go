@@ -90,31 +90,23 @@ var (
 			Y: 0,
 		},
 		{
-			X: 70,
+			X: 25,
 			Y: 0.05 * piecefunc.DecimalUnit,
 		},
 		{
-			X: 100,
+			X: 50,
 			Y: 0.1 * piecefunc.DecimalUnit,
 		},
 		{
-			X: 120,
-			Y: 0.3 * piecefunc.DecimalUnit,
-		},
-		{
-			X: 150,
-			Y: 0.5 * piecefunc.DecimalUnit,
+			X: 100,
+			Y: 0.4 * piecefunc.DecimalUnit,
 		},
 		{
 			X: 200,
-			Y: 0.8 * piecefunc.DecimalUnit,
+			Y: 0.9 * piecefunc.DecimalUnit,
 		},
 		{
-			X: 220,
-			Y: 0.95 * piecefunc.DecimalUnit,
-		},
-		{
-			X: 100000,
+			X: 1000,
 			Y: 1.0 * piecefunc.DecimalUnit,
 		},
 	})

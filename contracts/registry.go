@@ -37,6 +37,7 @@ func IsSystemContract(address common.Address) bool {
 		address == PayAsYouGoGasRewardsContractAddress ||
 		address == StakingSmartContractAddress ||
 		address == SubscribersSmartContractAddress ||
-		address == ValidatorInfoSmartContractAddress
+		address == ValidatorInfoSmartContractAddress ||
+		address == EmitterDriverSmartContractAddress
 
 }

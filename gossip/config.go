@@ -156,8 +156,8 @@ func DefaultConfig(scale cachescale.Func) Config {
 		HeavyCheck: heavycheck.DefaultConfig(),
 
 		Protocol: ProtocolConfig{
-			LatencyImportance:    60,
-			ThroughputImportance: 40,
+			LatencyImportance:    40,
+			ThroughputImportance: 60,
 			MsgsSemaphoreLimit: dag.Metric{
 				Num:  scale.Events(1000),
 				Size: scale.U64(30 * opt.MiB),
@@ -183,7 +183,7 @@ func DefaultConfig(scale cachescale.Func) Config {
 				GatherSlack:         100 * time.Millisecond,
 				HashLimit:           20000,
 				MaxBatch:            scale.I(512),
-				MaxQueuedBatches:    scale.I(32),
+				MaxQueuedBatches:    scale.I(64),
 				MaxParallelRequests: 192,
 			},
 			TxFetcher: itemsfetcher.Config{
@@ -192,7 +192,7 @@ func DefaultConfig(scale cachescale.Func) Config {
 				GatherSlack:         100 * time.Millisecond,
 				HashLimit:           10000,
 				MaxBatch:            scale.I(512),
-				MaxQueuedBatches:    scale.I(32),
+				MaxQueuedBatches:    scale.I(64),
 				MaxParallelRequests: 64,
 			},
 			DagStreamLeecher:         dagstreamleecher.DefaultConfig(),

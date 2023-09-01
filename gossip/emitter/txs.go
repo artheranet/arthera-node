@@ -21,7 +21,7 @@ import (
 const (
 	TxTurnPeriod        = 8 * time.Second
 	TxTurnPeriodLatency = 1 * time.Second
-	TxTurnNonces        = 32
+	TxTurnNonces        = 64
 )
 
 func max64(a, b uint64) uint64 {

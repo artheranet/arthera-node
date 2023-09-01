@@ -45,23 +45,33 @@ func (em *Emitter) OnNewEpoch(newValidators *pos.Validators, newEpoch idx.Epoch)
 	em.stakeRatio = make(map[idx.ValidatorID]uint64)
 
 	// get current adjustments from EmitterDriver contract
-	statedb := em.world.StateDB()
 	var (
 		extMinInterval        time.Duration
 		extConfirmingInterval time.Duration
 		switchToFCIndexer     bool
 	)
-	if statedb != nil {
+
+	statedb := em.world.StateDB()
+	if statedb != nil && statedb.GetCodeSize(contracts.EmitterDriverSmartContractAddress) > 0 {
 		switchToFCIndexer = statedb.GetState(contracts.EmitterDriverSmartContractAddress, utils.U64to256(51)) != (common.Hash{0})
 		extMinInterval = time.Duration(statedb.GetState(contracts.EmitterDriverSmartContractAddress, utils.U64to256(52)).Big().Uint64())
 		extConfirmingInterval = time.Duration(statedb.GetState(contracts.EmitterDriverSmartContractAddress, utils.U64to256(53)).Big().Uint64())
+	} else {
+		switchToFCIndexer = true
+		extMinInterval = 0
+		extConfirmingInterval = 0
 	}
+
 	if extMinInterval == 0 {
 		extMinInterval = em.config.EmitIntervals.Min
 	}
 	if extConfirmingInterval == 0 {
 		extConfirmingInterval = em.config.EmitIntervals.Confirming
 	}
+
+	switchToFCIndexer = true
+	extMinInterval = em.config.EmitIntervals.Min
+	extConfirmingInterval = em.config.EmitIntervals.Confirming
 
 	// sanity check to ensure that durations aren't too small/large
 	em.intervals.Min = maxDuration(minDuration(em.config.EmitIntervals.Min*20, extMinInterval), em.config.EmitIntervals.Min/4)

@@ -106,13 +106,14 @@ func FakeConfig(num idx.Validator) Config {
 
 func TestnetConfig() Config {
 	cfg := DefaultConfig()
-	cfg.EmitIntervals.DoublesignProtection = cfg.EmitIntervals.Max + (5 * time.Minute)
+	cfg.EmitIntervals.Max = 1 * time.Minute
+	cfg.EmitIntervals.DoublesignProtection = cfg.EmitIntervals.Max / 2
 	return cfg
 }
 
 func DevnetConfig() Config {
 	cfg := DefaultConfig()
-	cfg.EmitIntervals.Max = 5 * time.Minute
-	cfg.EmitIntervals.DoublesignProtection = cfg.EmitIntervals.Max + (2 * time.Minute)
+	cfg.EmitIntervals.Max = 1 * time.Minute
+	cfg.EmitIntervals.DoublesignProtection = cfg.EmitIntervals.Max / 2
 	return cfg
 }

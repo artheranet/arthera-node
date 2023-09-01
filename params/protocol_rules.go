@@ -195,8 +195,11 @@ func DevNetRules() ProtocolRules {
 		Name:      "dev",
 		NetworkID: DevNetworkID,
 		Dag:       DefaultDagRules(),
-		Epochs:    DefaultEpochsRules(),
-		Economy:   DefaultEconomyRules(),
+		Epochs: EpochsRules{
+			MaxEpochGas:      1500000000,
+			MaxEpochDuration: inter.Timestamp(1 * time.Hour),
+		},
+		Economy: DefaultEconomyRules(),
 		Blocks: BlocksRules{
 			MaxBlockGas:             20_500_000,
 			MaxEmptyBlockSkipPeriod: inter.Timestamp(1 * time.Minute),

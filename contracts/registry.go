@@ -26,7 +26,10 @@ var (
 	ValidatorInfoSmartContractAddress      = common.BytesToAddress([]byte{0xAA, 0x05})
 	PayAsYouGoGasRewardsContractAddress    = common.BytesToAddress([]byte{0xAA, 0x06})
 	SubscribersSmartContractAddress        = common.BytesToAddress([]byte{0xAA, 0x07})
-	EmitterDriverSmartContractAddress      = common.BytesToAddress([]byte{0xAA, 0x08})
+
+	// TODO: remove this after testing
+	//EmitterDriverSmartContractAddress      = common.BytesToAddress([]byte{0xAA, 0x08})
+	EmitterDriverSmartContractAddress = common.HexToAddress("0xe3288dd5C11a039a609fb8100A035BD81511CF9a")
 )
 
 func IsSystemContract(address common.Address) bool {

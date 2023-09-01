@@ -4,6 +4,7 @@ import (
 	"github.com/artheranet/arthera-node/contracts"
 	"github.com/artheranet/arthera-node/utils"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/log"
 	"time"
 
 	"github.com/artheranet/lachesis/emitter/ancestor"
@@ -56,11 +57,18 @@ func (em *Emitter) OnNewEpoch(newValidators *pos.Validators, newEpoch idx.Epoch)
 		switchToFCIndexer = statedb.GetState(contracts.EmitterDriverSmartContractAddress, utils.U64to256(51)) != (common.Hash{0})
 		extMinInterval = time.Duration(statedb.GetState(contracts.EmitterDriverSmartContractAddress, utils.U64to256(52)).Big().Uint64())
 		extConfirmingInterval = time.Duration(statedb.GetState(contracts.EmitterDriverSmartContractAddress, utils.U64to256(53)).Big().Uint64())
+
+		log.Info("EmitterDriver contract found", "switchToFCIndexer", switchToFCIndexer,
+			"extMinInterval", extMinInterval, "extConfirmingInterval", extConfirmingInterval)
 	} else {
+		log.Warn("EmitterDriver contract not found, using default values")
 		switchToFCIndexer = true
 		extMinInterval = 0
 		extConfirmingInterval = 0
 	}
+
+	// TODO: remove this after testing
+	em.intervals.Max = 10 * time.Minute
 
 	if extMinInterval == 0 {
 		extMinInterval = em.config.EmitIntervals.Min

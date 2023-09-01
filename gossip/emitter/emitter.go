@@ -305,6 +305,9 @@ func (em *Emitter) createEvent(sortedTxs *types.TransactionsByPriceAndNonce) (*i
 	if !ok {
 		return nil, nil
 	}
+
+	// this prevents some validators to run their nodes
+	//
 	//prevEmitted := em.readLastEmittedEventID()
 	//if prevEmitted != nil && prevEmitted.Epoch() >= em.epoch {
 	//	if selfParent == nil || *selfParent != *prevEmitted {

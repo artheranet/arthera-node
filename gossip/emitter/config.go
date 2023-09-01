@@ -59,9 +59,9 @@ func DefaultConfig() Config {
 		VersionToPublish: ethparams.VersionWithMeta(),
 
 		EmitIntervals: EmitIntervals{
-			Min:                        300 * time.Millisecond,
+			Min:                        170 * time.Millisecond,
 			Max:                        10 * time.Minute,
-			Confirming:                 340 * time.Millisecond,
+			Confirming:                 190 * time.Millisecond,
 			DoublesignProtection:       27 * time.Minute, // should be greater than MaxEmitInterval
 			ParallelInstanceProtection: 1 * time.Minute,
 		},
@@ -74,7 +74,7 @@ func DefaultConfig() Config {
 		NoTxsThreshold:      params.DefaultEventGas * 30,
 		EmergencyThreshold:  params.DefaultEventGas * 5,
 
-		TxsCacheInvalidation: 400 * time.Millisecond,
+		TxsCacheInvalidation: 200 * time.Millisecond,
 	}
 }
 

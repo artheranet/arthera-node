@@ -1,7 +1,7 @@
 GOPROXY?="https://proxy.golang.org,direct"
 GIT_COMMIT?=$(shell git rev-list -1 HEAD | xargs git rev-parse --short)
 GIT_DATE?=$(shell git log -1 --date=short --pretty=format:%ct)
-VERSION=1.1.0-rc.2
+VERSION=1.1.0-rc.3
 
 .PHONY: all
 all: arthera

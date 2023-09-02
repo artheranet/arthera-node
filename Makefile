@@ -1,7 +1,12 @@
 GOPROXY?="https://proxy.golang.org,direct"
 GIT_COMMIT?=$(shell git rev-list -1 HEAD | xargs git rev-parse --short)
 GIT_DATE?=$(shell git log -1 --date=short --pretty=format:%ct)
-VERSION=1.1.0-rc.4
+VERSION_MAJOR=1
+VERSION_MINOR=1
+VERSION_PATCH=0
+VERSION_META=rc5
+VERSION="$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)-$(VERSION_META)"
+VERSION_FLAGS=-X github.com/artheranet/arthera-node/version.VersionMajor=$(VERSION_MAJOR) -X github.com/artheranet/arthera-node/version.VersionMinor=$(VERSION_MINOR) -X github.com/artheranet/arthera-node/version.VersionPatch=$(VERSION_PATCH) -X github.com/artheranet/arthera-node/version.VersionMeta=$(VERSION_META) -X github.com/artheranet/arthera-node/version.GitCommit=$(GIT_COMMIT) -X github.com/artheranet/arthera-node/version.GitDate=$(GIT_DATE)
 
 .PHONY: all
 all: arthera
@@ -10,7 +15,7 @@ all: arthera
 arthera:
 	@echo "Building version: $(VERSION)"
 	go build \
-	    -ldflags "-s -w -X github.com/artheranet/arthera-node/version.GitCommit=$(GIT_COMMIT) -X github.com/artheranet/arthera-node/version.GitDate=$(GIT_DATE)" \
+	    -ldflags "-s -w $(VERSION_FLAGS)" \
 	    -o build/arthera-node \
 	    ./cmd/arthera
 

@@ -3,21 +3,29 @@ package version
 import (
 	"fmt"
 	"math/big"
+	"strconv"
 
 	"github.com/ethereum/go-ethereum/params"
 )
 
 var (
 	// Git SHA1 commit hash of the release (set via linker flags).
-	GitCommit = ""
-	GitDate   = ""
+	GitCommit    = ""
+	GitDate      = ""
+	VersionMajor = "0"
+	VersionMinor = "0"
+	VersionPatch = "0"
+	VersionMeta  = ""
 )
 
 func init() {
-	params.VersionMajor = 1     // Major version component of the current release
-	params.VersionMinor = 1     // Minor version component of the current release
-	params.VersionPatch = 0     // Patch version component of the current release
-	params.VersionMeta = "rc.4" // Version metadata to append to the version string
+	vmaj, _ := strconv.Atoi(VersionMajor)
+	vmin, _ := strconv.Atoi(VersionMinor)
+	vpatch, _ := strconv.Atoi(VersionPatch)
+	params.VersionMajor = vmaj       // Major version component of the current release
+	params.VersionMinor = vmin       // Minor version component of the current release
+	params.VersionPatch = vpatch     // Patch version component of the current release
+	params.VersionMeta = VersionMeta // Version metadata to append to the version string
 }
 
 func VersionWithCommit() string {

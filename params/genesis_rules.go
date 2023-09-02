@@ -25,21 +25,21 @@ var (
 			Addr:    "0xC34ad0296f606749Ff8F77b75A7d577eB2CDF846",
 			Pubkey:  "0xc004bf689e0aa508fc18c9820348cea64cc8b3b3dff85af513fef6309a514c21b33d96e6113904e21c49e012cb73c46d1e5b8ab7cad64131b27a8578d9f87a298f49",
 			Stake:   utils2.ToArt(5_000_000), // min stake StakerConstants.sol -> minSelfStake
-			Balance: utils2.ToArt(10_000),
+			Balance: utils2.ToArt(60_000_000),
 		},
 		{
 			ID:      2,
 			Addr:    "0xE3E641Dad7ac5477482Ab338FD535EAA1071201F",
 			Pubkey:  "0xc0046218198298ade0acaecde7816c1513c40c359673b516449f4e383d87fa53b54c245a75ed98629f2a35eae140306d7d81b6ba33feec81f0b98ddb0b529c48db32",
 			Stake:   utils2.ToArt(5_000_000), // min stake StakerConstants.sol -> minSelfStake
-			Balance: utils2.ToArt(10_000),
+			Balance: utils2.ToArt(60_000_000),
 		},
 		{
 			ID:      3,
 			Addr:    "0x131BA6dA27B622De8771b63D40915F2530fCa0BD",
 			Pubkey:  "0xc004c0cc8ddc257ed1aadd6aec58c40592c00ce653c1e96c5856f3cbb57371b01a7e8c0f2b76255271004673930ebcbc798c360f8df39c08e831bc815ee9f13dc6a6",
 			Stake:   utils2.ToArt(5_000_000), // min stake StakerConstants.sol -> minSelfStake
-			Balance: utils2.ToArt(10_000),
+			Balance: utils2.ToArt(60_000_000),
 		},
 	}
 

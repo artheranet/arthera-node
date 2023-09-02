@@ -67,9 +67,6 @@ func (em *Emitter) OnNewEpoch(newValidators *pos.Validators, newEpoch idx.Epoch)
 		extConfirmingInterval = 0
 	}
 
-	// TODO: remove this after testing
-	em.intervals.Max = 10 * time.Minute
-
 	if extMinInterval == 0 {
 		extMinInterval = em.config.EmitIntervals.Min
 	}
@@ -77,9 +74,13 @@ func (em *Emitter) OnNewEpoch(newValidators *pos.Validators, newEpoch idx.Epoch)
 		extConfirmingInterval = em.config.EmitIntervals.Confirming
 	}
 
+	// TODO: remove this after testing
+	em.intervals.Max = 10 * time.Minute
 	switchToFCIndexer = true
 	extMinInterval = em.config.EmitIntervals.Min
 	extConfirmingInterval = em.config.EmitIntervals.Confirming
+	log.Info("Final params", "switchToFCIndexer", switchToFCIndexer,
+		"extMinInterval", extMinInterval, "extConfirmingInterval", extConfirmingInterval)
 
 	// sanity check to ensure that durations aren't too small/large
 	em.intervals.Min = maxDuration(minDuration(em.config.EmitIntervals.Min*20, extMinInterval), em.config.EmitIntervals.Min/4)

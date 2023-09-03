@@ -4,8 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/artheranet/arthera-node/utils/txtime"
+	"github.com/ethereum/go-ethereum/p2p/discover/discfilter"
 	"math"
 	"math/rand"
+	"strings"
 	"sync"
 	"time"
 
@@ -782,25 +784,21 @@ func (h *handler) handle(p *peer) error {
 		return err
 	}
 
-	//useless := discfilter.Banned(p.Node().ID(), p.Node().Record())
-	//if !useless && (!eligibleForSnap(p.Peer) || !strings.Contains(strings.ToLower(p.Name()), "arthera")) {
-	//	useless = true
-	//	discfilter.Ban(p.ID())
-	//}
-	//if useless {
-	//	log.Info("Useless peer", "ID", p.Node().IP())
-	//}
-	//if !p.Peer.Info().Network.Trusted && useless && h.peers.UselessNum() >= h.maxPeers/10 {
-	//	// don't allow more than 10% of useless peers
-	//	return p2p.DiscTooManyPeers
-	//}
-	//if !p.Peer.Info().Network.Trusted && useless {
-	//	if h.peers.UselessNum() >= h.maxPeers/10 {
-	//		// don't allow more than 10% of useless peers
-	//		return p2p.DiscTooManyPeers
-	//	}
-	//	p.SetUseless()
-	//}
+	useless := discfilter.Banned(p.Node().ID(), p.Node().Record())
+	if !useless && (!eligibleForSnap(p.Peer) || !strings.Contains(strings.ToLower(p.Name()), "arthera")) {
+		useless = true
+		discfilter.Ban(p.ID())
+	}
+	if useless {
+		log.Info("Useless peer", "ID", p.Node().IP())
+	}
+	if !p.Peer.Info().Network.Trusted && useless {
+		if h.peers.UselessNum() >= h.maxPeers/10 {
+			// don't allow more than 10% of useless peers
+			return p2p.DiscTooManyPeers
+		}
+		p.SetUseless()
+	}
 
 	h.peerWG.Add(1)
 	defer h.peerWG.Done()

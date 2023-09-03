@@ -3,7 +3,7 @@
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd -P)
 NODE_DIR=$SCRIPT_DIR/node1
 
-"$SCRIPT_DIR/../../build/arthera-node" --devnet --genesis devnet.g --genesis.allowUnknown --port 6534 --netrestrict 127.0.0.1/8 --cache 5000 \
+"$SCRIPT_DIR/../../build/arthera-node" --devnet --genesis devnet.g --genesis.allowUnknown --port 6534 --netrestrict 127.0.0.1/8 \
   --identity "node1" --nodekey "$NODE_DIR/node.key" --nousb \
   --datadir "$NODE_DIR" --verbosity=4 \
   --bootnodes "" \

@@ -809,7 +809,7 @@ func (h *handler) handle(p *peer) error {
 		myProgress = h.myProgress()
 	)
 	if err := p.Handshake(h.NetworkID, myProgress, common.Hash(genesis)); err != nil {
-		p.Log().Info("Banning peer for failed handshake", "peer", p.Name(), "err", err)
+		p.Log().Info("Banning peer for failed handshake", "peer", p.Node().ID(), "err", err)
 		if !useless {
 			discfilter.Ban(p.ID())
 		}

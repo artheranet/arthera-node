@@ -11,6 +11,8 @@ VERSION_FLAGS=-X github.com/artheranet/arthera-node/version.VersionMajor=$(VERSI
 .PHONY: all
 all: arthera
 
+all_release: node_release rpc_release rpc_trace_release
+
 .PHONY: arthera
 arthera:
 	@echo "Building version: $(VERSION)"

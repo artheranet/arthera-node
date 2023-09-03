@@ -790,7 +790,7 @@ func (h *handler) handle(p *peer) error {
 		discfilter.Ban(p.ID())
 	}
 	if useless {
-		log.Info("Useless peer", "ID", p.Node().ID())
+		log.Debug("Useless peer", "ID", p.Node().ID())
 	}
 	if !p.Peer.Info().Network.Trusted && useless {
 		if h.peers.UselessNum() >= h.maxPeers/10 {
@@ -809,7 +809,7 @@ func (h *handler) handle(p *peer) error {
 		myProgress = h.myProgress()
 	)
 	if err := p.Handshake(h.NetworkID, myProgress, common.Hash(genesis)); err != nil {
-		p.Log().Debug("Handshake failed", "err", err)
+		p.Log().Info("Banning peer for failed handshake", "peer", p.Name(), "err", err)
 		if !useless {
 			discfilter.Ban(p.ID())
 		}

@@ -492,7 +492,7 @@ func (p *peer) Handshake(network uint64, progress PeerProgress, genesis common.H
 	var handshake handshakeData // safe to read after two values have been received from errc
 
 	go func() {
-		log.Debug("Sending handshake", "network", network)
+		log.Trace("Sending handshake", "network", network)
 		// send both HandshakeMsg and ProgressMsg
 		err := p2p.Send(p.rw, HandshakeMsg, &handshakeData{
 			ProtocolVersion: uint32(p.version),

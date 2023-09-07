@@ -485,6 +485,11 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 	}
 	cfg.Node = nodeConfigWithFlags(ctx, cfg.Node)
 
+	if ctx.GlobalIsSet(FakeNetFlag.Name) {
+		id, _, _ := parseFakeGen(ctx.GlobalString(FakeNetFlag.Name))
+		cfg.Node.P2P.PrivateKey = fake.FakeKey(id)
+	}
+
 	err = setValidator(ctx, &cfg.Emitter)
 	if err != nil {
 		return nil, err

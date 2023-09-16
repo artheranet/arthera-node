@@ -64,6 +64,7 @@ func (em *Emitter) isAllowedToEmit(e inter.EventI, eTxs bool, metric ancestor.Me
 	adjustedPassedTime := time.Duration(ancestor.Metric(passedTime/piecefunc.DecimalUnit) * metric)
 	adjustedPassedIdleTime := time.Duration(ancestor.Metric(passedTimeIdle/piecefunc.DecimalUnit) * metric)
 	passedBlocks := em.world.GetLatestBlockIndex() - em.prevEmittedAtBlock
+
 	// Forbid emitting if not enough power and power is decreasing
 	{
 		threshold := em.config.EmergencyThreshold

@@ -20,6 +20,8 @@ import (
 	"crypto/ecdsa"
 	"errors"
 	"fmt"
+	"github.com/artheranet/arthera-node/contracts"
+	"github.com/artheranet/arthera-node/logger"
 	"io/ioutil"
 	"math/big"
 	"math/rand"
@@ -96,6 +98,10 @@ func (bc *testBlockChain) GetBlock(hash common.Hash, number uint64) *EvmBlock {
 	return bc.CurrentBlock()
 }
 
+func (bc *testBlockChain) GetHeader(hash common.Hash, number uint64) *EvmHeader {
+	return bc.CurrentBlock().Header()
+}
+
 func (bc *testBlockChain) StateAt(common.Hash) (*state.StateDB, error) {
 	return bc.statedb, nil
 }
@@ -142,6 +148,7 @@ func setupTxPool() (*TxPool, *ecdsa.PrivateKey) {
 
 func setupTxPoolWithConfig(config *params.ChainConfig) (*TxPool, *ecdsa.PrivateKey) {
 	statedb, _ := state.New(common.Hash{}, state.NewDatabase(rawdb.NewMemoryDatabase()), nil)
+	statedb.SetCode(contracts.SubscribersSmartContractAddress, contracts.SubscribersBytecode)
 	blockchain := &testBlockChain{statedb, 10000000, new(event.Feed)}
 
 	key, _ := crypto.GenerateKey()
@@ -569,6 +576,7 @@ func TestTransactionNonceRecovery(t *testing.T) {
 // Tests that if an account runs out of funds, any pending and queued transactions
 // are dropped.
 func TestTransactionDropping(t *testing.T) {
+	logger.SetTestMode(t)
 	t.Parallel()
 
 	// Create a test account and fund it

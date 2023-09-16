@@ -16,7 +16,10 @@ var InfiniteCap = new(big.Int).Sub(new(big.Int).Exp(new(big.Int).SetUint64(2), n
 
 func ValidateSubscriberBalance(from common.Address, tx *types.Transaction, state *state.StateDB, vmRunner vmcontext.EVMRunner) bool {
 	senderAABalance := state.GetBalance(from)
+	return ValidateSubscriberBalanceWithParam(senderAABalance, from, tx, state, vmRunner)
+}
 
+func ValidateSubscriberBalanceWithParam(senderAABalance *big.Int, from common.Address, tx *types.Transaction, state *state.StateDB, vmRunner vmcontext.EVMRunner) bool {
 	// if the tx has a value, the sender must have enough balance to pay for it
 	if senderAABalance.Cmp(tx.Value()) < 0 {
 		return false

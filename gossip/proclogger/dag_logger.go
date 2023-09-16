@@ -29,7 +29,7 @@ func (l *Logger) EventConnectionStarted(e inter.EventPayloadI, emitted bool) fun
 		now := time.Now()
 		// logging for the individual item
 		msg := "New event"
-		logType := l.Log.Debug
+		logType := l.Log.Trace
 		if emitted {
 			msg = "New event emitted"
 			logType = l.Log.Debug

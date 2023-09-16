@@ -684,6 +684,11 @@ const NetworkInitializerStr = `[
 
 const SubscribersStr = `[
     {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
       "anonymous": false,
       "inputs": [
         {
@@ -1016,6 +1021,12 @@ const SubscribersStr = `[
     {
       "anonymous": false,
       "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
         {
           "indexed": false,
           "internalType": "uint256",
@@ -1830,6 +1841,19 @@ const SubscribersStr = `[
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "isOwner",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -2109,6 +2133,25 @@ const SubscribersStr = `[
     {
       "inputs": [
         {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "subscribersById",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "bytes4",
           "name": "interfaceId",
           "type": "bytes4"
@@ -2315,6 +2358,19 @@ const SubscribersStr = `[
       "name": "updatePlan",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "version",
+      "outputs": [
+        {
+          "internalType": "bytes3",
+          "name": "",
+          "type": "bytes3"
+        }
+      ],
+      "stateMutability": "pure",
       "type": "function"
     },
     {

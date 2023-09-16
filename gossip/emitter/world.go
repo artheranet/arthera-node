@@ -2,6 +2,7 @@ package emitter
 
 import (
 	"errors"
+	"github.com/artheranet/arthera-node/internal/inter/iblockproc"
 	"github.com/artheranet/arthera-node/params"
 	"github.com/ethereum/go-ethereum/core/state"
 	"sync"
@@ -68,6 +69,7 @@ type Reader interface {
 	LlrReader
 	GetLatestBlockIndex() idx.Block
 	GetEpochValidators() (*pos.Validators, idx.Epoch)
+	GetHistoryEpochState(epoch idx.Epoch) *iblockproc.EpochState
 	GetEvent(hash.Event) *inter.Event
 	GetEventPayload(hash.Event) *inter.EventPayload
 	GetLastEvent(epoch idx.Epoch, from idx.ValidatorID) *hash.Event

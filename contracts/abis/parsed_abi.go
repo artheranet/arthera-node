@@ -12,7 +12,7 @@ var (
 	EVMWriter            *abi.ABI = mustParseAbi("EVMWriter", EVMWriterStr)
 	Subscribers          *abi.ABI = mustParseAbi("Subscribers", SubscribersStr)
 	PayAsYouGoGasRewards *abi.ABI = mustParseAbi("PayAsYouGoGasRewards", PayAsYouGoGasRewardsStr)
-	IERC20               *abi.ABI = mustParseAbi("IERC20", IERC20Str)
+	IERC20WithMetadata   *abi.ABI = mustParseAbi("IERC20WithMetadata", IERC20WithMetadataStr)
 	Staking              *abi.ABI = mustParseAbi("Staking", StakingStr)
 )
 

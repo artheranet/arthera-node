@@ -22,10 +22,14 @@ var (
 	allowanceMethodID    []byte
 	approveMethodID      []byte
 	transferFromMethodID []byte
+	nameMethodID         []byte
+	symbolMethodID       []byte
+	decimalsMethodID     []byte
 )
 
 var (
 	zeroAddress   = common.Address{}
+	abiUint8, _   = abi.NewType("uint8", "", nil)
 	abiUint256, _ = abi.NewType("uint256", "", nil)
 	abiString, _  = abi.NewType("string", "", nil)
 	abiBool, _    = abi.NewType("bool", "", nil)
@@ -40,10 +44,13 @@ func init() {
 		"allowance":    &allowanceMethodID,
 		"approve":      &approveMethodID,
 		"transferFrom": &transferFromMethodID,
+		"name":         &nameMethodID,
+		"symbol":       &symbolMethodID,
+		"decimals":     &decimalsMethodID,
 	} {
-		method, exist := abis.IERC20.Methods[name]
+		method, exist := abis.IERC20WithMetadata.Methods[name]
 		if !exist {
-			panic("unknown IERC20 method")
+			panic("unknown IERC20Metadata method")
 		}
 
 		*constID = make([]byte, len(method.ID))
@@ -74,6 +81,12 @@ func (_ PreCompiledContract) Run(evm *vm.EVM, caller common.Address, input []byt
 		return approve(evm, caller, args, suppliedGas)
 	} else if bytes.Equal(methodId, transferFromMethodID) {
 		return transferFrom(evm, caller, args, suppliedGas)
+	} else if bytes.Equal(methodId, nameMethodID) {
+		return packAbiString("Arthera"), suppliedGas, nil
+	} else if bytes.Equal(methodId, symbolMethodID) {
+		return packAbiString("AA"), suppliedGas, nil
+	} else if bytes.Equal(methodId, decimalsMethodID) {
+		return packAbiUint8(18), suppliedGas, nil
 	} else {
 		return nil, 0, vm.ErrExecutionReverted
 	}
@@ -217,22 +230,6 @@ func _transfer(evm *vm.EVM, from common.Address, to common.Address, amount *big.
 	return nil
 }
 
-func packAbiError(err string) []byte {
-	errText, _ := abi.Arguments{{Type: abiString}}.Pack(err)
-	ret := []byte{0x08, 0xc3, 0x79, 0xa0} // Keccak256("Error(string)")[:4]
-	return append(ret, errText...)
-}
-
-func packAbiBool(b bool) []byte {
-	ret, _ := abi.Arguments{{Type: abiBool}}.Pack(b)
-	return ret
-}
-
-func packAbiUint256(value *big.Int) []byte {
-	ret, _ := abi.Arguments{{Type: abiUint256}}.Pack(value)
-	return ret
-}
-
 func createTransferEvent(from common.Address, to common.Address, amount *big.Int, blockNumber uint64) types.Log {
 	var topics = []common.Hash{
 		transferEvent,
@@ -279,4 +276,30 @@ func getTotalSupplyKey() common.Hash {
 	return crypto.Keccak256Hash(
 		common.LeftPadBytes(big.NewInt(0).Bytes(), 32),
 	)
+}
+
+func packAbiError(err string) []byte {
+	errText, _ := abi.Arguments{{Type: abiString}}.Pack(err)
+	ret := []byte{0x08, 0xc3, 0x79, 0xa0} // Keccak256("Error(string)")[:4]
+	return append(ret, errText...)
+}
+
+func packAbiBool(b bool) []byte {
+	ret, _ := abi.Arguments{{Type: abiBool}}.Pack(b)
+	return ret
+}
+
+func packAbiUint256(value *big.Int) []byte {
+	ret, _ := abi.Arguments{{Type: abiUint256}}.Pack(value)
+	return ret
+}
+
+func packAbiUint8(value uint8) []byte {
+	ret, _ := abi.Arguments{{Type: abiUint8}}.Pack(value)
+	return ret
+}
+
+func packAbiString(value string) []byte {
+	ret, _ := abi.Arguments{{Type: abiString}}.Pack(value)
+	return ret
 }

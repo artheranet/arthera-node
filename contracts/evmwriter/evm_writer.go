@@ -38,7 +38,7 @@ func init() {
 
 type PreCompiledContract struct{}
 
-func (_ PreCompiledContract) Run(stateDB vm.StateDB, _ vm.BlockContext, txCtx vm.TxContext, caller common.Address, input []byte, suppliedGas uint64) ([]byte, uint64, error) {
+func (_ PreCompiledContract) Run(evm *vm.EVM, caller common.Address, input []byte, suppliedGas uint64) ([]byte, uint64, error) {
 	if caller != contracts.NodeDriverSmartContractAddress {
 		return nil, 0, vm.ErrExecutionReverted
 	}
@@ -60,18 +60,18 @@ func (_ PreCompiledContract) Run(stateDB vm.StateDB, _ vm.BlockContext, txCtx vm
 		input = input[32:]
 		value := new(big.Int).SetBytes(input[:32])
 
-		if acc == txCtx.Origin {
+		if acc == evm.TxContext.Origin {
 			// Origin balance shouldn't decrease during his transaction
 			return nil, 0, vm.ErrExecutionReverted
 		}
 
-		balance := stateDB.GetBalance(acc)
+		balance := evm.StateDB.GetBalance(acc)
 		if balance.Cmp(value) >= 0 {
 			diff := new(big.Int).Sub(balance, value)
-			stateDB.SubBalance(acc, diff)
+			evm.StateDB.SubBalance(acc, diff)
 		} else {
 			diff := new(big.Int).Sub(value, balance)
-			stateDB.AddBalance(acc, diff)
+			evm.StateDB.AddBalance(acc, diff)
 		}
 	} else if bytes.Equal(input[:4], copyCodeMethodID) {
 		input = input[4:]
@@ -88,7 +88,7 @@ func (_ PreCompiledContract) Run(stateDB vm.StateDB, _ vm.BlockContext, txCtx vm
 		input = input[32:]
 		accFrom := common.BytesToAddress(input[12:32])
 
-		code := stateDB.GetCode(accFrom)
+		code := evm.StateDB.GetCode(accFrom)
 		if code == nil {
 			code = []byte{}
 		}
@@ -98,7 +98,7 @@ func (_ PreCompiledContract) Run(stateDB vm.StateDB, _ vm.BlockContext, txCtx vm
 		}
 		suppliedGas -= cost
 		if accTo != accFrom {
-			stateDB.SetCode(accTo, code)
+			evm.StateDB.SetCode(accTo, code)
 		}
 	} else if bytes.Equal(input[:4], swapCodeMethodID) {
 		input = input[4:]
@@ -115,11 +115,11 @@ func (_ PreCompiledContract) Run(stateDB vm.StateDB, _ vm.BlockContext, txCtx vm
 		acc0 := common.BytesToAddress(input[12:32])
 		input = input[32:]
 		acc1 := common.BytesToAddress(input[12:32])
-		code0 := stateDB.GetCode(acc0)
+		code0 := evm.StateDB.GetCode(acc0)
 		if code0 == nil {
 			code0 = []byte{}
 		}
-		code1 := stateDB.GetCode(acc1)
+		code1 := evm.StateDB.GetCode(acc1)
 		if code1 == nil {
 			code1 = []byte{}
 		}
@@ -131,8 +131,8 @@ func (_ PreCompiledContract) Run(stateDB vm.StateDB, _ vm.BlockContext, txCtx vm
 		}
 		suppliedGas -= cost
 		if acc0 != acc1 {
-			stateDB.SetCode(acc0, code1)
-			stateDB.SetCode(acc1, code0)
+			evm.StateDB.SetCode(acc0, code1)
+			evm.StateDB.SetCode(acc1, code0)
 		}
 	} else if bytes.Equal(input[:4], setStorageMethodID) {
 		input = input[4:]
@@ -150,7 +150,7 @@ func (_ PreCompiledContract) Run(stateDB vm.StateDB, _ vm.BlockContext, txCtx vm
 		input = input[32:]
 		value := common.BytesToHash(input[:32])
 
-		stateDB.SetState(acc, key, value)
+		evm.StateDB.SetState(acc, key, value)
 	} else if bytes.Equal(input[:4], incNonceMethodID) {
 		input = input[4:]
 		// incNonce
@@ -166,7 +166,7 @@ func (_ PreCompiledContract) Run(stateDB vm.StateDB, _ vm.BlockContext, txCtx vm
 		input = input[32:]
 		value := new(big.Int).SetBytes(input[:32])
 
-		if acc == txCtx.Origin {
+		if acc == evm.TxContext.Origin {
 			// Origin nonce shouldn't change during his transaction
 			return nil, 0, vm.ErrExecutionReverted
 		}
@@ -179,7 +179,7 @@ func (_ PreCompiledContract) Run(stateDB vm.StateDB, _ vm.BlockContext, txCtx vm
 			return nil, 0, vm.ErrExecutionReverted
 		}
 
-		stateDB.SetNonce(acc, stateDB.GetNonce(acc)+value.Uint64())
+		evm.StateDB.SetNonce(acc, evm.StateDB.GetNonce(acc)+value.Uint64())
 	} else {
 		return nil, 0, vm.ErrExecutionReverted
 	}

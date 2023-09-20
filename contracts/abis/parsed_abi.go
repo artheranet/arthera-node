@@ -12,6 +12,8 @@ var (
 	EVMWriter            *abi.ABI = mustParseAbi("EVMWriter", EVMWriterStr)
 	Subscribers          *abi.ABI = mustParseAbi("Subscribers", SubscribersStr)
 	PayAsYouGoGasRewards *abi.ABI = mustParseAbi("PayAsYouGoGasRewards", PayAsYouGoGasRewardsStr)
+	IERC20               *abi.ABI = mustParseAbi("IERC20", IERC20Str)
+	Staking              *abi.ABI = mustParseAbi("Staking", StakingStr)
 )
 
 func mustParseAbi(name, abiStr string) *abi.ABI {

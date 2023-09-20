@@ -3,6 +3,7 @@ package params
 import (
 	"encoding/json"
 	"github.com/artheranet/arthera-node/contracts"
+	"github.com/artheranet/arthera-node/contracts/native_token"
 	"math/big"
 	"time"
 
@@ -28,7 +29,8 @@ const (
 
 var DefaultVMConfig = vm.Config{
 	StatePrecompiles: map[common.Address]vm.PrecompiledStateContract{
-		contracts.EvmWriterSmartContractAddress: &evmwriter.PreCompiledContract{},
+		contracts.EvmWriterSmartContractAddress:   &evmwriter.PreCompiledContract{},
+		contracts.NativeTokenSmartContractAddress: &native_token.PreCompiledContract{},
 	},
 }
 

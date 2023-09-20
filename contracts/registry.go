@@ -27,6 +27,7 @@ var (
 	PayAsYouGoGasRewardsContractAddress    = common.BytesToAddress([]byte{0xAA, 0x06})
 	SubscribersSmartContractAddress        = common.BytesToAddress([]byte{0xAA, 0x07})
 	EmitterDriverSmartContractAddress      = common.BytesToAddress([]byte{0xAA, 0x08})
+	NativeTokenSmartContractAddress        = common.BytesToAddress([]byte{0xAA, 0x09})
 )
 
 func IsSystemContract(address common.Address) bool {

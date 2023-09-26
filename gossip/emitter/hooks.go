@@ -62,7 +62,7 @@ func (em *Emitter) OnNewEpoch(newValidators *pos.Validators, newEpoch idx.Epoch)
 			"extMinInterval", extMinInterval, "extConfirmingInterval", extConfirmingInterval)
 	} else {
 		log.Warn("EmitterDriver contract not found, using default values")
-		switchToFCIndexer = true
+		switchToFCIndexer = false
 		extMinInterval = 0
 		extConfirmingInterval = 0
 	}

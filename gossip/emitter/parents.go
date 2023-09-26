@@ -42,7 +42,9 @@ func (em *Emitter) chooseParents(epoch idx.Epoch, myValidatorID idx.ValidatorID)
 	heads := em.world.GetHeads(epoch) // events with no descendants
 
 	if selfParent != nil && len(em.world.DagIndex().NoCheaters(selfParent, hash.Events{*selfParent})) == 0 {
-		em.Periodic.Error(time.Second, "Events emitting isn't allowed due to the doublesign", "validator", myValidatorID)
+		epochState := em.world.GetHistoryEpochState(epoch)
+		em.Periodic.Error(time.Second, "Events emitting isn't allowed due to the doublesign",
+			"validator", myValidatorID, "epoch", epoch, "epochStart", epochState.EpochStart, "event", selfParent.String())
 		return nil, nil, false
 	}
 

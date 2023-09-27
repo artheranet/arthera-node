@@ -13,6 +13,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/syndtr/goleveldb/leveldb/opt"
 	"gopkg.in/urfave/cli.v1"
+	"math/big"
 	"os"
 	"path"
 	"path/filepath"
@@ -498,6 +499,14 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 		cfg.Emitter.PrevEmittedEventFile.Path = cfg.Node.ResolvePath(path.Join("emitter", fmt.Sprintf("last-%d", cfg.Emitter.Validator.ID)))
 	}
 	setTxPool(ctx, &cfg.TxPool)
+
+	// Sanitize GPO config
+	if cfg.Arthera.GPO.MinGasTip == nil || cfg.Arthera.GPO.MinGasTip.Sign() == 0 {
+		cfg.Arthera.GPO.MinGasTip = new(big.Int).SetUint64(cfg.TxPool.PriceLimit)
+	}
+	if cfg.Arthera.GPO.MinGasTip.Cmp(new(big.Int).SetUint64(cfg.TxPool.PriceLimit)) < 0 {
+		log.Warn(fmt.Sprintf("GPO minimum gas tip (Arthera.GPO.MinGasTip=%s) is lower than txpool minimum gas tip (TxPool.PriceLimit=%d)", cfg.Arthera.GPO.MinGasTip.String(), cfg.TxPool.PriceLimit))
+	}
 
 	if err := cfg.Arthera.Validate(); err != nil {
 		return nil, err

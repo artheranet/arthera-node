@@ -27,9 +27,15 @@ type EVMRunner interface {
 
 	// StartGasMetering start gas metering
 	StartGasMetering()
+
+	GetEvmStateDB() vm.StateDB
 }
 
 type SharedEVMRunner struct{ *vm.EVM }
+
+func (runner *SharedEVMRunner) GetEvmStateDB() vm.StateDB {
+	return runner.StateDB
+}
 
 func (runner *SharedEVMRunner) Execute(recipient common.Address, input []byte, gas uint64, value *big.Int) (ret []byte, err error) {
 	ret, _, err = runner.Call(vm.AccountRef(params.ZeroAddress), recipient, input, gas, value)

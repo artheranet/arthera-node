@@ -287,10 +287,11 @@ func (b *GenesisBuilder) DeployBaseContracts() {
 	// pre deploy registry
 	b.SetCode(contracts.PayAsYouGoGasRewardsContractAddress, contracts.PayAsYouGoGasRewardsBytecode)
 	// pre deploy subscription
-	b.SetCode(contracts.SubscribersSmartContractAddress, contracts.SubscribersBytecode)
+	//b.SetCode(contracts.SubscribersSmartContractAddress, contracts.SubscribersBytecode)
 	// set non-zero code for pre-compiled contracts
 	b.SetCode(contracts.EvmWriterSmartContractAddress, []byte{0})
 	b.SetCode(contracts.NativeTokenSmartContractAddress, []byte{0})
+	b.SetCode(contracts.SubscribersSmartContractAddress, []byte{0})
 }
 
 func (b *GenesisBuilder) InitializeEpoch(block idx.Block, epoch idx.Epoch, rules params.ProtocolRules, timestamp inter.Timestamp) {

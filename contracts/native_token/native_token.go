@@ -4,13 +4,16 @@ import (
 	"bytes"
 	"github.com/artheranet/arthera-node/contracts"
 	"github.com/artheranet/arthera-node/contracts/abis"
-	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/params"
 	"math/big"
+)
+
+const (
+	AllowanceSlot = iota
 )
 
 var (
@@ -27,15 +30,6 @@ var (
 	decimalsMethodID     []byte
 )
 
-var (
-	zeroAddress   = common.Address{}
-	abiUint8, _   = abi.NewType("uint8", "", nil)
-	abiUint256, _ = abi.NewType("uint256", "", nil)
-	abiString, _  = abi.NewType("string", "", nil)
-	abiBool, _    = abi.NewType("bool", "", nil)
-	maxUint256    = new(big.Int).Sub(new(big.Int).Exp(new(big.Int).SetUint64(2), new(big.Int).SetUint64(256), nil), new(big.Int).SetUint64(1))
-)
-
 func init() {
 	for name, constID := range map[string]*[]byte{
 		"totalSupply":  &totalSupplyMethodID,
@@ -48,7 +42,7 @@ func init() {
 		"symbol":       &symbolMethodID,
 		"decimals":     &decimalsMethodID,
 	} {
-		method, exist := abis.IERC20WithMetadata.Methods[name]
+		method, exist := abis.NativeToken.Methods[name]
 		if !exist {
 			panic("unknown IERC20Metadata method")
 		}
@@ -82,11 +76,11 @@ func (_ PreCompiledContract) Run(evm *vm.EVM, caller common.Address, input []byt
 	} else if bytes.Equal(methodId, transferFromMethodID) {
 		return transferFrom(evm, caller, args, suppliedGas)
 	} else if bytes.Equal(methodId, nameMethodID) {
-		return packAbiString("Arthera"), suppliedGas, nil
+		return abis.PackAbiString("Arthera"), suppliedGas, nil
 	} else if bytes.Equal(methodId, symbolMethodID) {
-		return packAbiString("AA"), suppliedGas, nil
+		return abis.PackAbiString("AA"), suppliedGas, nil
 	} else if bytes.Equal(methodId, decimalsMethodID) {
-		return packAbiUint8(18), suppliedGas, nil
+		return abis.PackAbiUint8(18), suppliedGas, nil
 	} else {
 		return nil, 0, vm.ErrExecutionReverted
 	}
@@ -104,12 +98,12 @@ func totalSupply(evm *vm.EVM, caller common.Address, input []byte, suppliedGas u
 
 // function balanceOf(address account) returns (uint256)
 func balanceOf(evm *vm.EVM, _ common.Address, input []byte, suppliedGas uint64) ([]byte, uint64, error) {
-	if len(input) != 32 {
+	if !abis.HasNumArgs(input, 1) {
 		return nil, 0, vm.ErrExecutionReverted
 	}
-	acc := common.BytesToAddress(input[12:32])
+	acc := abis.GetAddressArg(input, 0)
 	balance := evm.StateDB.GetBalance(acc)
-	return packAbiUint256(balance), suppliedGas, nil
+	return abis.PackAbiUint256(balance), suppliedGas, nil
 }
 
 // function transfer(address to, uint256 amount) returns (bool)
@@ -118,92 +112,90 @@ func transfer(evm *vm.EVM, owner common.Address, input []byte, suppliedGas uint6
 		return nil, 0, vm.ErrOutOfGas
 	}
 	suppliedGas -= params.CallValueTransferGas
-	if len(input) != 64 {
+	if !abis.HasNumArgs(input, 2) {
 		return nil, 0, vm.ErrExecutionReverted
 	}
-	to := common.BytesToAddress(input[12:32])
-	input = input[32:]
-	amount := new(big.Int).SetBytes(input[:32])
+	to := abis.GetAddressArg(input, 0)
+	amount := abis.GetUint256Arg(input, 1)
 	ret := _transfer(evm, owner, to, amount)
 	if ret != nil {
 		return ret, suppliedGas, vm.ErrExecutionReverted
 	}
-	return packAbiBool(true), suppliedGas, nil
+	return abis.PackAbiBool(true), suppliedGas, nil
 }
 
 // function approve(address spender, uint256 amount) returns (bool)
 func approve(evm *vm.EVM, _ common.Address, input []byte, suppliedGas uint64) ([]byte, uint64, error) {
-	if len(input) != 64 {
+	if !abis.HasNumArgs(input, 2) {
 		return nil, 0, vm.ErrExecutionReverted
 	}
 	if suppliedGas < params.SstoreSetGasEIP2200 {
 		return nil, 0, vm.ErrOutOfGas
 	}
 	suppliedGas -= params.SstoreSetGasEIP2200
-	spender := common.BytesToAddress(input[12:32])
-	input = input[32:]
-	amount := new(big.Int).SetBytes(input[:32])
+	spender := abis.GetAddressArg(input, 0)
+	amount := abis.GetUint256Arg(input, 1)
 	ret := _approve(evm, evm.TxContext.Origin, spender, amount)
 	if ret != nil {
 		return ret, suppliedGas, vm.ErrExecutionReverted
 	}
-	return packAbiBool(true), suppliedGas, nil
+	return abis.PackAbiBool(true), suppliedGas, nil
 }
 
 // function allowance(address owner, address spender) returns (uint256)
 func allowance(evm *vm.EVM, _ common.Address, input []byte, suppliedGas uint64) ([]byte, uint64, error) {
-	if len(input) != 64 {
+	if !abis.HasNumArgs(input, 2) {
 		return nil, 0, vm.ErrExecutionReverted
 	}
-	owner := common.BytesToAddress(input[12:32])
-	input = input[32:]
-	spender := common.BytesToAddress(input[12:32])
-	return packAbiUint256(_allowance(evm, owner, spender)), suppliedGas, nil
+	owner := abis.GetAddressArg(input, 0)
+	spender := abis.GetAddressArg(input, 1)
+	return abis.PackAbiUint256(_allowance(evm, owner, spender)), suppliedGas, nil
 }
 
 // function transferFrom(address from, address to, uint256 amount) returns (bool)
 func transferFrom(evm *vm.EVM, spender common.Address, input []byte, suppliedGas uint64) ([]byte, uint64, error) {
-	if len(input) != 96 {
+	if !abis.HasNumArgs(input, 3) {
 		return nil, 0, vm.ErrExecutionReverted
 	}
-	from := common.BytesToAddress(input[12:32])
-	input = input[32:]
-	to := common.BytesToAddress(input[12:32])
-	input = input[32:]
-	amount := new(big.Int).SetBytes(input[:32])
+	from := abis.GetAddressArg(input, 0)
+	to := abis.GetAddressArg(input, 1)
+	amount := abis.GetUint256Arg(input, 2)
 	ret := _spendAllowance(evm, from, spender, amount)
 	if ret != nil {
 		return ret, suppliedGas, vm.ErrExecutionReverted
 	}
 	_transfer(evm, from, to, amount)
-	return packAbiBool(true), suppliedGas, nil
+	return abis.PackAbiBool(true), suppliedGas, nil
 }
 
 func _approve(evm *vm.EVM, owner common.Address, spender common.Address, amount *big.Int) []byte {
-	if owner == zeroAddress {
-		return packAbiError("ERC20: approve from the zero address")
+	if owner == abis.ZeroAddress {
+		return abis.PackRevert("ERC20: approve from the zero address")
 	}
-	if spender == zeroAddress {
-		return packAbiError("ERC20: approve to the zero address")
+	if spender == abis.ZeroAddress {
+		return abis.PackRevert("ERC20: approve to the zero address")
 	}
-	storageKey := getAllowanceKey(owner, spender)
-	evm.StateDB.SetState(contracts.NativeTokenSmartContractAddress, storageKey, common.BigToHash(amount))
+	abis.SetDoubleMappingData(
+		evm.StateDB, contracts.NativeTokenSmartContractAddress, AllowanceSlot,
+		owner.Bytes(), spender.Bytes(), common.BigToHash(amount),
+	)
 	event := createApprovalEvent(evm.TxContext.Origin, spender, amount, evm.Context.BlockNumber.Uint64())
 	evm.StateDB.AddLog(&event)
 	return nil
 }
 
 func _allowance(evm *vm.EVM, owner common.Address, spender common.Address) *big.Int {
-	storageKey := getAllowanceKey(owner, spender)
-	ret := evm.StateDB.GetState(contracts.NativeTokenSmartContractAddress, storageKey)
-	return ret.Big()
+	return abis.GetDoubleMappingData(
+		evm.StateDB, contracts.NativeTokenSmartContractAddress, AllowanceSlot,
+		owner.Bytes(), spender.Bytes(),
+	).Big()
 }
 
 func _spendAllowance(evm *vm.EVM, owner common.Address, spender common.Address, amount *big.Int) []byte {
 	currentAllowance := _allowance(evm, owner, spender)
-	if currentAllowance.Cmp(maxUint256) != 0 {
+	if currentAllowance.Cmp(abis.MaxUint256) != 0 {
 		if currentAllowance.Cmp(amount) < 0 {
-			return packAbiError("ERC20: insufficient allowance")
+			return abis.PackRevert("ERC20: insufficient allowance")
 		}
 		_approve(evm, owner, spender, new(big.Int).Sub(currentAllowance, amount))
 	}
@@ -211,11 +203,11 @@ func _spendAllowance(evm *vm.EVM, owner common.Address, spender common.Address, 
 }
 
 func _transfer(evm *vm.EVM, from common.Address, to common.Address, amount *big.Int) []byte {
-	if from == zeroAddress {
-		return packAbiError("ERC20: transfer from the zero address")
+	if from == abis.ZeroAddress {
+		return abis.PackRevert("ERC20: transfer from the zero address")
 	}
-	if to == zeroAddress {
-		return packAbiError("ERC20: transfer to the zero address")
+	if to == abis.ZeroAddress {
+		return abis.PackRevert("ERC20: transfer to the zero address")
 	}
 	if amount.Cmp(big.NewInt(0)) == 0 {
 		return nil
@@ -225,7 +217,7 @@ func _transfer(evm *vm.EVM, from common.Address, to common.Address, amount *big.
 		event := createTransferEvent(from, to, amount, evm.Context.BlockNumber.Uint64())
 		evm.StateDB.AddLog(&event)
 	} else {
-		return packAbiError("transfer amount exceeds balance")
+		return abis.PackRevert("transfer amount exceeds balance")
 	}
 	return nil
 }
@@ -237,7 +229,7 @@ func createTransferEvent(from common.Address, to common.Address, amount *big.Int
 		common.BytesToHash(common.LeftPadBytes(to.Bytes(), 32)),
 	}
 
-	data, _ := abi.Arguments{{Type: abiUint256}}.Pack(amount)
+	data := abis.PackAbiUint256(amount)
 
 	return types.Log{
 		Address:     contracts.NativeTokenSmartContractAddress,
@@ -254,7 +246,7 @@ func createApprovalEvent(owner common.Address, spender common.Address, amount *b
 		common.BytesToHash(common.LeftPadBytes(spender.Bytes(), 32)),
 	}
 
-	data, _ := abi.Arguments{{Type: abiUint256}}.Pack(amount)
+	data := abis.PackAbiUint256(amount)
 
 	return types.Log{
 		Address:     contracts.NativeTokenSmartContractAddress,
@@ -262,44 +254,4 @@ func createApprovalEvent(owner common.Address, spender common.Address, amount *b
 		Data:        data,
 		BlockNumber: blockNumber,
 	}
-}
-
-func getAllowanceKey(owner common.Address, spender common.Address) common.Hash {
-	return crypto.Keccak256Hash(
-		common.LeftPadBytes(spender.Bytes(), 32),
-		common.LeftPadBytes(owner.Bytes(), 32),
-		common.LeftPadBytes(big.NewInt(1).Bytes(), 32),
-	)
-}
-
-func getTotalSupplyKey() common.Hash {
-	return crypto.Keccak256Hash(
-		common.LeftPadBytes(big.NewInt(0).Bytes(), 32),
-	)
-}
-
-func packAbiError(err string) []byte {
-	errText, _ := abi.Arguments{{Type: abiString}}.Pack(err)
-	ret := []byte{0x08, 0xc3, 0x79, 0xa0} // Keccak256("Error(string)")[:4]
-	return append(ret, errText...)
-}
-
-func packAbiBool(b bool) []byte {
-	ret, _ := abi.Arguments{{Type: abiBool}}.Pack(b)
-	return ret
-}
-
-func packAbiUint256(value *big.Int) []byte {
-	ret, _ := abi.Arguments{{Type: abiUint256}}.Pack(value)
-	return ret
-}
-
-func packAbiUint8(value uint8) []byte {
-	ret, _ := abi.Arguments{{Type: abiUint8}}.Pack(value)
-	return ret
-}
-
-func packAbiString(value string) []byte {
-	ret, _ := abi.Arguments{{Type: abiString}}.Pack(value)
-	return ret
 }

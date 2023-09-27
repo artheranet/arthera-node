@@ -53,6 +53,10 @@ func (ev *evmRunner) StartGasMetering() {
 	ev.dontMeterGas = false
 }
 
+func (ev *evmRunner) GetEvmStateDB() vm.StateDB {
+	return ev.state
+}
+
 func NewEVMRunner(chain DummyChain, chainconfig *params2.ChainConfig, header *EvmHeader, state vm.StateDB) vmcontext.EVMRunner {
 	return &evmRunner{
 		state: state,

@@ -7,13 +7,13 @@ import (
 )
 
 var (
-	NodeDriver           *abi.ABI = mustParseAbi("NodeDriver", NodeDriverStr)
-	NetworkInitializer   *abi.ABI = mustParseAbi("NetworkInitializer", NetworkInitializerStr)
-	EVMWriter            *abi.ABI = mustParseAbi("EVMWriter", EVMWriterStr)
-	Subscribers          *abi.ABI = mustParseAbi("Subscribers", SubscribersStr)
-	PayAsYouGoGasRewards *abi.ABI = mustParseAbi("PayAsYouGoGasRewards", PayAsYouGoGasRewardsStr)
-	IERC20WithMetadata   *abi.ABI = mustParseAbi("IERC20WithMetadata", IERC20WithMetadataStr)
-	Staking              *abi.ABI = mustParseAbi("Staking", StakingStr)
+	NodeDriver           = mustParseAbi("NodeDriver", NodeDriverStr)
+	NetworkInitializer   = mustParseAbi("NetworkInitializer", NetworkInitializerStr)
+	EVMWriter            = mustParseAbi("EVMWriter", EVMWriterStr)
+	ISubscribers         = mustParseAbi("ISubscribers", ISubscribersStr)
+	PayAsYouGoGasRewards = mustParseAbi("PayAsYouGoGasRewards", PayAsYouGoGasRewardsStr)
+	NativeToken          = mustParseAbi("NativeToken", NativeTokenStr)
+	Staking              = mustParseAbi("Staking", StakingStr)
 )
 
 func mustParseAbi(name, abiStr string) *abi.ABI {

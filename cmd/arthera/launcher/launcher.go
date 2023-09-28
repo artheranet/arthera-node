@@ -131,12 +131,6 @@ func initFlags() {
 	}
 	legacyRpcFlags = []cli.Flag{
 		utils.NoUSBFlag,
-		utils.LegacyRPCEnabledFlag,
-		utils.LegacyRPCListenAddrFlag,
-		utils.LegacyRPCPortFlag,
-		utils.LegacyRPCCORSDomainFlag,
-		utils.LegacyRPCVirtualHostsFlag,
-		utils.LegacyRPCApiFlag,
 	}
 
 	rpcFlags = []cli.Flag{

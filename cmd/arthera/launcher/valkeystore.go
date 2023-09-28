@@ -27,7 +27,7 @@ func addFakeValidatorKey(ctx *cli.Context, key *ecdsa.PrivateKey, pubkey validat
 }
 
 func getValKeystoreDir(cfg node.Config) string {
-	_, _, keydir, err := cfg.AccountConfig()
+	keydir, err := cfg.KeyDirConfig()
 	if err != nil {
 		utils.Fatalf("Failed to setup account config: %v", err)
 	}

@@ -175,7 +175,7 @@ func validatorKeyConvert(ctx *cli.Context) error {
 	cfg := makeAllConfigs(ctx)
 	utils.SetNodeConfig(ctx, &cfg.Node)
 
-	_, _, keydir, _ := cfg.Node.AccountConfig()
+	keydir, _ := cfg.Node.KeyDirConfig()
 
 	pubkeyStr := ctx.Args().Get(1)
 	pubkey, err := validatorpk.FromString(pubkeyStr)

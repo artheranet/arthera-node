@@ -26,7 +26,6 @@ const (
 func overrideFlags() {
 	utils.ListenPortFlag.Value = DefaultP2PPort
 	utils.HTTPPortFlag.Value = DefaultHTTPPort
-	utils.LegacyRPCPortFlag.Value = DefaultHTTPPort
 	utils.WSPortFlag.Value = DefaultWSPort
 	utils.MetricsInfluxDBEndpointFlag.Value = DefaultInfluxMetricsEndpoint
 	utils.MetricsInfluxDBTokenFlag.Value = DefaultInfluxMetricsToken

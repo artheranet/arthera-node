@@ -2,7 +2,7 @@ package dbconfig
 
 import (
 	"fmt"
-	"github.com/artheranet/arthera-node/internal/dbconfig/threads"
+	"github.com/artheranet/arthera-node/utils/dbutil/threads"
 
 	"github.com/artheranet/lachesis/kvdb"
 	"github.com/artheranet/lachesis/kvdb/cachedproducer"

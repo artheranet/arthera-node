@@ -47,7 +47,7 @@ var notifier = logger.New("threads-pool")
 func (s *countedStore) NewIterator(prefix []byte, start []byte) kvdb.Iterator {
 	got, release := GlobalPool.Lock(1)
 	if got < 1 {
-		notifier.Log.Warn("Too much db iterators")
+		notifier.Log.Warn("Too many DB iterators")
 	}
 
 	return &countedIterator{

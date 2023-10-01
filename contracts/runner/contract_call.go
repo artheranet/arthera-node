@@ -51,7 +51,7 @@ func (am Method) decodeResult(result interface{}, output []byte) error {
 	if result == nil {
 		return nil
 	}
-	return am.abi.UnpackIntoInterface(result, am.method, output)
+	return am.abi.UnpackIntoInterface(&result, am.method, output)
 }
 
 // BoundMethod represents a Method that is bounded to an address

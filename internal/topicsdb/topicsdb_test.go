@@ -3,7 +3,7 @@ package topicsdb
 import (
 	"context"
 	"fmt"
-	"github.com/artheranet/arthera-node/internal/dbconfig/threads"
+	"github.com/artheranet/arthera-node/utils/dbutil/threads"
 	"math/rand"
 	"os"
 	"runtime/debug"

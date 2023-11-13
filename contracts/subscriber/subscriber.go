@@ -12,13 +12,13 @@ import (
 )
 
 var (
-	hasActiveSubscription = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "hasActiveSubscription", params.MaxGasForHasActiveSubscription)
-	debitSubscription     = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "debit", params.MaxGasForDebitSubscription)
-	creditSubscription    = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "credit", params.MaxGasForCreditSubscription)
-	getSubscriptionData   = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "getSubscriptionData", params.MaxGasForGetSub)
-	getCapRemaining       = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "getCapRemaining", params.MaxGasForGetSub)
-	getCapWindow          = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "getCapWindow", params.MaxGasForGetSub)
-	isWhitelisted         = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "isWhitelisted", params.MaxGasForIsWhitelisted)
+	hasActiveSubscription    = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "hasActiveSubscription", params.MaxGasForHasActiveSubscription)
+	debitSubscription        = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "debit", params.MaxGasForDebitSubscription)
+	creditSubscription       = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "credit", params.MaxGasForCreditSubscription)
+	getSubscriptionData      = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "getSubscriptionData", params.MaxGasForGetSub)
+	getCapRemaining          = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "getCapRemaining", params.MaxGasForGetSub)
+	getCapWindow             = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "getCapWindow", params.MaxGasForGetSub)
+	isWhitelistedForContract = runner.NewBoundMethod(contracts.SubscribersSmartContractAddress, abis.Subscribers, "isWhitelistedForContract", params.MaxGasForIsWhitelisted)
 )
 
 type Subscription struct {
@@ -31,28 +31,28 @@ type Subscription struct {
 	PeriodUsage  *big.Int
 }
 
-func HasActiveSubscription(evmRunner vmcontext.EVMRunner, subscriber common.Address) (bool, error) {
+func HasActiveSubscription(evmRunner vmcontext.EVMRunner, subscriber common.Address, contractSub bool) (bool, error) {
 	var result bool
 	if subscriber == params.ZeroAddress {
 		return false, nil
 	}
 	evmRunner.StopGasMetering()
 	defer evmRunner.StartGasMetering()
-	err := hasActiveSubscription.Query(evmRunner, &result, subscriber)
+	err := hasActiveSubscription.Query(evmRunner, &result, subscriber, contractSub)
 	if err != nil {
 		return false, err
 	}
 	return result, nil
 }
 
-func DebitSubscription(evmRunner vmcontext.EVMRunner, subscriber common.Address, units *big.Int) (*big.Int, error) {
+func DebitSubscription(evmRunner vmcontext.EVMRunner, subscriber common.Address, units *big.Int, contractSub bool) (*big.Int, error) {
 	var result *big.Int
 	if subscriber == params.ZeroAddress {
 		return units, nil
 	}
 	evmRunner.StopGasMetering()
 	defer evmRunner.StartGasMetering()
-	err := debitSubscription.Execute(evmRunner, &result, big.NewInt(0), subscriber, units)
+	err := debitSubscription.Execute(evmRunner, &result, big.NewInt(0), subscriber, units, contractSub)
 	if err != nil {
 		return big.NewInt(0), err
 	}
@@ -60,13 +60,13 @@ func DebitSubscription(evmRunner vmcontext.EVMRunner, subscriber common.Address,
 	return result, nil
 }
 
-func CreditSubscription(evmRunner vmcontext.EVMRunner, subscriber common.Address, units *big.Int) error {
+func CreditSubscription(evmRunner vmcontext.EVMRunner, subscriber common.Address, units *big.Int, contractSub bool) error {
 	if subscriber == params.ZeroAddress {
 		return nil
 	}
 	evmRunner.StopGasMetering()
 	defer evmRunner.StartGasMetering()
-	err := creditSubscription.Execute(evmRunner, nil, big.NewInt(0), subscriber, units)
+	err := creditSubscription.Execute(evmRunner, nil, big.NewInt(0), subscriber, units, contractSub)
 	if err != nil {
 		return err
 	}
@@ -74,28 +74,28 @@ func CreditSubscription(evmRunner vmcontext.EVMRunner, subscriber common.Address
 	return nil
 }
 
-func GetSubscriptionData(evmRunner vmcontext.EVMRunner, subscriber common.Address) (*Subscription, error) {
+func GetSubscriptionData(evmRunner vmcontext.EVMRunner, subscriber common.Address, contractSub bool) (*Subscription, error) {
 	var result Subscription
 	if subscriber == params.ZeroAddress {
 		return nil, nil
 	}
 	evmRunner.StopGasMetering()
 	defer evmRunner.StartGasMetering()
-	err := getSubscriptionData.Query(evmRunner, &result, subscriber)
+	err := getSubscriptionData.Query(evmRunner, &result, subscriber, contractSub)
 	if err != nil {
 		return nil, err
 	}
 	return &result, nil
 }
 
-func GetCapWindow(evmRunner vmcontext.EVMRunner, subscriber common.Address) (inter.Timestamp, error) {
+func GetCapWindow(evmRunner vmcontext.EVMRunner, subscriber common.Address, contractSub bool) (inter.Timestamp, error) {
 	var result *big.Int
 	if subscriber == params.ZeroAddress {
 		return inter.FromUnix(0), nil
 	}
 	evmRunner.StopGasMetering()
 	defer evmRunner.StartGasMetering()
-	err := getCapWindow.Query(evmRunner, &result, subscriber)
+	err := getCapWindow.Query(evmRunner, &result, subscriber, contractSub)
 	if err != nil {
 		return inter.FromUnix(0), err
 	}
@@ -103,14 +103,14 @@ func GetCapWindow(evmRunner vmcontext.EVMRunner, subscriber common.Address) (int
 	return inter.FromUnix(result.Int64()), nil
 }
 
-func GetCapRemaining(evmRunner vmcontext.EVMRunner, subscriber common.Address) (*big.Int, error) {
+func GetCapRemaining(evmRunner vmcontext.EVMRunner, subscriber common.Address, contractSub bool) (*big.Int, error) {
 	var result *big.Int
 	if subscriber == params.ZeroAddress {
 		return big.NewInt(0), nil
 	}
 	evmRunner.StopGasMetering()
 	defer evmRunner.StartGasMetering()
-	err := getCapRemaining.Query(evmRunner, &result, subscriber)
+	err := getCapRemaining.Query(evmRunner, &result, subscriber, contractSub)
 	if err != nil {
 		return big.NewInt(0), err
 	}
@@ -118,14 +118,14 @@ func GetCapRemaining(evmRunner vmcontext.EVMRunner, subscriber common.Address) (
 	return result, nil
 }
 
-func IsWhitelisted(evmRunner vmcontext.EVMRunner, subscriber common.Address, account common.Address) (bool, error) {
+func IsWhitelistedForContract(evmRunner vmcontext.EVMRunner, contract common.Address, account common.Address) (bool, error) {
 	var result bool
-	if subscriber == params.ZeroAddress || account == params.ZeroAddress {
+	if contract == params.ZeroAddress || account == params.ZeroAddress {
 		return false, nil
 	}
 	evmRunner.StopGasMetering()
 	defer evmRunner.StartGasMetering()
-	err := isWhitelisted.Query(evmRunner, &result, subscriber, account)
+	err := isWhitelistedForContract.Query(evmRunner, &result, contract, account)
 	if err != nil {
 		return false, err
 	}

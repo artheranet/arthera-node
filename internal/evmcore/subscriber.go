@@ -25,22 +25,22 @@ func ValidateSubscriberBalanceWithParam(senderAABalance *big.Int, from common.Ad
 		return false
 	}
 
-	senderSub := GetSubscriptionData(from, vmRunner)
+	senderSub := GetSubscriptionData(from, false, vmRunner)
 	var receiverSub *subscriber.Subscription = nil
 	contractCreation := tx.To() == nil
 	if !contractCreation && state.GetCodeSize(*tx.To()) > 0 {
-		receiverSub = GetSubscriptionData(*tx.To(), vmRunner)
+		receiverSub = GetSubscriptionData(*tx.To(), true, vmRunner)
 	}
 
 	// check to see if the target is a contract account, and it can pay for all gas units from its subscription
 	if SubscriptionDataValid(receiverSub) {
-		receiverActiveSub := HasActiveSubscription(*tx.To(), vmRunner)
+		receiverActiveSub := HasActiveSubscription(*tx.To(), true, vmRunner)
 		if receiverActiveSub {
 			// the dapp has an active subscription
-			senderWhitelisted := IsWhitelisted(*tx.To(), from, vmRunner)
+			senderWhitelisted := IsWhitelistedForContract(*tx.To(), from, vmRunner)
 			if senderWhitelisted {
 				// the sender is whitelisted, the receiver needs to cover the gas
-				subBalance := GetCappedBalance(receiverSub, *tx.To(), vmRunner)
+				subBalance := GetCappedBalance(receiverSub, *tx.To(), true, vmRunner)
 				if subBalance.Cmp(new(big.Int).SetUint64(tx.Gas())) < 0 {
 					// the subscription balance is not enough to cover the gas
 					// the user needs to have funds to cover the difference
@@ -61,10 +61,10 @@ func ValidateSubscriberBalanceWithParam(senderAABalance *big.Int, from common.Ad
 		}
 	} else {
 		// the contract account does not have a subscription, check the sender's subscription
-		senderActiveSub := HasActiveSubscription(from, vmRunner)
+		senderActiveSub := HasActiveSubscription(from, false, vmRunner)
 		if senderActiveSub {
 			// the sender has an active subscription that needs to cover the gas
-			subBalance := GetCappedBalance(senderSub, from, vmRunner)
+			subBalance := GetCappedBalance(senderSub, from, false, vmRunner)
 			if subBalance.Cmp(new(big.Int).SetUint64(tx.Gas())) < 0 {
 				// the subscription balance is not enough to cover the gas
 				// the user needs to have funds to cover the difference
@@ -82,8 +82,8 @@ func ValidateSubscriberBalanceWithParam(senderAABalance *big.Int, from common.Ad
 	}
 }
 
-func GetCappedBalance(subscr *subscriber.Subscription, address common.Address, vmRunner vmcontext.EVMRunner) *big.Int {
-	capRemaining := GetCapRemaining(address, vmRunner)
+func GetCappedBalance(subscr *subscriber.Subscription, address common.Address, contractSub bool, vmRunner vmcontext.EVMRunner) *big.Int {
+	capRemaining := GetCapRemaining(address, contractSub, vmRunner)
 	subBalance := subscr.Balance
 	if capRemaining.Cmp(InfiniteCap) != 0 {
 		if subBalance.Cmp(capRemaining) > 0 {
@@ -94,8 +94,8 @@ func GetCappedBalance(subscr *subscriber.Subscription, address common.Address, v
 	return subBalance
 }
 
-func HasActiveSubscription(address common.Address, vmRunner vmcontext.EVMRunner) bool {
-	activeSub, err := subscriber.HasActiveSubscription(vmRunner, address)
+func HasActiveSubscription(address common.Address, contractSub bool, vmRunner vmcontext.EVMRunner) bool {
+	activeSub, err := subscriber.HasActiveSubscription(vmRunner, address, contractSub)
 	if err != nil {
 		log.Debug("Subscribers::HasActiveSubscription() failed", "error", err.Error())
 		activeSub = false
@@ -103,8 +103,8 @@ func HasActiveSubscription(address common.Address, vmRunner vmcontext.EVMRunner)
 	return activeSub
 }
 
-func GetSubscriptionData(address common.Address, vmRunner vmcontext.EVMRunner) *subscriber.Subscription {
-	sub, err := subscriber.GetSubscriptionData(vmRunner, address)
+func GetSubscriptionData(address common.Address, contractSub bool, vmRunner vmcontext.EVMRunner) *subscriber.Subscription {
+	sub, err := subscriber.GetSubscriptionData(vmRunner, address, contractSub)
 	if err != nil {
 		log.Error("Subscribers::getSubscription() failed", "error", err.Error())
 		sub = nil
@@ -112,8 +112,8 @@ func GetSubscriptionData(address common.Address, vmRunner vmcontext.EVMRunner) *
 	return sub
 }
 
-func IsWhitelisted(_subscriber common.Address, _account common.Address, vmRunner vmcontext.EVMRunner) bool {
-	whitelisted, err := subscriber.IsWhitelisted(vmRunner, _subscriber, _account)
+func IsWhitelistedForContract(_contract common.Address, _account common.Address, vmRunner vmcontext.EVMRunner) bool {
+	whitelisted, err := subscriber.IsWhitelistedForContract(vmRunner, _contract, _account)
 	if err != nil {
 		log.Error("Subscribers::isWhitelisted() failed", "error", err.Error())
 		whitelisted = false
@@ -121,8 +121,8 @@ func IsWhitelisted(_subscriber common.Address, _account common.Address, vmRunner
 	return whitelisted
 }
 
-func GetCapWindow(address common.Address, vmRunner vmcontext.EVMRunner) inter.Timestamp {
-	ts, err := subscriber.GetCapWindow(vmRunner, address)
+func GetCapWindow(address common.Address, contractSub bool, vmRunner vmcontext.EVMRunner) inter.Timestamp {
+	ts, err := subscriber.GetCapWindow(vmRunner, address, contractSub)
 	if err != nil {
 		log.Error("Subscribers::getCapWindow() failed", "error", err.Error())
 		ts = inter.FromUnix(0)
@@ -130,8 +130,8 @@ func GetCapWindow(address common.Address, vmRunner vmcontext.EVMRunner) inter.Ti
 	return ts
 }
 
-func GetCapRemaining(address common.Address, vmRunner vmcontext.EVMRunner) *big.Int {
-	capRemaining, err := subscriber.GetCapRemaining(vmRunner, address)
+func GetCapRemaining(address common.Address, contractSub bool, vmRunner vmcontext.EVMRunner) *big.Int {
+	capRemaining, err := subscriber.GetCapRemaining(vmRunner, address, contractSub)
 	if err != nil {
 		log.Error("Subscribers::getCapRemaining() failed", "error", err.Error())
 		capRemaining = big.NewInt(0)
@@ -139,11 +139,11 @@ func GetCapRemaining(address common.Address, vmRunner vmcontext.EVMRunner) *big.
 	return capRemaining
 }
 
-func DebitSubscription(target common.Address, units *big.Int, vmRunner vmcontext.EVMRunner) *big.Int {
+func DebitSubscription(target common.Address, units *big.Int, contractSub bool, vmRunner vmcontext.EVMRunner) *big.Int {
 	if units.BitLen() == 0 {
 		return big.NewInt(0)
 	}
-	result, err := subscriber.DebitSubscription(vmRunner, target, units)
+	result, err := subscriber.DebitSubscription(vmRunner, target, units, contractSub)
 	if err != nil {
 		log.Error("Subscribers::debitSubscription() failed", "error", err.Error())
 		return units
@@ -151,11 +151,11 @@ func DebitSubscription(target common.Address, units *big.Int, vmRunner vmcontext
 	return result
 }
 
-func CreditSubscription(target common.Address, units *big.Int, vmRunner vmcontext.EVMRunner) {
+func CreditSubscription(target common.Address, units *big.Int, contractSub bool, vmRunner vmcontext.EVMRunner) {
 	if units.BitLen() == 0 {
 		return
 	}
-	err := subscriber.CreditSubscription(vmRunner, target, units)
+	err := subscriber.CreditSubscription(vmRunner, target, units, contractSub)
 	if err != nil {
 		log.Error("Subscribers::creditSubscription() failed", "error", err.Error())
 	}

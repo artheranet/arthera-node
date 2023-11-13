@@ -1256,11 +1256,6 @@ const SubscribersStr = `[
       "inputs": [
         {
           "internalType": "address",
-          "name": "_contract",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
           "name": "whitelister",
           "type": "address"
         }
@@ -1310,9 +1305,9 @@ const SubscribersStr = `[
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "_contract",
-          "type": "address"
+          "internalType": "uint256",
+          "name": "subId",
+          "type": "uint256"
         },
         {
           "internalType": "address",
@@ -1397,6 +1392,11 @@ const SubscribersStr = `[
           "internalType": "uint56",
           "name": "units",
           "type": "uint56"
+        },
+        {
+          "internalType": "bool",
+          "name": "contractSub",
+          "type": "bool"
         }
       ],
       "name": "credit",
@@ -1415,6 +1415,11 @@ const SubscribersStr = `[
           "internalType": "uint256",
           "name": "units",
           "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "contractSub",
+          "type": "bool"
         }
       ],
       "name": "debit",
@@ -1453,6 +1458,11 @@ const SubscribersStr = `[
           "internalType": "address",
           "name": "subscriber",
           "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "contractSub",
+          "type": "bool"
         }
       ],
       "name": "getBalance",
@@ -1472,6 +1482,11 @@ const SubscribersStr = `[
           "internalType": "address",
           "name": "subscriber",
           "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "contractSub",
+          "type": "bool"
         }
       ],
       "name": "getCapRemaining",
@@ -1491,6 +1506,11 @@ const SubscribersStr = `[
           "internalType": "address",
           "name": "subscriber",
           "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "contractSub",
+          "type": "bool"
         }
       ],
       "name": "getCapWindow",
@@ -1508,27 +1528,13 @@ const SubscribersStr = `[
       "inputs": [
         {
           "internalType": "address",
-          "name": "_contract",
-          "type": "address"
-        }
-      ],
-      "name": "getContractSubscriptionId",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
           "name": "subscriber",
           "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "contractSub",
+          "type": "bool"
         }
       ],
       "name": "getEndTime",
@@ -1677,6 +1683,11 @@ const SubscribersStr = `[
           "internalType": "address",
           "name": "subscriber",
           "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "contractSub",
+          "type": "bool"
         }
       ],
       "name": "getStartTime",
@@ -1696,6 +1707,11 @@ const SubscribersStr = `[
           "internalType": "address",
           "name": "subscriber",
           "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "contractSub",
+          "type": "bool"
         }
       ],
       "name": "getSubscriptionData",
@@ -1752,9 +1768,33 @@ const SubscribersStr = `[
           "internalType": "address",
           "name": "subscriber",
           "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "contractSub",
+          "type": "bool"
         }
       ],
-      "name": "getSubscriptionTokenId",
+      "name": "getSubscriptionId",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contract",
+          "type": "address"
+        }
+      ],
+      "name": "getSubscriptionIdForContract",
       "outputs": [
         {
           "internalType": "uint256",
@@ -1771,6 +1811,11 @@ const SubscribersStr = `[
           "internalType": "address",
           "name": "subscriber",
           "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "contractSub",
+          "type": "bool"
         }
       ],
       "name": "hasActiveSubscription",
@@ -1790,6 +1835,49 @@ const SubscribersStr = `[
           "internalType": "address",
           "name": "subscriber",
           "type": "address"
+        }
+      ],
+      "name": "hasContractSubscription",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "subscriber",
+          "type": "address"
+        }
+      ],
+      "name": "hasEoaSubscription",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "subscriber",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "contractSub",
+          "type": "bool"
         }
       ],
       "name": "hasSubscription",
@@ -1841,8 +1929,89 @@ const SubscribersStr = `[
       "type": "function"
     },
     {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "subId",
+          "type": "uint256"
+        }
+      ],
+      "name": "isContractSubscription",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "subId",
+          "type": "uint256"
+        }
+      ],
+      "name": "isEoaSubscription",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [],
       "name": "isOwner",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "subId",
+          "type": "uint256"
+        }
+      ],
+      "name": "isValidSubscription",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contract",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "isWhitelistedForContract",
       "outputs": [
         {
           "internalType": "bool",
@@ -1866,7 +2035,7 @@ const SubscribersStr = `[
           "type": "address"
         }
       ],
-      "name": "isWhitelisted",
+      "name": "isWhitelistedWithSubscriber",
       "outputs": [
         {
           "internalType": "bool",
@@ -1893,8 +2062,21 @@ const SubscribersStr = `[
     {
       "inputs": [
         {
+          "internalType": "uint256",
+          "name": "planId",
+          "type": "uint256"
+        }
+      ],
+      "name": "newSubscription",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "address",
-          "name": "_contract",
+          "name": "addr",
           "type": "address"
         },
         {
@@ -1903,20 +2085,7 @@ const SubscribersStr = `[
           "type": "uint256"
         }
       ],
-      "name": "newContractSubscription",
-      "outputs": [],
-      "stateMutability": "payable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "planId",
-          "type": "uint256"
-        }
-      ],
-      "name": "newEOASubscription",
+      "name": "newSubscriptionForAddress",
       "outputs": [],
       "stateMutability": "payable",
       "type": "function"
@@ -2002,11 +2171,6 @@ const SubscribersStr = `[
       "inputs": [
         {
           "internalType": "address",
-          "name": "_contract",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
           "name": "whitelister",
           "type": "address"
         }
@@ -2017,7 +2181,13 @@ const SubscribersStr = `[
       "type": "function"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "bool",
+          "name": "forContract",
+          "type": "bool"
+        }
+      ],
       "name": "renewSubscription",
       "outputs": [],
       "stateMutability": "payable",
@@ -2174,6 +2344,11 @@ const SubscribersStr = `[
           "internalType": "uint256",
           "name": "newPlanId",
           "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "forContract",
+          "type": "bool"
         }
       ],
       "name": "switchPlan",
@@ -2195,7 +2370,13 @@ const SubscribersStr = `[
       "type": "function"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "bool",
+          "name": "forContract",
+          "type": "bool"
+        }
+      ],
       "name": "terminateSubscription",
       "outputs": [],
       "stateMutability": "nonpayable",
@@ -2376,9 +2557,9 @@ const SubscribersStr = `[
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "_contract",
-          "type": "address"
+          "internalType": "uint256",
+          "name": "subId",
+          "type": "uint256"
         },
         {
           "internalType": "address",

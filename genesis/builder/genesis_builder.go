@@ -11,8 +11,10 @@ import (
 	"github.com/artheranet/lachesis/inter/idx"
 	"github.com/artheranet/lachesis/inter/pos"
 	"github.com/artheranet/lachesis/lachesis"
+	"github.com/ethereum/go-ethereum/core/vm"
 	"io"
 	"math/big"
+	"os"
 
 	"github.com/artheranet/lachesis/hash"
 	"github.com/artheranet/lachesis/kvdb"
@@ -150,9 +152,21 @@ func (b *GenesisBuilder) ExecuteGenesisTxs(blockProc BlockProc, genesisTxs types
 	sealer := blockProc.SealerModule.Start(blockCtx, bs, es)
 	sealing := true
 	txListener := blockProc.TxListenerModule.Start(blockCtx, bs, es, b.tmpStateDB)
+	vmConfigWithDebug := params.DefaultVMConfig
+	vmConfigWithDebug.Debug = false
+	vmConfigWithDebug.Tracer = vm.NewJSONLogger(&vm.LogConfig{
+		EnableMemory:     false,
+		DisableStack:     true,
+		DisableStorage:   true,
+		EnableReturnData: true,
+		Debug:            false,
+		Limit:            0,
+		Overrides:        nil,
+	}, os.Stdout)
+
 	evmProcessor := blockProc.EVMModule.Start(blockCtx, b.tmpStateDB, dummyHeaderReturner{}, func(l *types.Log) {
 		txListener.OnNewLog(l)
-	}, es.Rules, params.DefaultVMConfig, es.Rules.EvmChainConfig([]params.UpgradeHeight{
+	}, es.Rules, vmConfigWithDebug, es.Rules.EvmChainConfig([]params.UpgradeHeight{
 		{
 			Upgrades: es.Rules.Upgrades,
 			Height:   0,

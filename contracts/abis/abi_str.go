@@ -3517,34 +3517,6 @@ const StakingStr = `[
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "fromValidatorID",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "withdrawalRequestID",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "amount",
-          "type": "uint256"
-        },
-        {
-          "internalType": "bool",
-          "name": "artheraStake",
-          "type": "bool"
-        }
-      ],
-      "name": "_undelegate",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
           "name": "toValidatorID",
           "type": "uint256"
         }

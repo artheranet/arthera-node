@@ -3578,19 +3578,6 @@ const StakingStr = `[
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "c",
-      "outputs": [
-        {
-          "internalType": "contract ConstantsManager",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
           "internalType": "uint256",
@@ -3601,6 +3588,19 @@ const StakingStr = `[
       "name": "claimRewards",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "config",
+      "outputs": [
+        {
+          "internalType": "contract StakingConfig",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -4231,7 +4231,7 @@ const StakingStr = `[
         },
         {
           "internalType": "address",
-          "name": "_c",
+          "name": "_config",
           "type": "address"
         },
         {
@@ -4804,11 +4804,11 @@ const StakingStr = `[
       "inputs": [
         {
           "internalType": "address",
-          "name": "v",
+          "name": "_address",
           "type": "address"
         }
       ],
-      "name": "updateConstsAddress",
+      "name": "updateConfigAddress",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -4835,7 +4835,7 @@ const StakingStr = `[
       "inputs": [
         {
           "internalType": "address",
-          "name": "v",
+          "name": "_address",
           "type": "address"
         }
       ],

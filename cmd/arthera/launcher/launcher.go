@@ -298,7 +298,9 @@ func makeNode(ctx *cli.Context, cfg *config, genesisStore *genesisstore.Store) (
 	if genesisStore != nil {
 		_ = genesisStore.Close()
 	}
-	metrics.SetDataDir(cfg.Node.DataDir)
+	if evmetrics.Enabled {
+		metrics.SetDataDir(cfg.Node.DataDir)
+	}
 
 	// substitute default bootnodes if requested
 	networkName := ""

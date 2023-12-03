@@ -154,11 +154,11 @@ func validatorKeyCreate(ctx *cli.Context) error {
 		utils.Fatalf("Failed to decrypt the account: %v", err)
 	}
 
-	addr := crypto.PubkeyToAddress(privateKeyECDSA.PublicKey)
+	//addr := crypto.PubkeyToAddress(privateKeyECDSA.PublicKey)
 
 	fmt.Printf("\nYour new key was generated\n\n")
 	fmt.Printf("Public key: 		%s\n", publicKey.String())
-	fmt.Printf("   Address: 		%s\n", addr)
+	//fmt.Printf("   Address: 		%s\n", addr)
 	fmt.Printf("Path of the secret key file: %s\n\n", valKeystore.PathOf(publicKey))
 	fmt.Printf("- You can share your public key with anyone. Others need it to validate messages from you.\n")
 	fmt.Printf("- You must NEVER share the secret key with anyone! The key controls access to your validator!\n")

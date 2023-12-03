@@ -27,4 +27,4 @@ COPY --from=builder /arthera/arthera-node/build/arthera-node /usr/local/bin/
 
 EXPOSE 6060 18545 18546
 
-ENTRYPOINT ["arthera-node", "--datadir=/data", "--devnet", "--genesis=/data/devnet.g", "--genesis.allowUnknown", "--syncmode=full", "--verbosity=3", "--cache=3600", "--metrics.influxdbv2", "--validator.password=/data/password"]
+ENTRYPOINT ["arthera-node", "--datadir=/data", "--genesis=/data/genesis.g", "--genesis.allowUnknown", "--syncmode=full", "--verbosity=3", "--cache=3600", "--metrics.influxdbv2", "--validator.password=/data/password"]

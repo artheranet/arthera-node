@@ -14,11 +14,8 @@ all: arthera
 all_release: rpc_docker rpc_trace_docker node_docker
 	docker login && \
 	docker image push arthera/arthera-rpc:$(VERSION) && \
-	docker image push arthera/arthera-rpc:latest && \
 	docker image push arthera/arthera-rpc-trace:$(VERSION) && \
-	docker image push arthera/arthera-rpc-trace:latest && \
 	docker image push arthera/arthera-node:$(VERSION) && \
-	docker image push arthera/arthera-node:latest && \
 	docker logout
 
 .PHONY: arthera

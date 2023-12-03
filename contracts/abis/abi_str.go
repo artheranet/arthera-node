@@ -3233,6 +3233,12 @@ const StakingStr = `[
           "internalType": "uint256",
           "name": "amount",
           "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "artheraStake",
+          "type": "bool"
         }
       ],
       "name": "Delegated",
@@ -3377,6 +3383,12 @@ const StakingStr = `[
           "internalType": "uint256",
           "name": "amount",
           "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "artheraStake",
+          "type": "bool"
         }
       ],
       "name": "Undelegated",
@@ -4090,6 +4102,11 @@ const StakingStr = `[
         },
         {
           "internalType": "uint256",
+          "name": "artheraStake",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
           "name": "createdEpoch",
           "type": "uint256"
         },
@@ -4317,19 +4334,6 @@ const StakingStr = `[
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "noWithdrawals",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
         }
       ],
       "stateMutability": "view",
@@ -4817,6 +4821,19 @@ const StakingStr = `[
       "type": "function"
     },
     {
+      "inputs": [
+        {
+          "internalType": "bool",
+          "name": "_enabled",
+          "type": "bool"
+        }
+      ],
+      "name": "updateWithdrawalsEnabled",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "inputs": [],
       "name": "version",
       "outputs": [
@@ -4868,6 +4885,19 @@ const StakingStr = `[
       "name": "withdrawTo",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "withdrawalsEnabled",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     }
   ]`

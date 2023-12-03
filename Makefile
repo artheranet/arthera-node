@@ -11,7 +11,7 @@ VERSION_FLAGS=-X github.com/artheranet/arthera-node/version.VersionMajor=$(VERSI
 .PHONY: all
 all: arthera
 
-all_release: check_changes tag_release push_changes rpc_docker rpc_trace_docker node_docker
+all_release: rpc_docker rpc_trace_docker node_docker
 	docker login && \
 	docker image push arthera/arthera-rpc:$(VERSION) && \
 	docker image push arthera/arthera-rpc:latest && \

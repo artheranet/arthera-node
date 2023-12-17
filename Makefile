@@ -11,10 +11,8 @@ VERSION_FLAGS=-X github.com/artheranet/arthera-node/version.VersionMajor=$(VERSI
 .PHONY: all
 all: arthera
 
-all_release: rpc_docker rpc_trace_docker node_docker
+all_release: node_docker
 	docker login && \
-	docker image push arthera/arthera-rpc:$(VERSION) && \
-	docker image push arthera/arthera-rpc-trace:$(VERSION) && \
 	docker image push arthera/arthera-node:$(VERSION) && \
 	docker logout
 
@@ -29,26 +27,6 @@ arthera:
 .PHONY: clean
 clean:
 	rm -fr ./build/*
-
-## <RPC node>
-rpc_release: rpc_docker
-	docker login && \
-	docker image push arthera/arthera-rpc:$(VERSION) && \
-	docker logout
-
-rpc_docker:
-	docker build -f Dockerfile.rpc --network host --build-arg "GIT_COMMIT=$(GIT_COMMIT)" --build-arg "GIT_DATE=$(GIT_DATE)" . -t arthera/arthera-rpc:$(VERSION)
-## </RPC node>
-
-## <RPC trace node>
-rpc_trace_release: rpc_trace_docker
-	docker login && \
-	docker image push arthera/arthera-rpc-trace:$(VERSION) && \
-	docker logout
-
-rpc_trace_docker:
-	docker build -f Dockerfile.rpc.tracenode --network host --build-arg "GIT_COMMIT=$(GIT_COMMIT)" --build-arg "GIT_DATE=$(GIT_DATE)" . -t arthera/arthera-rpc-trace:$(VERSION)
-## </RPC trace node>
 
 ## <Validator node>
 node_release: node_docker
@@ -75,4 +53,3 @@ tag_release:
 		echo "Creating git tag $(VERSION)"; \
 		git tag -a $(VERSION) -m "Release $(VERSION)"; \
 	fi
-

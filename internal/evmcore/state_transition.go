@@ -458,13 +458,14 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	if !contractCreation && !st.hasActiveSubscription(senderSubscription) && !st.hasActiveSubscription(receiverSubscription) {
 		if !contracts.IsSystemContract(st.to()) {
 			// check to see if the destination address is eligible for Pay-as-You-Go rebates
-			owner, err := pyag.GetOwnerOfContract(&st.evmRunner, st.to())
-			if err != nil {
-				log.Error("GetOwnerOfContract() failed", "err", err)
-			} else if owner != params2.ZeroAddress {
+			owner, _ := pyag.GetOwnerOfContract(&st.evmRunner, st.to())
+			if owner != params2.ZeroAddress {
 				deployerGas := st.gasUsed() / 10
 				refund := new(big.Int).Mul(new(big.Int).SetUint64(deployerGas), st.gasPrice)
-				st.state.AddBalance(owner, refund)
+				err := pyag.AddReward(&st.evmRunner, owner, refund)
+				if err == nil {
+					st.state.AddBalance(contracts.PayAsYouGoGasRewardsContractAddress, refund)
+				}
 			}
 		}
 	}

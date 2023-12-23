@@ -2666,7 +2666,7 @@ const SubscribersStr = `[
     }
   ]`
 
-const PayAsYouGoGasRewardsStr = `[
+const PayAsYouGoGasRewardsStr = ` [
     {
       "anonymous": false,
       "inputs": [
@@ -2705,19 +2705,6 @@ const PayAsYouGoGasRewardsStr = `[
           "internalType": "address",
           "name": "_contract",
           "type": "address"
-        }
-      ],
-      "name": "activate",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_contract",
-          "type": "address"
         },
         {
           "internalType": "uint256",
@@ -2738,7 +2725,7 @@ const PayAsYouGoGasRewardsStr = `[
           "type": "address"
         }
       ],
-      "name": "deactivate",
+      "name": "claimReward",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -2751,7 +2738,45 @@ const PayAsYouGoGasRewardsStr = `[
           "type": "address"
         }
       ],
+      "name": "getBalance",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contract",
+          "type": "address"
+        }
+      ],
       "name": "getOwnerOfContract",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contract",
+          "type": "address"
+        }
+      ],
+      "name": "getRewardAddressOfContract",
       "outputs": [
         {
           "internalType": "address",
@@ -2792,25 +2817,6 @@ const PayAsYouGoGasRewardsStr = `[
       "name": "initialize",
       "outputs": [],
       "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "name": "isActivated",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -2868,6 +2874,24 @@ const PayAsYouGoGasRewardsStr = `[
       "inputs": [
         {
           "internalType": "address",
+          "name": "_contract",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_rewardAddress",
+          "type": "address"
+        }
+      ],
+      "name": "setRewardAddress",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
           "name": "newOwner",
           "type": "address"
         }
@@ -2875,6 +2899,19 @@ const PayAsYouGoGasRewardsStr = `[
       "name": "transferOwnership",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "version",
+      "outputs": [
+        {
+          "internalType": "bytes3",
+          "name": "",
+          "type": "bytes3"
+        }
+      ],
+      "stateMutability": "pure",
       "type": "function"
     }
   ]`

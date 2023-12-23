@@ -25,6 +25,8 @@ RUN apk add --no-cache ca-certificates
 
 COPY --from=builder /arthera/arthera-node/build/arthera-node /usr/local/bin/
 
+VOLUME /data
+
 EXPOSE 6060 18545 18546
 
-ENTRYPOINT ["arthera-node", "--datadir=/data", "--genesis=/data/genesis.g", "--genesis.allowUnknown", "--syncmode=full", "--verbosity=3", "--cache=3600", "--validator.password=/data/password"]
+ENTRYPOINT ["arthera-node", "--datadir=/data"]

@@ -2738,25 +2738,6 @@ const PayAsYouGoGasRewardsStr = ` [
           "type": "address"
         }
       ],
-      "name": "getBalance",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_contract",
-          "type": "address"
-        }
-      ],
       "name": "getOwnerOfContract",
       "outputs": [
         {
@@ -2772,11 +2753,30 @@ const PayAsYouGoGasRewardsStr = ` [
       "inputs": [
         {
           "internalType": "address",
-          "name": "_contract",
+          "name": "",
           "type": "address"
         }
       ],
-      "name": "getRewardAddressOfContract",
+      "name": "getRegistry",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "getRewardAddress",
       "outputs": [
         {
           "internalType": "address",

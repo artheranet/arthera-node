@@ -4,7 +4,13 @@ import "github.com/ethereum/go-ethereum/common"
 
 var (
 	Bootnodes = map[string][]string{
-		"main": {},
+		"main": {
+			"enode://c4138ac86c0cd7607231601afeb24d2d0b7aaf4c8e1de28978aab6fdbca1af2ec41307b33529e64da72b9e592782840aa1552bda5b1f700eefbdba2a662c4ecc@bootnode1.arthera.net:6533",
+			"enode://91a72a01ba3eb7994c681d2e0212a8239d51fffe9dfdb38af373af2cb9612bf1f2f9514fea1b099a2d1e2bb83afa9c4487af7c7f05bcb5f0c6c63f8f757c7fcd@bootnode2.arthera.net:6533",
+			"enode://c3c05932654c6a92a8f544857491073f96715fa394476edee07931bf4da00d76eeb1b256d0a68d0404a8b37e8dec7e038c18f1a4cdbde0da91ef45d04c243de1@bootnode3.arthera.net:6533",
+			"enode://0ccae9dd3d8f6033929c9cf8371c4dd96f27c602e2cf9b363196a22557f8f36ca02b6ee64d20d230cb6b60d4a473066f9a4e6b0551d6ca67c797250c9bb3db20@bootnode4.arthera.net:6533",
+			"enode://946ec02182a11adb2c93851303ca8c6a6ef5041d84e7f695f3dd6a574f1891b879c5bde1c19cafa1ad91a9057e7d6830b8def76dede45bda350a9deb4e0c152c@bootnode5.arthera.net:6533",
+		},
 		"test": {
 			"enode://4dbc94a60d0d5c91b0fcafd8dd931bb77a2de8b269c80a58da676af3a74fcf9fa5457c536aea40544080780a99b0dcf6629f34f0974d21da7a4c2f62a0074eec@167.235.203.218:6534",
 			"enode://eae25d66e8fedd6e32801f627ae8ff35b74478460c3ea5d773bcf1417dc88e75b8284eb8ee9aa2c5d450f785591b63b440ea708a590d355ed57e1f51c7fc3082@135.181.90.176:6534",

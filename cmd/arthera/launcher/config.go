@@ -450,7 +450,7 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 		cfg.Node.P2P.BootstrapNodes = asDefault
 		cfg.Node.P2P.BootstrapNodesV5 = asDefault
 	} else {
-		// "asDefault" means set network defaults
+		cfg.Emitter = emitter.DefaultConfig()
 		cfg.Node.P2P.BootstrapNodes = asDefault
 		cfg.Node.P2P.BootstrapNodesV5 = asDefault
 	}

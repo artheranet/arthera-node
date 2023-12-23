@@ -2,7 +2,7 @@ GOPROXY?="https://proxy.golang.org,direct"
 GIT_COMMIT?=$(shell git rev-list -1 HEAD | xargs git rev-parse --short)
 GIT_DATE?=$(shell git log -1 --date=short --pretty=format:%ct)
 VERSION_MAJOR=1
-VERSION_MINOR=1
+VERSION_MINOR=2
 VERSION_PATCH=0
 VERSION_META=$$ENV_VERSION_META
 VERSION="$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)-$(VERSION_META)"
@@ -10,11 +10,6 @@ VERSION_FLAGS=-X github.com/artheranet/arthera-node/version.VersionMajor=$(VERSI
 
 .PHONY: all
 all: arthera
-
-all_release: node_docker
-	docker login && \
-	docker image push arthera/arthera-node:$(VERSION) && \
-	docker logout
 
 .PHONY: arthera
 arthera:
@@ -29,7 +24,7 @@ clean:
 	rm -fr ./build/*
 
 ## <Validator node>
-node_release: node_docker
+node_release: check_changes node_docker
 	docker login && \
 	docker image push arthera/arthera-node:$(VERSION) && \
 	docker logout
@@ -42,14 +37,4 @@ check_changes:
 	@if ! git diff-index --quiet HEAD --; then \
 		echo "You have uncommitted changes. Please commit or stash them before making a release."; \
 		exit 1; \
-	fi
-
-push_changes:
-	git push --tags
-
-tag_release:
-	@echo "Checking tag $(VERSION)"
-	@if ! git tag -l | grep "$(VERSION)"; then \
-		echo "Creating git tag $(VERSION)"; \
-		git tag -a $(VERSION) -m "Release $(VERSION)"; \
 	fi

@@ -171,62 +171,62 @@ var (
 		},
 		{
 			// Seed
-			Addr:    "0x40bd65cfc4D95844704F4b2a2c46a60f6d6CE766",
+			Addr:    "0xe2618bF31A16Bba5D296C118F8D75bD6C4a75dBc",
 			Balance: utils2.ToArt(12_000_000),
 		},
 		{
 			// Perpetual Security Fund
-			Addr:    "0x40bd65cfc4D95844704F4b2a2c46a60f6d6CE766",
+			Addr:    "0xe723a256D8912615A47Ef84F0830b05b22a7e9F5",
 			Balance: utils2.ToArt(8_000_000),
 		},
 		{
 			// Insurance Fund
-			Addr:    "0x40bd65cfc4D95844704F4b2a2c46a60f6d6CE766",
+			Addr:    "0x6A412042A05167CdB80d49f2cdfEfb6240C158bA",
 			Balance: utils2.ToArt(8_000_000),
 		},
 		{
 			// Team
-			Addr:    "0x40bd65cfc4D95844704F4b2a2c46a60f6d6CE766",
+			Addr:    "0xcABa6265997076a95FC81ba19E5Ba22D38F72e00",
 			Balance: utils2.ToArt(16_000_000),
 		},
 		{
 			// Advisors
-			Addr:    "0x40bd65cfc4D95844704F4b2a2c46a60f6d6CE766",
+			Addr:    "0xEEaBCe1f04F29dB5cf25275C3b7475E79fC7568d",
 			Balance: utils2.ToArt(4_000_000),
 		},
 		{
 			// Marketing
-			Addr:    "0x40bd65cfc4D95844704F4b2a2c46a60f6d6CE766",
+			Addr:    "0xCc688B6A11271f54e84534d12A51Db04fa677C5f",
 			Balance: utils2.ToArt(36_000_000),
 		},
 		{
 			// Growth Reserve
-			Addr:    "0x40bd65cfc4D95844704F4b2a2c46a60f6d6CE766",
+			Addr:    "0xd949738946DB18e65DEf26a2A3528A14a5417AdF",
 			Balance: utils2.ToArt(32_000_000),
 		},
 		{
 			// DEX & CEX Liquidity
-			Addr:    "0x40bd65cfc4D95844704F4b2a2c46a60f6d6CE766",
+			Addr:    "0x625d81DFc1a2e6A0Bb87e8eD4ed81d54235fBc23",
 			Balance: utils2.ToArt(22_000_000),
 		},
 		{
 			// Project Treasury
-			Addr:    "0x40bd65cfc4D95844704F4b2a2c46a60f6d6CE766",
+			Addr:    "0xe37CdbfFa2a302e608b4f10FC832a5314Ed1529f",
 			Balance: utils2.ToArt(24_000_000),
 		},
 		{
 			// Web2 Grants
-			Addr:    "0x40bd65cfc4D95844704F4b2a2c46a60f6d6CE766",
+			Addr:    "0x6d8d46c01b50931239f2371BF289D38F173085Fd",
 			Balance: utils2.ToArt(8_000_000),
 		},
 		{
 			// Liquidity Pools
-			Addr:    "0x40bd65cfc4D95844704F4b2a2c46a60f6d6CE766",
+			Addr:    "0xBaCF674C76C945B024ACfC7EeAa4a75528BcebF3",
 			Balance: utils2.ToArt(30_000_000),
 		},
 		{
 			// Genesis Validator Delegation
-			Addr:    "0x40bd65cfc4D95844704F4b2a2c46a60f6d6CE766",
+			Addr:    "0x9D986C0c1F931EB700161aaD57e9D799FCEA48b1",
 			Balance: utils2.ToArt(7_220_000),
 		},
 	}

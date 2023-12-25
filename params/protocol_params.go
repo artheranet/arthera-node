@@ -25,10 +25,10 @@ var (
 )
 
 var (
-	MainnetGenesisID            = "0xd16933fcc8b1fa1cf7439565867e2f6eeec052b1541267e1d4f82c0d71e56361"
-	MainnetGenesisEpochsSection = "0xd6b676bb9713d340cf95d5d255f0e2d1b19c64680f33f55b30e13bb5aabe5f7d"
-	MainnetGenesisBlocksSection = "0xbae1cf4aa9e60af37db4ce7a34988ab71aefcd0d3425913005e8153db8673cfc"
-	MainnetGenesisEvmSection    = "0x4196de494b7f2986ad7b4687286b2e0b6419aa32a6fb727167d8b08d8cd13fcf"
+	MainnetGenesisID            = "0x993417afae15968aa185376537e2c633844b5e624444812b64e0241a3289d8be"
+	MainnetGenesisEpochsSection = "0x3ab151817b1a2f204394ab9ff1fbb98a3fd633cb1baa613d5c62b60b03b3e655"
+	MainnetGenesisBlocksSection = "0xc4c14fcc2367bee44d422f35b82d643eff26038ffa251ea5ca83fc28e0090805"
+	MainnetGenesisEvmSection    = "0x104d1761f3ab6f6be312e2adeb2a6640048104dbe647d17018d23ea0ab2cfe9d"
 
 	TestnetGenesisID            = "0x4288e5d835b1c94747ef6a6fb0366ff0dfacd76ea6c418c1028b3fc18b17474d"
 	TestnetGenesisEpochsSection = "0x68f968d90f7e1be36f0470799df69f5d879bfb623d53a80a072d5f072af946dc"

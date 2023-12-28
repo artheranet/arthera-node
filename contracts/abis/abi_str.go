@@ -2087,7 +2087,20 @@ const SubscribersStr = `[
       ],
       "name": "mintSubscriptionTo",
       "outputs": [],
-      "stateMutability": "payable",
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "minter",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -2327,6 +2340,19 @@ const SubscribersStr = `[
         }
       ],
       "name": "setApprovalForAll",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_minter",
+          "type": "address"
+        }
+      ],
+      "name": "setMinter",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

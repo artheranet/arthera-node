@@ -84,7 +84,7 @@ type TxPool interface {
 	Has(hash common.Hash) bool
 	// Pending should return pending transactions.
 	// The slice should be modifiable by the caller.
-	Pending(enforceTips bool) (map[common.Address]types.Transactions, error)
+	Pending(enforceTips bool) map[common.Address]types.Transactions
 
 	// Count returns the total number of transactions
 	Count() int

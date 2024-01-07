@@ -2126,13 +2126,15 @@ func (api *PublicDebugAPI) TraceTransaction(ctx context.Context, hash common.Has
 func (api *PublicDebugAPI) traceTx(ctx context.Context, message evmcore.Message, txctx *tracers.Context, vmctx vm.BlockContext, statedb *state.StateDB, config *TraceConfig) (interface{}, error) {
 	// Assemble the structured logger or the JavaScript tracer
 	var (
-		tracer    vm.Tracer
+		tracer    vm.EVMLogger
 		err       error
 		txContext = evmcore.NewEVMTxContext(message)
 	)
 
 	switch {
-	case config != nil && config.Tracer != nil:
+	case config == nil:
+		tracer = vm.NewStructLogger(nil)
+	case config.Tracer != nil:
 		// Define a meaningful timeout of a single transaction trace
 		timeout := defaultTraceTimeout
 		if config.Timeout != nil {
@@ -2140,23 +2142,19 @@ func (api *PublicDebugAPI) traceTx(ctx context.Context, message evmcore.Message,
 				return nil, err
 			}
 		}
-		// Constuct the JavaScript tracer to execute with
-		if tracer, err = tracers.New(*config.Tracer, txctx); err != nil {
+		if t, err := tracers.New(*config.Tracer, txctx); err != nil {
 			return nil, err
+		} else {
+			deadlineCtx, cancel := context.WithTimeout(ctx, timeout)
+			go func() {
+				<-deadlineCtx.Done()
+				if errors.Is(deadlineCtx.Err(), context.DeadlineExceeded) {
+					t.Stop(errors.New("execution timeout"))
+				}
+			}()
+			defer cancel()
+			tracer = t
 		}
-		// Handle timeouts and RPC cancellations
-		deadlineCtx, cancel := context.WithTimeout(ctx, timeout)
-		go func() {
-			<-deadlineCtx.Done()
-			if deadlineCtx.Err() == context.DeadlineExceeded {
-				tracer.(*tracers.Tracer).Stop(errors.New("execution timeout"))
-			}
-		}()
-		defer cancel()
-
-	case config == nil:
-		tracer = vm.NewStructLogger(nil)
-
 	default:
 		tracer = vm.NewStructLogger(config.LogConfig)
 	}
@@ -2167,7 +2165,7 @@ func (api *PublicDebugAPI) traceTx(ctx context.Context, message evmcore.Message,
 	evmconfig.NoBaseFee = true
 
 	// Run the transaction with tracing enabled.
-	vmenv := vm.NewEVM(vmctx, txContext, statedb, api.b.ChainConfig(), evmconfig)
+	vmenv := vm.NewEVM(vmctx, txContext, statedb, api.b.ChainConfig(), params.DefaultVMConfig)
 
 	// Call Prepare to clear out the statedb access list
 	statedb.Prepare(txctx.TxHash, txctx.TxIndex)
@@ -2192,7 +2190,7 @@ func (api *PublicDebugAPI) traceTx(ctx context.Context, message evmcore.Message,
 			StructLogs:  FormatLogs(tracer.StructLogs()),
 		}, nil
 
-	case *tracers.Tracer:
+	case tracers.Tracer:
 		return tracer.GetResult()
 
 	default:

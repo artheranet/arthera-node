@@ -6,6 +6,9 @@ import (
 	"runtime"
 
 	"github.com/artheranet/arthera-node/cmd/arthera/launcher"
+
+	// Force-load the native, to trigger registration
+	_ "github.com/ethereum/go-ethereum/eth/tracers/native"
 )
 
 func main() {

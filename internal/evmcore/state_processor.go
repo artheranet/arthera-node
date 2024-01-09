@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"github.com/artheranet/arthera-node/contracts/pyag"
 	"github.com/artheranet/arthera-node/internal/evmcore/vmcontext"
-	"github.com/artheranet/arthera-node/tracing/txtrace"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/log"
 	"math/big"
@@ -121,21 +120,6 @@ func applyTransaction(
 	txContext := NewEVMTxContext(msg)
 	evm.Reset(txContext, statedb)
 
-	// Test if type of tracer is transaction tracing
-	// logger, in that case, set a info for it
-	var traceLogger *txtrace.TraceStructLogger
-	switch cfg.Tracer.(type) {
-	case *txtrace.TraceStructLogger:
-		traceLogger = cfg.Tracer.(*txtrace.TraceStructLogger)
-		traceLogger.SetTx(tx.Hash())
-		traceLogger.SetFrom(msg.From())
-		traceLogger.SetTo(msg.To())
-		traceLogger.SetValue(*msg.Value())
-		traceLogger.SetBlockHash(blockHash)
-		traceLogger.SetBlockNumber(blockNumber)
-		traceLogger.SetTxIndex(uint(statedb.TxIndex()))
-	}
-
 	// Apply the transaction to the current state (included in the env).
 	result, err := ApplyMessage(evm, msg, gp)
 	if err != nil {
@@ -189,15 +173,6 @@ func applyTransaction(
 	receipt.BlockHash = blockHash
 	receipt.BlockNumber = blockNumber
 	receipt.TransactionIndex = uint(statedb.TxIndex())
-
-	// Set post informations and save trace
-	if traceLogger != nil {
-		traceLogger.SetGasUsed(result.UsedGas)
-		traceLogger.SetNewAddress(receipt.ContractAddress)
-		traceLogger.ProcessTx()
-		traceLogger.SaveTrace()
-	}
-
 	return receipt, result.UsedGas, false, err
 }
 

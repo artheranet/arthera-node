@@ -1,9 +1,7 @@
 package gossip
 
 import (
-	"encoding/json"
 	"fmt"
-	"github.com/artheranet/arthera-node/tracing/txtrace"
 	"sort"
 	"sync"
 	"sync/atomic"
@@ -264,13 +262,7 @@ func consensusCallbackBeginBlockFn(
 
 				// Providing default config
 				// In case of trace transaction node, this config is changed
-				evmCfg := params.DefaultVMConfig
-				if store.txtrace != nil {
-					evmCfg.Debug = true
-					evmCfg.Tracer = txtrace.NewTraceStructLogger(store.txtrace)
-				}
-
-				evmProcessor := blockProc.EVMModule.Start(blockCtx, statedb, evmStateReader, onNewLogAll, es.Rules, evmCfg, es.Rules.EvmChainConfig(store.GetUpgradeHeights()))
+				evmProcessor := blockProc.EVMModule.Start(blockCtx, statedb, evmStateReader, onNewLogAll, es.Rules, params.DefaultVMConfig, es.Rules.EvmChainConfig(store.GetUpgradeHeights()))
 				executionStart := time.Now()
 
 				// Execute pre-internal transactions
@@ -379,21 +371,6 @@ func consensusCallbackBeginBlockFn(
 						for _, tx := range evmBlock.Transactions {
 							// not skipped txs only
 							store.evm.SetTxPosition(tx.Hash(), txPositions[tx.Hash()].TxPosition)
-
-							// transaction traces need correction of transaction position when skipped txs
-							if len(skippedTxs) > 0 && store.txtrace != nil {
-								txBytes := store.txtrace.GetTx(tx.Hash())
-								if txBytes != nil {
-									traces := make([]txtrace.ActionTrace, 0)
-									json.Unmarshal(txBytes, &traces)
-									pos := uint64(txPositions[tx.Hash()].TxPosition.BlockOffset)
-									for i := range traces {
-										traces[i].TransactionPosition = pos
-									}
-									jsonTraceBytes, _ := json.Marshal(traces)
-									store.txtrace.SetTxTrace(tx.Hash(), jsonTraceBytes)
-								}
-							}
 						}
 
 						// Index receipts
@@ -507,13 +484,7 @@ func (s *Service) ReexecuteBlocks(from, to idx.Block) {
 		}
 		es := s.store.GetHistoryEpochState(s.store.FindBlockEpoch(b))
 		// Providing default config
-		// In case of trace transaction node, this config is changed
-		evmCfg := params.DefaultVMConfig
-		if s.store.txtrace != nil {
-			evmCfg.Debug = true
-			evmCfg.Tracer = txtrace.NewTraceStructLogger(s.store.txtrace)
-		}
-		evmProcessor := blockProc.EVMModule.Start(blockCtx, statedb, evmStateReader, func(t *types.Log) {}, es.Rules, evmCfg, es.Rules.EvmChainConfig(upgradeHeights))
+		evmProcessor := blockProc.EVMModule.Start(blockCtx, statedb, evmStateReader, func(t *types.Log) {}, es.Rules, params.DefaultVMConfig, es.Rules.EvmChainConfig(upgradeHeights))
 		txs := s.store.GetBlockTxs(b, block)
 		evmProcessor.Execute(txs)
 		evmProcessor.Finalize()

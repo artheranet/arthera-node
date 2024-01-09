@@ -19,7 +19,6 @@ package api
 
 import (
 	"context"
-	"github.com/artheranet/arthera-node/tracing/txtrace"
 	"math/big"
 	"time"
 
@@ -79,10 +78,6 @@ type Backend interface {
 	GetBlockContext(header *evmcore.EvmHeader) vm.BlockContext
 	MinGasPrice() *big.Int
 	MaxGasLimit() uint64
-
-	// Transaction trace API
-	TxTraceByHash(ctx context.Context, h common.Hash) (*[]txtrace.ActionTrace, error)
-	TxTraceSave(ctx context.Context, h common.Hash, traces []byte) error
 
 	// Transaction pool API
 	SendTx(ctx context.Context, signedTx *types.Transaction) error
@@ -163,11 +158,6 @@ func GetAPIs(apiBackend Backend) []rpc.API {
 			Namespace: "abft",
 			Version:   "1.0",
 			Service:   NewPublicAbftAPI(apiBackend),
-			Public:    true,
-		}, {
-			Namespace: "trace",
-			Version:   "1.0",
-			Service:   NewPublicTxTraceAPI(apiBackend),
 			Public:    true,
 		},
 	}

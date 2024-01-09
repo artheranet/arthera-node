@@ -2,11 +2,8 @@ package gossip
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/artheranet/arthera-node/api"
-	"github.com/artheranet/arthera-node/tracing/txtrace"
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"math/big"
 	"strconv"
 	"strings"
@@ -95,77 +92,6 @@ func (b *EthAPIBackend) HeaderByHash(ctx context.Context, h common.Hash) (*evmco
 		return nil, nil
 	}
 	return b.HeaderByNumber(ctx, rpc.BlockNumber(*index))
-}
-
-// TxTraceByHash returns transaction trace from store db by the hash.
-func (b *EthAPIBackend) TxTraceByHash(ctx context.Context, h common.Hash) (*[]txtrace.ActionTrace, error) {
-	if b.state.store.txtrace == nil {
-		return nil, errors.New("Transaction trace key-value store db is not initialized")
-	}
-	txBytes := b.state.store.txtrace.GetTx(h)
-	traces := make([]txtrace.ActionTrace, 0)
-	json.Unmarshal(txBytes, &traces)
-	if len(traces) == 0 {
-		return nil, fmt.Errorf("no trace for tx hash: %s", h.String())
-	}
-	lookForNillMandatoryFields(&traces)
-	return &traces, nil
-}
-
-func lookForNillMandatoryFields(actionTraces *[]txtrace.ActionTrace) {
-	for _, actionTrace := range *actionTraces {
-
-		switch actionTrace.TraceType {
-		case txtrace.CREATE:
-			if actionTrace.Action.From == nil {
-				actionTrace.Action.From = &common.Address{}
-			}
-			if actionTrace.Action.Init == nil || len(*actionTrace.Action.Init) == 0 {
-				actionTrace.Action.Init = &hexutil.Bytes{}
-			}
-			if actionTrace.Result != nil {
-
-				if actionTrace.Result.Code == nil {
-					actionTrace.Result.Code = &hexutil.Bytes{}
-				}
-				if actionTrace.Result.Address == nil {
-					actionTrace.Result.Address = &common.Address{}
-				}
-			}
-		case txtrace.CALL:
-			if actionTrace.Action.CallType == nil {
-				calltype := txtrace.CALL
-				actionTrace.Action.CallType = &calltype
-			}
-			if actionTrace.Action.From == nil {
-				actionTrace.Action.From = &common.Address{}
-			}
-			if actionTrace.Action.Input == nil {
-				actionTrace.Action.Input = &hexutil.Bytes{}
-			}
-			if actionTrace.Result != nil && actionTrace.Result.Output == nil {
-				actionTrace.Result.Output = &hexutil.Bytes{}
-			}
-		case txtrace.SELFDESTRUCT:
-			if actionTrace.Action.Address == nil {
-				actionTrace.Action.Address = &common.Address{}
-			}
-			if actionTrace.Action.RefundAddress == nil {
-				actionTrace.Action.RefundAddress = &common.Address{}
-			}
-			if actionTrace.Action.Balance == nil {
-				actionTrace.Action.Balance = &hexutil.Big{}
-			}
-		}
-	}
-}
-
-// TxTraceSave saves transaction trace into store db
-func (b *EthAPIBackend) TxTraceSave(ctx context.Context, h common.Hash, traces []byte) error {
-	if b.state.store.txtrace != nil {
-		return b.state.store.txtrace.SetTxTrace(h, traces)
-	}
-	return errors.New("Transaction trace key-value store db is not initialized")
 }
 
 // BlockByNumber returns evm block by its number, or nil if not exists.

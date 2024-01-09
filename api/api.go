@@ -2130,7 +2130,6 @@ func (api *PublicDebugAPI) traceTx(ctx context.Context, message evmcore.Message,
 		err       error
 		txContext = evmcore.NewEVMTxContext(message)
 	)
-
 	switch {
 	case config == nil:
 		tracer = vm.NewStructLogger(nil)
@@ -2165,7 +2164,7 @@ func (api *PublicDebugAPI) traceTx(ctx context.Context, message evmcore.Message,
 	evmconfig.NoBaseFee = true
 
 	// Run the transaction with tracing enabled.
-	vmenv := vm.NewEVM(vmctx, txContext, statedb, api.b.ChainConfig(), params.DefaultVMConfig)
+	vmenv := vm.NewEVM(vmctx, txContext, statedb, api.b.ChainConfig(), evmconfig)
 
 	// Call Prepare to clear out the statedb access list
 	statedb.Prepare(txctx.TxHash, txctx.TxIndex)
@@ -2191,7 +2190,8 @@ func (api *PublicDebugAPI) traceTx(ctx context.Context, message evmcore.Message,
 		}, nil
 
 	case tracers.Tracer:
-		return tracer.GetResult()
+		result, err := tracer.GetResult()
+		return result, err
 
 	default:
 		panic(fmt.Sprintf("bad tracer type %T", tracer))

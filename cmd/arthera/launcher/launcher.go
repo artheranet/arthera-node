@@ -122,7 +122,6 @@ func initFlags() {
 		validatorIDFlag,
 		validatorPubkeyFlag,
 		validatorPasswordFlag,
-		TraceNodeFlag,
 		SyncModeFlag,
 		GCModeFlag,
 		genesisTypeFlag,

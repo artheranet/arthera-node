@@ -127,9 +127,6 @@ func NewStore(dbs kvdb.FlushableDBProducer, cfg StoreConfig) *Store {
 
 	s.initCache()
 	s.evm = evmstore.NewStore(dbs, cfg.EVM)
-	if cfg.TraceTransactions {
-		s.txtrace = txtrace.NewStore(s.table.TransactionTraces)
-	}
 
 	if err := s.migrateData(); err != nil {
 		s.Log.Crit("Failed to migrate Gossip DB", "err", err)

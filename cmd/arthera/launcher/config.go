@@ -125,11 +125,6 @@ var (
 		Name:  "exitwhensynced.epoch",
 		Usage: "Exits after synchronisation reaches the required epoch",
 	}
-	// TraceNodeFlag enables transaction tracing recording
-	TraceNodeFlag = cli.BoolFlag{
-		Name:  "tracenode",
-		Usage: "If present, than this node records inner transaction traces",
-	}
 	TestnetFlag = cli.BoolFlag{
 		Name:  "testnet",
 		Usage: "Run a testnet node",
@@ -510,10 +505,6 @@ func mayMakeAllConfigs(ctx *cli.Context) (*config, error) {
 
 	if err := cfg.Arthera.Validate(); err != nil {
 		return nil, err
-	}
-
-	if ctx.GlobalIsSet(TraceNodeFlag.Name) {
-		cfg.ArtheraStore.TraceTransactions = true
 	}
 
 	return &cfg, nil

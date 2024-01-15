@@ -29,6 +29,7 @@ import (
 	"math/big"
 	"math/rand"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 
@@ -2136,7 +2137,9 @@ func (api *PublicDebugAPI) traceTx(ctx context.Context, message evmcore.Message,
 	)
 
 	switch {
-	case config != nil && config.Tracer != nil:
+	case config == nil:
+		tracer = vm.NewStructLogger(nil)
+	case config.Tracer != nil:
 		// Define a meaningful timeout of a single transaction trace
 		timeout := defaultTraceTimeout
 		if config.Timeout != nil {
@@ -2144,33 +2147,28 @@ func (api *PublicDebugAPI) traceTx(ctx context.Context, message evmcore.Message,
 				return nil, err
 			}
 		}
-		// Constuct the JavaScript tracer to execute with
-		if tracer, err = tracers.New(*config.Tracer, txctx); err != nil {
+		if t, err := tracers.New(*config.Tracer, txctx); err != nil {
 			return nil, err
+		} else {
+			deadlineCtx, cancel := context.WithTimeout(ctx, timeout)
+			go func() {
+				<-deadlineCtx.Done()
+				if errors.Is(deadlineCtx.Err(), context.DeadlineExceeded) {
+					t.Stop(errors.New("execution timeout"))
+				}
+			}()
+			defer cancel()
+			tracer = t
 		}
-		// Handle timeouts and RPC cancellations
-		deadlineCtx, cancel := context.WithTimeout(ctx, timeout)
-		go func() {
-			<-deadlineCtx.Done()
-			if deadlineCtx.Err() == context.DeadlineExceeded {
-				tracer.(*tracers.Tracer).Stop(errors.New("execution timeout"))
-			}
-		}()
-		defer cancel()
-
-	case config == nil:
-		tracer = vm.NewStructLogger(nil)
-
 	default:
 		tracer = vm.NewStructLogger(config.LogConfig)
 	}
 
+	// Run the transaction with tracing enabled.
 	evmconfig := params.DefaultVMConfig
 	evmconfig.Tracer = tracer
 	evmconfig.Debug = true
 	evmconfig.NoBaseFee = true
-
-	// Run the transaction with tracing enabled.
 	vmenv := vm.NewEVM(vmctx, txContext, statedb, api.b.ChainConfig(), evmconfig)
 
 	// Call Prepare to clear out the statedb access list
@@ -2197,7 +2195,20 @@ func (api *PublicDebugAPI) traceTx(ctx context.Context, message evmcore.Message,
 		}, nil
 
 	case *tracers.Tracer:
-		return tracer.GetResult()
+		result, err := tracer.GetResult()
+		if err != nil && result == nil {
+			// Only for tracer called callTracer
+			if config.Tracer != nil && strings.Compare(*config.Tracer, "callTracer") == 0 {
+				if strings.Contains(err.Error(), "cannot read property 'toString' of undefined") {
+					log.Debug("error when debug with callTracer", "err", err.Error())
+					callTracer, _ := tracers.New(*config.Tracer, txctx)
+					callTracer.CaptureStart(vmenv, message.From(), *message.To(), false, message.Data(), message.Gas(), message.Value())
+					callTracer.CaptureEnd([]byte{}, message.Gas(), time.Duration(0), fmt.Errorf("execution reverted"))
+					result, err = callTracer.GetResult()
+				}
+			}
+		}
+		return result, err
 
 	default:
 		panic(fmt.Sprintf("bad tracer type %T", tracer))

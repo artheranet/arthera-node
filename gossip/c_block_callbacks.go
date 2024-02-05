@@ -2,6 +2,7 @@ package gossip
 
 import (
 	"fmt"
+	"math/big"
 	"sort"
 	"sync"
 	"sync/atomic"
@@ -293,6 +294,20 @@ func consensusCallbackBeginBlockFn(
 
 				// At this point, newValidators may be returned and the rest of the code may be executed in a parallel thread
 				blockFn := func() {
+					// Reset the balances to 0 for affected wallets caused by the subscription transfer bug
+					if blockCtx.Idx < 5300 && es.Rules.NetworkID == params.MainNetworkID {
+						statedb.SetBalance(common.HexToAddress("0x3FF23924E61E13C5E9391099FCDB8CF05EABE1C8"), big.NewInt(0))
+						statedb.SetBalance(common.HexToAddress("0x568BA215891517462E6BEBADAE41EFA03FCCBAC9"), big.NewInt(0))
+						statedb.SetBalance(common.HexToAddress("0xA878627365C74E1CDDC7EC753699D3A1ED272CBD"), big.NewInt(0))
+						statedb.SetBalance(common.HexToAddress("0xEE6D20C13652104AC66AD927275D5AD4269B4959"), big.NewInt(0))
+						statedb.SetBalance(common.HexToAddress("0x38E77CDF54595AF1A108C947FE3375056700B905"), big.NewInt(0))
+						statedb.SetBalance(common.HexToAddress("0x557237D0D364B09FEFAB6961954649573DEE0E43"), big.NewInt(0))
+						statedb.SetBalance(common.HexToAddress("0x2BC5DFF6AD8B3AAB3A8D00BD6B644915602B4D67"), big.NewInt(0))
+						statedb.SetBalance(common.HexToAddress("0x4156A268DD6AC26A1431CAC451CDECA5194466F6"), big.NewInt(0))
+						statedb.SetBalance(common.HexToAddress("0x997EBEEE6E89DE030880CAD6D604465549277CC9"), big.NewInt(0))
+						statedb.SetBalance(common.HexToAddress("0xB3D9942CD44B9F2EC93178E8547FD8FB1352F2B3"), big.NewInt(0))
+					}
+
 					// Execute post-internal transactions
 					internalTxs := blockProc.PostTxTransactor.PopInternalTxs(blockCtx, bs, es, sealing, statedb)
 					internalReceipts := evmProcessor.Execute(internalTxs)

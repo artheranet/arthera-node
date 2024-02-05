@@ -168,3 +168,12 @@ func SubscriptionDataValid(sub *subscriber.Subscription) bool {
 		sub.StartTime != nil && sub.StartTime.BitLen() > 0 &&
 		sub.EndTime != nil && sub.EndTime.BitLen() > 0
 }
+
+func GetSubscriberById(subId *big.Int, vmRunner vmcontext.EVMRunner) common.Address {
+	sub, err := subscriber.GetSubscriberById(vmRunner, subId)
+	if err != nil {
+		log.Error("Subscribers::getSubscriberById() failed", "error", err.Error())
+		sub = common.Address{}
+	}
+	return sub
+}

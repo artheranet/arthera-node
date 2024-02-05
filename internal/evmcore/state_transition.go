@@ -383,7 +383,7 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	contractCreation := msg.To() == nil
 
 	// check if the user has an active subscription
-	senderSubscription := GetSubscriptionData(st.msg.From(), false, &st.evmRunner)
+	senderSubscription1 := GetSubscriptionData(st.msg.From(), false, &st.evmRunner)
 	var receiverSubscription *subscriber.Subscription = nil
 	if !contractCreation && st.state.GetCodeSize(*st.msg.To()) > 0 {
 		// receiver is a smart contract, retrieve its subscription
@@ -391,7 +391,7 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	}
 
 	// Check clauses 1-3, buy gas if everything is correct
-	if err := st.preCheck(senderSubscription, receiverSubscription); err != nil {
+	if err := st.preCheck(senderSubscription1, receiverSubscription); err != nil {
 		return nil, err
 	}
 
@@ -413,6 +413,8 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	if rules := st.evm.ChainConfig().Rules(st.evm.Context.BlockNumber); rules.IsBerlin {
 		st.state.PrepareAccessList(msg.From(), msg.To(), vm.ActivePrecompiles(rules), msg.AccessList())
 	}
+
+	var senderHadActiveSubscription = st.hasActiveSubscription(senderSubscription1)
 
 	var (
 		ret   []byte
@@ -439,7 +441,7 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	}
 
 	// check if the user has an active subscription again, because the transaction might be a terminate subscription
-	senderSubscription = GetSubscriptionData(st.msg.From(), false, &st.evmRunner)
+	senderSubscription2 := GetSubscriptionData(st.msg.From(), false, &st.evmRunner)
 	receiverSubscription = nil
 	if !contractCreation && st.state.GetCodeSize(*st.msg.To()) > 0 {
 		// receiver is a smart contract, retrieve its subscription
@@ -448,14 +450,14 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 
 	if !london {
 		// Before EIP-3529: refunds were capped to gasUsed / 2
-		st.refundGas(params.RefundQuotient, senderSubscription, receiverSubscription)
+		st.refundGas(params.RefundQuotient, senderHadActiveSubscription, senderSubscription1, senderSubscription2, receiverSubscription)
 	} else {
 		// After EIP-3529: refunds are capped to gasUsed / 5
-		st.refundGas(params.RefundQuotientEIP3529, senderSubscription, receiverSubscription)
+		st.refundGas(params.RefundQuotientEIP3529, senderHadActiveSubscription, senderSubscription1, senderSubscription2, receiverSubscription)
 	}
 
 	// Pay-as-You-Go rebates
-	if !contractCreation && !st.hasActiveSubscription(senderSubscription) && !st.hasActiveSubscription(receiverSubscription) {
+	if !contractCreation && !st.hasActiveSubscription(senderSubscription2) && !st.hasActiveSubscription(receiverSubscription) {
 		if !contracts.IsSystemContract(st.to()) {
 			// check to see if the destination address is eligible for Pay-as-You-Go rebates
 			owner, _ := pyag.GetOwnerOfContract(&st.evmRunner, st.to())
@@ -479,7 +481,13 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 
 // Returns the remaining gas, plus a refund to the sender, because the initial gas that was provided
 // to the transaction might be bigger than was actually consumed
-func (st *StateTransition) refundGas(refundQuotient uint64, senderSubscription *subscriber.Subscription, receiverSubscription *subscriber.Subscription) {
+func (st *StateTransition) refundGas(
+	refundQuotient uint64,
+	senderHadActiveSubscription bool,
+	prevSenderSubscription *subscriber.Subscription,
+	senderSubscription *subscriber.Subscription,
+	receiverSubscription *subscriber.Subscription,
+) {
 	// Apply refund counter, capped to a refund quotient
 	refund := st.gasUsed() / refundQuotient
 	if refund > st.state.GetRefund() {
@@ -494,7 +502,7 @@ func (st *StateTransition) refundGas(refundQuotient uint64, senderSubscription *
 			if st.hasActiveSubscription(receiverSubscription) {
 				receiverGasRefund := st.gas * st.receiverSpentGas / st.initialGas
 				if receiverGasRefund > 0 {
-					log.Trace("Credit receiver subscription", "refund (units)", receiverGasRefund)
+					log.Info("Credit receiver subscription", "refund (units)", receiverGasRefund)
 					CreditSubscription(st.to(), new(big.Int).SetUint64(receiverGasRefund), true, &st.evmRunner)
 				}
 			} else {
@@ -505,19 +513,34 @@ func (st *StateTransition) refundGas(refundQuotient uint64, senderSubscription *
 
 		senderGasRefund := st.gas * st.senderSpentGas / st.initialGas
 		if senderGasRefund > 0 {
+			log.Info("Refunding gas", "sender", st.msg.From().String())
+
 			if st.hasActiveSubscription(senderSubscription) {
-				log.Trace("Credit sender subscription", "refund (units)", senderGasRefund)
+				log.Info("Credit sender subscription", "refund (units)", senderGasRefund)
 				CreditSubscription(st.msg.From(), new(big.Int).SetUint64(senderGasRefund), false, &st.evmRunner)
 			} else {
-				// if the sender does hot have an active subscription, give the refund to PYAG
-				st.pyagSpentGas += st.senderSpentGas
+				if st.isSubscribersCall() && senderHadActiveSubscription && !st.hasActiveSubscription(senderSubscription) {
+					// the sender had an active subscription and no longer has it
+					// we check to see if somebody else has it
+					newSubscriber := GetSubscriberById(prevSenderSubscription.Id, &st.evmRunner)
+					if newSubscriber != params2.ZeroAddress {
+						// if yes, give the refund to the subscription
+						CreditSubscription(newSubscriber, new(big.Int).SetUint64(senderGasRefund), false, &st.evmRunner)
+					} else {
+						// subscription was terminated, don't give a refund
+					}
+				} else {
+					// if the sender does hot have an active subscription, give the refund to PYAG
+					log.Info("Refunding Sender", "senderSpentGas", st.senderSpentGas)
+					st.pyagSpentGas += st.senderSpentGas
+				}
 			}
 		}
 
 		pyagGasRefund := st.gas * st.pyagSpentGas / st.initialGas
 		if pyagGasRefund > 0 {
 			pyagRefund := new(big.Int).Mul(new(big.Int).SetUint64(pyagGasRefund), st.gasPrice)
-			log.Trace("Credit Pay-as-You-Go", "refund (units)", pyagGasRefund, "refund (wei)", pyagRefund.String())
+			log.Info("Credit Pay-as-You-Go", "refund (units)", pyagGasRefund, "refund (wei)", pyagRefund.String())
 			st.state.AddBalance(st.msg.From(), pyagRefund)
 		}
 	} else {
@@ -547,4 +570,8 @@ func (st *StateTransition) hasActiveSubscription(sub *subscriber.Subscription) b
 		sub.PlanId.Cmp(big.NewInt(0)) > 0 &&
 		sub.EndTime.Cmp(st.evm.Context.Time) >= 0 &&
 		sub.Balance.Cmp(big.NewInt(0)) > 0
+}
+
+func (st *StateTransition) isSubscribersCall() bool {
+	return st.to() == contracts.SubscribersSmartContractAddress
 }

@@ -107,6 +107,8 @@ type (
 		AllowUnprotectedTxs bool
 
 		RPCBlockExt bool
+
+		SubDummyBalance bool
 	}
 
 	StoreCacheConfig struct {

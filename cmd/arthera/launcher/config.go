@@ -104,6 +104,10 @@ var (
 		Usage: "Time limit for RPC calls execution",
 		Value: gossip.DefaultConfig(cachescale.Identity).RPCTimeout,
 	}
+	SubDummyBalanceFlag = cli.BoolFlag{
+		Name:  "dummy.balance",
+		Usage: "Whether to enable a dummy balance for accounts that have a valid subscription",
+	}
 
 	SyncModeFlag = cli.StringFlag{
 		Name:  "syncmode",
@@ -355,6 +359,9 @@ func gossipConfigWithFlags(ctx *cli.Context, src gossip.Config) (gossip.Config, 
 			utils.Fatalf("--%s must be either 'full' or 'snap'", SyncModeFlag.Name)
 		}
 		cfg.AllowSnapsync = ctx.GlobalString(SyncModeFlag.Name) == "snap"
+	}
+	if ctx.GlobalIsSet(SubDummyBalanceFlag.Name) {
+		cfg.SubDummyBalance = ctx.GlobalBool(SubDummyBalanceFlag.Name)
 	}
 
 	return cfg, nil

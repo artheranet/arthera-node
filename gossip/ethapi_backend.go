@@ -463,6 +463,10 @@ func (b *EthAPIBackend) RPCEVMTimeout() time.Duration {
 	return b.svc.config.RPCEVMTimeout
 }
 
+func (b *EthAPIBackend) SubDummyBalance() bool {
+	return b.svc.config.SubDummyBalance
+}
+
 func (b *EthAPIBackend) RPCTxFeeCap() float64 {
 	return b.svc.config.RPCTxFeeCap
 }

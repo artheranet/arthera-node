@@ -713,11 +713,25 @@ func (s *PublicBlockChainAPI) BlockNumber() hexutil.Uint64 {
 // given block number. The rpc.LatestBlockNumber and rpc.PendingBlockNumber meta
 // block numbers are also allowed.
 func (s *PublicBlockChainAPI) GetBalance(ctx context.Context, address common.Address, blockNrOrHash rpc.BlockNumberOrHash) (*hexutil.Big, error) {
-	state, _, err := s.b.StateAndHeaderByNumberOrHash(ctx, blockNrOrHash)
+	state, header, err := s.b.StateAndHeaderByNumberOrHash(ctx, blockNrOrHash)
 	if state == nil || err != nil {
 		return nil, err
 	}
-	return (*hexutil.Big)(state.GetBalance(address)), state.Error()
+	balance := state.GetBalance(address)
+	showDummyBalance := s.b.SubDummyBalance()
+	if showDummyBalance {
+		// return 1 AA balance for the address if it has a subscription
+		vmConfig := params.DefaultVMConfig
+		var accessList types.AccessList
+		msg := types.NewMessage(address, nil, 0, new(big.Int).SetUint64(0), 0, new(big.Int).SetUint64(0), new(big.Int).SetUint64(0), new(big.Int).SetUint64(0), []byte{}, accessList, false)
+		evm, _, _ := s.b.GetEVM(ctx, msg, state, header, &vmConfig)
+		senderSub := evmcore.GetSubscriptionData(address, false, &vmcontext.SharedEVMRunner{EVM: evm})
+		if evmcore.SubscriptionDataActive(senderSub, evm.Context.Time) {
+			balance = new(big.Int).SetUint64(1e18)
+		}
+	}
+
+	return (*hexutil.Big)(balance), state.Error()
 }
 
 // AccountResult is result struct for GetProof

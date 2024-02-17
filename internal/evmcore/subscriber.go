@@ -169,6 +169,13 @@ func SubscriptionDataValid(sub *subscriber.Subscription) bool {
 		sub.EndTime != nil && sub.EndTime.BitLen() > 0
 }
 
+func SubscriptionDataActive(sub *subscriber.Subscription, blockTime *big.Int) bool {
+	return SubscriptionDataValid(sub) &&
+		sub.PlanId.Cmp(big.NewInt(0)) > 0 &&
+		sub.EndTime.Cmp(blockTime) >= 0 &&
+		sub.Balance.Cmp(big.NewInt(0)) > 0
+}
+
 func GetSubscriberById(subId *big.Int, vmRunner vmcontext.EVMRunner) common.Address {
 	sub, err := subscriber.GetSubscriberById(vmRunner, subId)
 	if err != nil {

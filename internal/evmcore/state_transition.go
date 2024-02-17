@@ -567,9 +567,7 @@ func (st *StateTransition) hasActiveSubscription(sub *subscriber.Subscription) b
 	// so subscriptions are not applied
 	return st.msg.GasPrice().Cmp(big.NewInt(0)) > 0 &&
 		sub != nil &&
-		sub.PlanId.Cmp(big.NewInt(0)) > 0 &&
-		sub.EndTime.Cmp(st.evm.Context.Time) >= 0 &&
-		sub.Balance.Cmp(big.NewInt(0)) > 0
+		SubscriptionDataActive(sub, st.evm.Context.Time)
 }
 
 func (st *StateTransition) isSubscribersCall() bool {

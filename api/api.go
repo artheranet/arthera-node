@@ -20,6 +20,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/artheranet/arthera-node/internal/evmcore/vmcontext"
 	"github.com/artheranet/arthera-node/utils/adapters/ethdb2kvdb"
 	"github.com/artheranet/arthera-node/utils/dbutil/compactdb"
 	"github.com/ethereum/go-ethereum/eth/tracers"
@@ -1111,7 +1112,7 @@ func DoEstimateGas(ctx context.Context, b Backend, args TransactionArgs, blockNr
 	}
 	// Recap the highest gas limit with account's available balance.
 	if feeCap.BitLen() != 0 {
-		state, _, err := b.StateAndHeaderByNumberOrHash(ctx, blockNrOrHash)
+		state, header, err := b.StateAndHeaderByNumberOrHash(ctx, blockNrOrHash)
 		if state == nil || err != nil {
 			return 0, err
 		}
@@ -1125,8 +1126,13 @@ func DoEstimateGas(ctx context.Context, b Backend, args TransactionArgs, blockNr
 		}
 		allowance := new(big.Int).Div(available, feeCap)
 
-		// If the allowance is larger than maximum uint64, skip checking
-		if allowance.IsUint64() && hi > allowance.Uint64() {
+		// at this point, if there's an existing sub, estimate the gas using the sub's balance
+		vmConfig := params.DefaultVMConfig
+		msg, _ := args.ToMessage(gasCap, header.BaseFee)
+		evm, _, err := b.GetEVM(ctx, msg, state, header, &vmConfig)
+		senderSub := evmcore.GetSubscriptionData(*args.From, false, &vmcontext.SharedEVMRunner{EVM: evm})
+		if !evmcore.SubscriptionDataActive(senderSub, evm.Context.Time) && allowance.IsUint64() && hi > allowance.Uint64() {
+			// If the allowance is larger than maximum uint64, skip checking
 			transfer := args.Value
 			if transfer == nil {
 				transfer = new(hexutil.Big)

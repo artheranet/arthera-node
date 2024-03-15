@@ -11,7 +11,7 @@ import (
 	"github.com/artheranet/lachesis/inter/idx"
 	"github.com/artheranet/lachesis/inter/pos"
 	"github.com/artheranet/lachesis/lachesis"
-	"github.com/ethereum/go-ethereum/core/vm"
+	"github.com/ethereum/go-ethereum/eth/tracers/logger"
 	"io"
 	"math/big"
 	"os"
@@ -154,7 +154,7 @@ func (b *GenesisBuilder) ExecuteGenesisTxs(blockProc BlockProc, genesisTxs types
 	txListener := blockProc.TxListenerModule.Start(blockCtx, bs, es, b.tmpStateDB)
 	vmConfigWithDebug := params.DefaultVMConfig
 	vmConfigWithDebug.Debug = false
-	vmConfigWithDebug.Tracer = vm.NewJSONLogger(&vm.LogConfig{
+	vmConfigWithDebug.Tracer = logger.NewJSONLogger(&logger.Config{
 		EnableMemory:     false,
 		DisableStack:     true,
 		DisableStorage:   true,

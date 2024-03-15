@@ -719,8 +719,8 @@ func (s *PublicBlockChainAPI) GetBalance(ctx context.Context, address common.Add
 	}
 	balance := state.GetBalance(address)
 	showDummyBalance := s.b.SubDummyBalance()
-	if showDummyBalance {
-		// return 1 AA balance for the address if it has a subscription
+	if balance.BitLen() == 0 && showDummyBalance {
+		// return 1 AA balance for the address if it has a subscription and the account has zero balance
 		vmConfig := params.DefaultVMConfig
 		var accessList types.AccessList
 		msg := types.NewMessage(address, nil, 0, new(big.Int).SetUint64(0), 0, new(big.Int).SetUint64(0), new(big.Int).SetUint64(0), new(big.Int).SetUint64(0), []byte{}, accessList, false)
@@ -2460,8 +2460,8 @@ func checkTxFee(gasPrice *big.Int, gas uint64, cap float64) error {
 	if cap == 0 {
 		return nil
 	}
-	feeEth := new(big.Float).Quo(new(big.Float).SetInt(new(big.Int).Mul(gasPrice, new(big.Int).SetUint64(gas))), new(big.Float).SetInt(big.NewInt(ethparams.Ether)))
-	feeFloat, _ := feeEth.Float64()
+	feeAA := new(big.Float).Quo(new(big.Float).SetInt(new(big.Int).Mul(gasPrice, new(big.Int).SetUint64(gas))), new(big.Float).SetInt(big.NewInt(ethparams.Ether)))
+	feeFloat, _ := feeAA.Float64()
 	if feeFloat > cap {
 		return fmt.Errorf("tx fee (%.2f AA) exceeds the configured cap (%.2f AA)", feeFloat, cap)
 	}

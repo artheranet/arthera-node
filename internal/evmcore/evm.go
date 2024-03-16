@@ -73,6 +73,11 @@ func GetHashFn(ref *EvmHeader, chain DummyChain) func(n uint64) common.Hash {
 	var cache []common.Hash
 
 	return func(n uint64) common.Hash {
+		if ref.Number.Uint64() <= n {
+			// This situation can happen if we're doing tracing and using
+			// block overrides.
+			return common.Hash{}
+		}
 		// If there's no hash cache yet, make one
 		if len(cache) == 0 {
 			cache = append(cache, ref.ParentHash)

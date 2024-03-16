@@ -2181,7 +2181,7 @@ func (api *PublicDebugAPI) traceTx(ctx context.Context, message evmcore.Message,
 				return nil, err
 			}
 		}
-		if t, err := tracers.New(*config.Tracer, txctx); err != nil {
+		if t, err := tracers.New(*config.Tracer, txctx, nil); err != nil {
 			return nil, err
 		} else {
 			deadlineCtx, cancel := context.WithTimeout(ctx, timeout)

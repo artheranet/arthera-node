@@ -2052,6 +2052,23 @@ func (api *PublicDebugAPI) TestSignCliqueBlock(ctx context.Context, address comm
 	return common.Address{}, errors.New("Clique isn't supported")
 }
 
+// GetRawReceipts retrieves the binary-encoded raw receipts of a single block.
+func (api *PublicDebugAPI) GetRawReceipts(ctx context.Context, blockNumber rpc.BlockNumber) ([]hexutil.Bytes, error) {
+	receipts, err := api.b.GetReceiptsByNumber(ctx, blockNumber)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]hexutil.Bytes, len(receipts))
+	for i, receipt := range receipts {
+		b, err := receipt.MarshalBinary()
+		if err != nil {
+			return nil, err
+		}
+		result[i] = b
+	}
+	return result, nil
+}
+
 // PrintBlock retrieves a block and returns its pretty printed form.
 func (api *PublicDebugAPI) PrintBlock(ctx context.Context, number uint64) (string, error) {
 	block, err := api.b.BlockByNumber(ctx, rpc.BlockNumber(number))

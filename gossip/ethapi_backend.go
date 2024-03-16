@@ -317,15 +317,13 @@ func (b *EthAPIBackend) GetTd(_ common.Hash) *big.Int {
 }
 
 func (b *EthAPIBackend) GetEVM(ctx context.Context, msg evmcore.Message, state *state.StateDB, header *evmcore.EvmHeader, vmConfig *vm.Config) (*vm.EVM, func() error, error) {
-	vmError := func() error { return nil }
-
 	if vmConfig == nil {
 		vmConfig = &params.DefaultVMConfig
 	}
 	txContext := evmcore.NewEVMTxContext(msg)
 	context := evmcore.NewEVMBlockContext(header, b.state, nil)
 	config := b.ChainConfig()
-	return vm.NewEVM(context, txContext, state, config, *vmConfig), vmError, nil
+	return vm.NewEVM(context, txContext, state, config, *vmConfig), state.Error, nil
 }
 
 func (b *EthAPIBackend) GetBlockContext(header *evmcore.EvmHeader) vm.BlockContext {

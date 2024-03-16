@@ -40,7 +40,7 @@ import (
 
 type testBackend struct {
 	db         ethdb.Database
-	logIndex   *topicsdb.Index
+	logIndex   topicsdb.Index
 	blocksFeed *notify.Feed
 	txsFeed    *notify.Feed
 	logsFeed   *notify.Feed
@@ -133,7 +133,7 @@ func (b *testBackend) SubscribeNewBlockNotify(ch chan<- evmcore.ChainHeadNotify)
 	return b.blocksFeed.Subscribe(ch)
 }
 
-func (b *testBackend) EvmLogIndex() *topicsdb.Index {
+func (b *testBackend) EvmLogIndex() topicsdb.Index {
 	return b.logIndex
 }
 

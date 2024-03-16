@@ -140,7 +140,7 @@ func TestFilters(t *testing.T) {
 			}
 			gen.AddUncheckedReceipt(receipt)
 			gen.AddUncheckedTx(types.NewTransaction(1, common.HexToAddress("0x1"), big.NewInt(1), 1, big.NewInt(1), nil))
-			backend.logIndex.MustPush(receipt.Logs...)
+			backend.logIndex.Push(receipt.Logs...)
 
 		case 2:
 			receipt := types.NewReceipt(nil, false, 0)
@@ -153,7 +153,7 @@ func TestFilters(t *testing.T) {
 			}
 			gen.AddUncheckedReceipt(receipt)
 			gen.AddUncheckedTx(types.NewTransaction(2, common.HexToAddress("0x2"), big.NewInt(2), 2, big.NewInt(2), nil))
-			backend.logIndex.MustPush(receipt.Logs...)
+			backend.logIndex.Push(receipt.Logs...)
 
 		case 998:
 			receipt := types.NewReceipt(nil, false, 0)
@@ -166,7 +166,7 @@ func TestFilters(t *testing.T) {
 			}
 			gen.AddUncheckedReceipt(receipt)
 			gen.AddUncheckedTx(types.NewTransaction(998, common.HexToAddress("0x998"), big.NewInt(998), 998, big.NewInt(998), nil))
-			backend.logIndex.MustPush(receipt.Logs...)
+			backend.logIndex.Push(receipt.Logs...)
 
 		case 999:
 			receipt := types.NewReceipt(nil, false, 0)
@@ -178,7 +178,7 @@ func TestFilters(t *testing.T) {
 			}
 			gen.AddUncheckedReceipt(receipt)
 			gen.AddUncheckedTx(types.NewTransaction(999, common.HexToAddress("0x999"), big.NewInt(999), 999, big.NewInt(999), nil))
-			backend.logIndex.MustPush(receipt.Logs...)
+			backend.logIndex.Push(receipt.Logs...)
 		}
 	})
 	for i, block := range chain {

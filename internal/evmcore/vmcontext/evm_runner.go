@@ -24,9 +24,13 @@ type EVMRunner interface {
 
 	// StopGasMetering stop gas metering
 	StopGasMetering()
-
 	// StartGasMetering start gas metering
 	StartGasMetering()
+
+	// StopDebug stop tracing
+	StopDebug()
+	// StartDebug start tracing
+	StartDebug()
 }
 
 type SharedEVMRunner struct{ *vm.EVM }

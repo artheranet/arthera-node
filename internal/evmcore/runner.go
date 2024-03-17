@@ -16,12 +16,16 @@ type evmRunner struct {
 	newEVM       func(from common.Address) *vm.EVM
 	state        vm.StateDB
 	dontMeterGas bool
+	dontTrace    bool
 }
 
 func (ev *evmRunner) Execute(recipient common.Address, input []byte, gas uint64, value *big.Int) (ret []byte, err error) {
 	evm := ev.newEVM(VMAddress)
 	if ev.dontMeterGas {
 		evm.StopGasMetering()
+	}
+	if ev.dontTrace {
+		evm.StopDebug()
 	}
 	ret, _, err = evm.Call(vm.AccountRef(evm.Origin), recipient, input, gas, value)
 	return ret, err
@@ -32,6 +36,9 @@ func (ev *evmRunner) ExecuteFrom(sender, recipient common.Address, input []byte,
 	if ev.dontMeterGas {
 		evm.StopGasMetering()
 	}
+	if ev.dontTrace {
+		evm.StopDebug()
+	}
 	ret, _, err = evm.Call(vm.AccountRef(sender), recipient, input, gas, value)
 	return ret, err
 }
@@ -40,6 +47,9 @@ func (ev *evmRunner) Query(recipient common.Address, input []byte, gas uint64) (
 	evm := ev.newEVM(VMAddress)
 	if ev.dontMeterGas {
 		evm.StopGasMetering()
+	}
+	if ev.dontTrace {
+		evm.StopDebug()
 	}
 	ret, _, err = evm.StaticCall(vm.AccountRef(evm.Origin), recipient, input, gas)
 	return ret, err
@@ -51,6 +61,14 @@ func (ev *evmRunner) StopGasMetering() {
 
 func (ev *evmRunner) StartGasMetering() {
 	ev.dontMeterGas = false
+}
+
+func (ev *evmRunner) StartDebug() {
+	ev.dontTrace = true
+}
+
+func (ev *evmRunner) StopDebug() {
+	ev.dontTrace = false
 }
 
 func NewEVMRunner(chain DummyChain, chainconfig *params2.ChainConfig, header *EvmHeader, state vm.StateDB) vmcontext.EVMRunner {

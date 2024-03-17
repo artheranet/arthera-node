@@ -24,7 +24,6 @@ import (
 	"github.com/artheranet/arthera-node/internal/evmcore/vmcontext"
 	"github.com/artheranet/arthera-node/utils/adapters/ethdb2kvdb"
 	"github.com/artheranet/arthera-node/utils/dbutil/compactdb"
-	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/eth/tracers"
 	"github.com/ethereum/go-ethereum/eth/tracers/logger"
 	ethparams "github.com/ethereum/go-ethereum/params"
@@ -72,6 +71,8 @@ const (
 var (
 	noUncles = []evmcore.EvmHeader{}
 )
+
+var errTxNotFound = errors.New("transaction not found")
 
 // PublicEthereumAPI provides an API to access Ethereum related information.
 // It offers only methods that operate on public data that is freely available to anyone.
@@ -2137,8 +2138,9 @@ func (api *PublicDebugAPI) TraceTransaction(ctx context.Context, hash common.Has
 	if err != nil {
 		return nil, err
 	}
+	// Only mined txes are supported
 	if tx == nil {
-		return nil, fmt.Errorf("transaction %s not found", hash.Hex())
+		return nil, errTxNotFound
 	}
 
 	// It shouldn't happen in practice.
@@ -2208,7 +2210,7 @@ func (api *PublicDebugAPI) traceTx(ctx context.Context, message evmcore.Message,
 
 	// Call Prepare to clear out the statedb access list
 	statedb.Prepare(txctx.TxHash, txctx.TxIndex)
-	if _, err = core.ApplyMessage(vmenv, message, new(core.GasPool).AddGas(message.Gas())); err != nil {
+	if _, err = evmcore.ApplyMessage(vmenv, message, new(evmcore.GasPool).AddGas(message.Gas())); err != nil {
 		return nil, fmt.Errorf("tracing failed: %w", err)
 	}
 	return tracer.GetResult()

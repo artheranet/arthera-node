@@ -18,11 +18,13 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/artheranet/arthera-node/internal/evmcore/vmcontext"
 	"github.com/artheranet/arthera-node/utils/adapters/ethdb2kvdb"
 	"github.com/artheranet/arthera-node/utils/dbutil/compactdb"
+	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/eth/tracers"
 	"github.com/ethereum/go-ethereum/eth/tracers/logger"
 	ethparams "github.com/ethereum/go-ethereum/params"
@@ -2123,6 +2125,9 @@ type TraceConfig struct {
 	Tracer  *string
 	Timeout *string
 	Reexec  *uint64
+	// Config specific to given tracer. Note struct logger
+	// config are historically embedded in main object.
+	TracerConfig json.RawMessage
 }
 
 // TraceTransaction returns the structured logs created during the execution of EVM
@@ -2166,76 +2171,47 @@ func (api *PublicDebugAPI) TraceTransaction(ctx context.Context, hash common.Has
 func (api *PublicDebugAPI) traceTx(ctx context.Context, message evmcore.Message, txctx *tracers.Context, vmctx vm.BlockContext, statedb *state.StateDB, config *TraceConfig) (interface{}, error) {
 	// Assemble the structured logger or the JavaScript tracer
 	var (
-		tracer    vm.EVMLogger
+		tracer    tracers.Tracer
 		err       error
+		timeout   = defaultTraceTimeout
 		txContext = evmcore.NewEVMTxContext(message)
 	)
-	switch {
-	case config == nil:
-		tracer = logger.NewStructLogger(nil)
-	case config.Tracer != nil:
-		// Define a meaningful timeout of a single transaction trace
-		timeout := defaultTraceTimeout
-		if config.Timeout != nil {
-			if timeout, err = time.ParseDuration(*config.Timeout); err != nil {
-				return nil, err
-			}
-		}
-		if t, err := tracers.DefaultDirectory.New(*config.Tracer, txctx, nil); err != nil {
-			return nil, err
-		} else {
-			deadlineCtx, cancel := context.WithTimeout(ctx, timeout)
-			go func() {
-				<-deadlineCtx.Done()
-				if errors.Is(deadlineCtx.Err(), context.DeadlineExceeded) {
-					t.Stop(errors.New("execution timeout"))
-				}
-			}()
-			defer cancel()
-			tracer = t
-		}
-	default:
-		tracer = logger.NewStructLogger(config.Config)
+	if config == nil {
+		config = &TraceConfig{}
 	}
+	// Default tracer is the struct logger
+	tracer = logger.NewStructLogger(config.Config)
+	if config.Tracer != nil {
+		tracer, err = tracers.DefaultDirectory.New(*config.Tracer, txctx, config.TracerConfig)
+		if err != nil {
+			return nil, err
+		}
+	}
+	vmenv := vm.NewEVM(vmctx, txContext, statedb, api.b.ChainConfig(), vm.Config{Debug: true, Tracer: tracer, NoBaseFee: true})
 
-	evmconfig := params.DefaultVMConfig
-	evmconfig.Tracer = tracer
-	evmconfig.Debug = true
-	evmconfig.NoBaseFee = true
-
-	// Run the transaction with tracing enabled.
-	vmenv := vm.NewEVM(vmctx, txContext, statedb, api.b.ChainConfig(), evmconfig)
+	// Define a meaningful timeout of a single transaction trace
+	if config.Timeout != nil {
+		if timeout, err = time.ParseDuration(*config.Timeout); err != nil {
+			return nil, err
+		}
+	}
+	deadlineCtx, cancel := context.WithTimeout(ctx, timeout)
+	go func() {
+		<-deadlineCtx.Done()
+		if errors.Is(deadlineCtx.Err(), context.DeadlineExceeded) {
+			tracer.Stop(errors.New("execution timeout"))
+			// Stop evm execution. Note cancellation is not necessarily immediate.
+			vmenv.Cancel()
+		}
+	}()
+	defer cancel()
 
 	// Call Prepare to clear out the statedb access list
 	statedb.Prepare(txctx.TxHash, txctx.TxIndex)
-
-	result, err := evmcore.ApplyMessage(vmenv, message, new(evmcore.GasPool).AddGas(message.Gas()))
-	if err != nil {
+	if _, err = core.ApplyMessage(vmenv, message, new(core.GasPool).AddGas(message.Gas())); err != nil {
 		return nil, fmt.Errorf("tracing failed: %w", err)
 	}
-
-	// Depending on the tracer type, format and return the output.
-	switch tracer := tracer.(type) {
-	case *logger.StructLogger:
-		// If the result contains a revert reason, return it.
-		returnVal := fmt.Sprintf("%x", result.Return())
-		if len(result.Revert()) > 0 {
-			returnVal = fmt.Sprintf("%x", result.Revert())
-		}
-		return &ExecutionResult{
-			Gas:         result.UsedGas,
-			Failed:      result.Failed(),
-			ReturnValue: returnVal,
-			StructLogs:  FormatLogs(tracer.StructLogs()),
-		}, nil
-
-	case tracers.Tracer:
-		result, err := tracer.GetResult()
-		return result, err
-
-	default:
-		panic(fmt.Sprintf("bad tracer type %T", tracer))
-	}
+	return tracer.GetResult()
 }
 
 // txTraceResult is the result of a single transaction trace.

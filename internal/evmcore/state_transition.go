@@ -397,7 +397,7 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	if err := st.preCheck(senderSubscription1, receiverSubscription); err != nil {
 		return nil, err
 	}
-	if st.evm.Config.Debug && st.evm.Config.Tracer != nil {
+	if st.evm.Config.Debug {
 		st.evm.Config.Tracer.CaptureTxStart(st.initialGas)
 		defer func() {
 			st.evm.Config.Tracer.CaptureTxEnd(st.gas)

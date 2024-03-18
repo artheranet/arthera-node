@@ -549,7 +549,7 @@ func (st *StateTransition) refundGas(
 		pyagGasRefund := st.gas * st.pyagSpentGas / st.initialGas
 		if pyagGasRefund > 0 {
 			pyagRefund := new(big.Int).Mul(new(big.Int).SetUint64(pyagGasRefund), st.gasPrice)
-			log.Info("Credit Pay-as-You-Go", "refund (units)", pyagGasRefund, "refund (wei)", pyagRefund.String())
+			log.Debug("Credit Pay-as-You-Go", "refund (units)", pyagGasRefund, "refund (wei)", pyagRefund.String())
 			st.state.AddBalance(st.msg.From(), pyagRefund)
 		}
 	} else {

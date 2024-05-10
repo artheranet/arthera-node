@@ -6,23 +6,6 @@ import (
 	"github.com/artheranet/arthera-node/contracts"
 	"github.com/artheranet/arthera-node/contracts/driver"
 	"github.com/artheranet/arthera-node/contracts/netinit"
-	"github.com/artheranet/arthera-node/internal/inter/drivertype"
-	"github.com/artheranet/arthera-node/params"
-	"github.com/artheranet/lachesis/inter/idx"
-	"github.com/artheranet/lachesis/inter/pos"
-	"github.com/artheranet/lachesis/lachesis"
-	"github.com/ethereum/go-ethereum/eth/tracers/logger"
-	"io"
-	"math/big"
-	"os"
-
-	"github.com/artheranet/lachesis/hash"
-	"github.com/artheranet/lachesis/kvdb"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/rlp"
-
 	"github.com/artheranet/arthera-node/genesis"
 	"github.com/artheranet/arthera-node/genesis/genesisstore"
 	"github.com/artheranet/arthera-node/gossip/blockproc"
@@ -33,10 +16,23 @@ import (
 	"github.com/artheranet/arthera-node/gossip/evmstore"
 	"github.com/artheranet/arthera-node/internal/evmcore"
 	"github.com/artheranet/arthera-node/internal/inter"
+	"github.com/artheranet/arthera-node/internal/inter/drivertype"
 	"github.com/artheranet/arthera-node/internal/inter/iblockproc"
 	"github.com/artheranet/arthera-node/internal/inter/ibr"
 	"github.com/artheranet/arthera-node/internal/inter/ier"
+	"github.com/artheranet/arthera-node/params"
 	"github.com/artheranet/arthera-node/utils/iodb"
+	"github.com/artheranet/lachesis/hash"
+	"github.com/artheranet/lachesis/inter/idx"
+	"github.com/artheranet/lachesis/inter/pos"
+	"github.com/artheranet/lachesis/kvdb"
+	"github.com/artheranet/lachesis/lachesis"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/state"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/rlp"
+	"io"
+	"math/big"
 )
 
 type GenesisBuilder struct {
@@ -154,15 +150,16 @@ func (b *GenesisBuilder) ExecuteGenesisTxs(blockProc BlockProc, genesisTxs types
 	txListener := blockProc.TxListenerModule.Start(blockCtx, bs, es, b.tmpStateDB)
 	vmConfigWithDebug := params.DefaultVMConfig
 	vmConfigWithDebug.Debug = false
-	vmConfigWithDebug.Tracer = logger.NewJSONLogger(&logger.Config{
-		EnableMemory:     false,
-		DisableStack:     true,
-		DisableStorage:   true,
-		EnableReturnData: true,
-		Debug:            false,
-		Limit:            0,
-		Overrides:        nil,
-	}, os.Stdout)
+	// useful for debugging genesis contracts
+	//vmConfigWithDebug.Tracer = logger.NewJSONLogger(&logger.Config{
+	//	EnableMemory:     false,
+	//	DisableStack:     true,
+	//	DisableStorage:   true,
+	//	EnableReturnData: true,
+	//	Debug:            false,
+	//	Limit:            0,
+	//	Overrides:        nil,
+	//}, os.Stdout)
 
 	evmProcessor := blockProc.EVMModule.Start(blockCtx, b.tmpStateDB, dummyHeaderReturner{}, func(l *types.Log) {
 		txListener.OnNewLog(l)

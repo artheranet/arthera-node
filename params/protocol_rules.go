@@ -162,7 +162,7 @@ func MainNetRules() ProtocolRules {
 		Epochs:    DefaultEpochsRules(),
 		Economy:   DefaultEconomyRules(),
 		Blocks: BlocksRules{
-			MaxBlockGas:             350_000_000,
+			MaxBlockGas:             20_500_000,
 			MaxEmptyBlockSkipPeriod: inter.Timestamp(1 * time.Minute),
 		},
 		Upgrades: Upgrades{
@@ -181,7 +181,7 @@ func TestNetRules() ProtocolRules {
 		Epochs:    DefaultEpochsRules(),
 		Economy:   DefaultEconomyRules(),
 		Blocks: BlocksRules{
-			MaxBlockGas:             350_000_000,
+			MaxBlockGas:             20_500_000,
 			MaxEmptyBlockSkipPeriod: inter.Timestamp(1 * time.Minute),
 		},
 		Upgrades: Upgrades{
@@ -198,12 +198,12 @@ func DevNetRules() ProtocolRules {
 		NetworkID: DevNetworkID,
 		Dag:       DefaultDagRules(),
 		Epochs: EpochsRules{
-			MaxEpochGas:      1500000000,
+			MaxEpochGas:      1_500_000_000,
 			MaxEpochDuration: inter.Timestamp(1 * time.Hour),
 		},
 		Economy: DefaultEconomyRules(),
 		Blocks: BlocksRules{
-			MaxBlockGas:             350_000_000,
+			MaxBlockGas:             20_500_000,
 			MaxEmptyBlockSkipPeriod: inter.Timestamp(1 * time.Minute),
 		},
 		Upgrades: Upgrades{
@@ -222,7 +222,7 @@ func FakeNetRules() ProtocolRules {
 		Epochs:    FakeNetEpochsRules(),
 		Economy:   FakeEconomyRules(),
 		Blocks: BlocksRules{
-			MaxBlockGas:             350_000_000,
+			MaxBlockGas:             20_500_000,
 			MaxEmptyBlockSkipPeriod: inter.Timestamp(3 * time.Second),
 		},
 		Upgrades: Upgrades{

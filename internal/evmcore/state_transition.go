@@ -511,7 +511,7 @@ func (st *StateTransition) refundGas(
 			if st.hasActiveSubscription(receiverSubscription) {
 				receiverGasRefund := st.gas * st.receiverSpentGas / st.initialGas
 				if receiverGasRefund > 0 {
-					log.Info("Credit receiver subscription", "refund (units)", receiverGasRefund)
+					log.Trace("Credit receiver subscription", "refund (units)", receiverGasRefund)
 					CreditSubscription(st.to(), new(big.Int).SetUint64(receiverGasRefund), true, &st.evmRunner)
 				}
 			} else {
@@ -522,10 +522,10 @@ func (st *StateTransition) refundGas(
 
 		senderGasRefund := st.gas * st.senderSpentGas / st.initialGas
 		if senderGasRefund > 0 {
-			log.Info("Refunding gas", "sender", st.msg.From().String())
+			log.Trace("Refunding gas", "sender", st.msg.From().String())
 
 			if st.hasActiveSubscription(senderSubscription) {
-				log.Info("Credit sender subscription", "refund (units)", senderGasRefund)
+				log.Trace("Credit sender subscription", "refund (units)", senderGasRefund)
 				CreditSubscription(st.msg.From(), new(big.Int).SetUint64(senderGasRefund), false, &st.evmRunner)
 			} else {
 				if st.isSubscribersCall() && senderHadActiveSubscription && !st.hasActiveSubscription(senderSubscription) {
@@ -540,7 +540,7 @@ func (st *StateTransition) refundGas(
 					}
 				} else {
 					// if the sender does hot have an active subscription, give the refund to PYAG
-					log.Info("Refunding Sender", "senderSpentGas", st.senderSpentGas)
+					log.Trace("Refunding Sender", "senderSpentGas", st.senderSpentGas)
 					st.pyagSpentGas += st.senderSpentGas
 				}
 			}
@@ -549,7 +549,7 @@ func (st *StateTransition) refundGas(
 		pyagGasRefund := st.gas * st.pyagSpentGas / st.initialGas
 		if pyagGasRefund > 0 {
 			pyagRefund := new(big.Int).Mul(new(big.Int).SetUint64(pyagGasRefund), st.gasPrice)
-			log.Debug("Credit Pay-as-You-Go", "refund (units)", pyagGasRefund, "refund (wei)", pyagRefund.String())
+			log.Trace("Credit Pay-as-You-Go", "refund (units)", pyagGasRefund, "refund (wei)", pyagRefund.String())
 			st.state.AddBalance(st.msg.From(), pyagRefund)
 		}
 	} else {

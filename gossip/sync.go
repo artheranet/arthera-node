@@ -168,10 +168,10 @@ func (h *handler) updateSnapsyncStage() {
 	snapsyncNeeded := !fullsyncPossibleEver || time.Since(h.store.GetEpochState().EpochStart.Time()) > snapsyncMinEndAge
 
 	if snapsyncPossible && snapsyncNeeded {
-		h.Log.Info("Snapsync needed...")
+		h.Log.Debug("Snapsync needed...")
 		h.syncStatus.Set(ssSnaps)
 	} else if snapGenOngoing {
-		h.Log.Info("Snapsync running...")
+		h.Log.Debug("Snapsync running...")
 		h.syncStatus.Set(ssEvmSnapGen)
 	} else if fullsyncPossibleNow {
 		if !h.syncStatus.Is(ssEvents) {

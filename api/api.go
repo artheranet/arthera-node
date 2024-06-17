@@ -994,6 +994,46 @@ func (diff *StateOverride) Apply(state *state.StateDB) error {
 	return nil
 }
 
+// BlockOverrides is a set of header fields to override.
+type BlockOverrides struct {
+	Number     *hexutil.Big
+	Difficulty *hexutil.Big
+	Time       *hexutil.Big
+	GasLimit   *hexutil.Uint64
+	Coinbase   *common.Address
+	Random     *common.Hash
+}
+
+// TraceCallConfig is the config for traceCall API. It holds one more
+// field to override the state for tracing.
+type TraceCallConfig struct {
+	TraceConfig
+	StateOverrides *StateOverride
+	BlockOverrides *BlockOverrides
+}
+
+// Apply overrides the given header fields into the given block context.
+func (diff *BlockOverrides) Apply(blockCtx *vm.BlockContext) {
+	if diff == nil {
+		return
+	}
+	if diff.Number != nil {
+		blockCtx.BlockNumber = diff.Number.ToInt()
+	}
+	if diff.Difficulty != nil {
+		blockCtx.Difficulty = diff.Difficulty.ToInt()
+	}
+	if diff.Time != nil {
+		blockCtx.Time = diff.Time.ToInt()
+	}
+	if diff.GasLimit != nil {
+		blockCtx.GasLimit = uint64(*diff.GasLimit)
+	}
+	if diff.Coinbase != nil {
+		blockCtx.Coinbase = *diff.Coinbase
+	}
+}
+
 func DoCall(ctx context.Context, b Backend, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, overrides *StateOverride, timeout time.Duration, globalGasCap uint64) (*evmcore.ExecutionResult, error) {
 	defer func(start time.Time) { log.Trace("Executing EVM call finished", "runtime", time.Since(start)) }(time.Now())
 
@@ -2131,6 +2171,39 @@ type TraceConfig struct {
 	TracerConfig json.RawMessage
 }
 
+func (api *PublicDebugAPI) TraceCall(ctx context.Context, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, config *TraceCallConfig) (interface{}, error) {
+	stateDb, header, err := api.b.StateAndHeaderByNumberOrHash(ctx, blockNrOrHash)
+	if stateDb == nil || err != nil {
+		return nil, err
+	}
+	block, err := api.blockByNumber(ctx, rpc.BlockNumber(header.Number.Int64()))
+	if err != nil {
+		return nil, err
+	}
+
+	blockCtx := api.b.GetBlockContext(header)
+	// Apply the customization rules if required.
+	if config != nil {
+		if err := config.StateOverrides.Apply(stateDb); err != nil {
+			return nil, err
+		}
+		config.BlockOverrides.Apply(&blockCtx)
+	}
+
+	// Execute the trace
+	msg, err := args.ToMessage(api.b.RPCGasCap(), block.BaseFee)
+	if err != nil {
+		return nil, err
+	}
+
+	var traceConfig *TraceConfig
+	if config != nil {
+		traceConfig = &config.TraceConfig
+	}
+
+	return api.traceTx(ctx, msg, new(tracers.Context), blockCtx, stateDb, traceConfig)
+}
+
 // TraceTransaction returns the structured logs created during the execution of EVM
 // and returns them as a JSON object.
 func (api *PublicDebugAPI) TraceTransaction(ctx context.Context, hash common.Hash, config *TraceConfig) (interface{}, error) {
@@ -2210,6 +2283,7 @@ func (api *PublicDebugAPI) traceTx(ctx context.Context, message evmcore.Message,
 
 	// Call Prepare to clear out the statedb access list
 	statedb.Prepare(txctx.TxHash, txctx.TxIndex)
+
 	if _, err = evmcore.ApplyMessage(vmenv, message, new(evmcore.GasPool).AddGas(message.Gas())); err != nil {
 		return nil, fmt.Errorf("tracing failed: %w", err)
 	}

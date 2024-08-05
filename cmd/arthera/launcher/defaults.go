@@ -50,7 +50,7 @@ var NodeDefaultConfig = node.Config{
 		DiscoveryV5: false, // enable discovery v5 by default
 		ListenAddr:  fmt.Sprintf("0.0.0.0:%d", DefaultP2PPort),
 		MaxPeers:    50,
-		NAT:         nat.Any(),
+		NAT:         nat.MustFromSpec("any"),
 	},
 }
 

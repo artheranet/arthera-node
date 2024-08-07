@@ -1177,8 +1177,14 @@ func DoEstimateGas(ctx context.Context, b Backend, args TransactionArgs, blockNr
 		balance := state.GetBalance(*args.From) // from can't be nil
 		available := new(big.Int).Set(balance)
 		if args.Value != nil {
-			if args.Value.ToInt().Cmp(available) >= 0 {
-				return 0, errors.New("insufficient funds for transfer")
+			if b.SubDummyBalance() {
+				if args.Value.ToInt().Cmp(available) > 0 {
+					return 0, errors.New("insufficient funds for transfer")
+				}
+			} else {
+				if args.Value.ToInt().Cmp(available) >= 0 {
+					return 0, errors.New("insufficient funds for transfer")
+				}
 			}
 			available.Sub(available, args.Value.ToInt())
 		}
